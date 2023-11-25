@@ -1,4 +1,3 @@
-flet
-httpx
-flet-fastapi
 uvicorn
+flet_manager
+mybody_api_client

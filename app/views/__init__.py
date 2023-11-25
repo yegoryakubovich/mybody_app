@@ -15,14 +15,15 @@
 #
 
 
-from .main import MainView
+from .splash import SplashView
 
 
 views = [
-    MainView,
+    SplashView,
 ]
+
 
 __all__ = [
     'views',
-    'MainView',
+    'SplashView',
 ]

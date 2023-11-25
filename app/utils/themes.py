@@ -15,74 +15,16 @@
 #
 
 
-from flet_core import ColorScheme, ScrollbarTheme, TextStyle, TextTheme, Theme, colors
+from flet_core import Theme
+
+from flet_manager.utils import Themes
 
 
-BASE_TEXT_STYLE = TextStyle(
-    font_family='Regular',
-    color='black',
+themes = Themes(
+    light=Theme(
+        color_scheme_seed='#1d1d1d',
+    ),
+    dark=Theme(
+        color_scheme_seed='#1d1d1d',
+    ),
 )
-PRIMARY_COLOR_LIGHT = 'BLACK'
-PRIMARY_COLOR_DARK = 'WHITE'
-BG_COLOR_LIGHT = 'WHITE'
-BG_COLOR_DARK = 'BLACK'
-SECONDARY_COLOR_LIGHT = colors.GREY_700
-SECONDARY_COLOR_DARK = colors.GREY_300
-
-
-class Themes:
-    LIGHT = Theme(
-        color_scheme=ColorScheme(
-            surface=BG_COLOR_LIGHT,
-            surface_tint=BG_COLOR_LIGHT,
-            primary=SECONDARY_COLOR_LIGHT,
-            on_surface=PRIMARY_COLOR_LIGHT,
-            on_primary=PRIMARY_COLOR_LIGHT,
-            secondary_container=BG_COLOR_LIGHT,
-            on_secondary_container=PRIMARY_COLOR_LIGHT,
-            on_secondary=BG_COLOR_LIGHT,
-            outline=PRIMARY_COLOR_LIGHT,
-        ),
-        text_theme=TextTheme(
-            label_medium=BASE_TEXT_STYLE,
-            label_large=BASE_TEXT_STYLE,
-            label_small=BASE_TEXT_STYLE,
-            body_small=BASE_TEXT_STYLE,
-            body_medium=BASE_TEXT_STYLE,
-            body_large=BASE_TEXT_STYLE,
-        ),
-        scrollbar_theme=ScrollbarTheme(
-            track_color=PRIMARY_COLOR_LIGHT,
-            track_border_color=PRIMARY_COLOR_LIGHT,
-            thickness=0
-        )
-    )
-    DARK = Theme(
-        color_scheme=ColorScheme(
-            surface=BG_COLOR_DARK,
-            surface_tint=BG_COLOR_DARK,
-            primary=SECONDARY_COLOR_DARK,
-            on_surface=PRIMARY_COLOR_DARK,
-            on_primary=PRIMARY_COLOR_DARK,
-            secondary_container=BG_COLOR_DARK,
-            on_secondary_container=PRIMARY_COLOR_DARK,
-            on_secondary=BG_COLOR_DARK,
-            outline=PRIMARY_COLOR_DARK,
-        ),
-        text_theme=TextTheme(
-            label_medium=BASE_TEXT_STYLE,
-            label_large=BASE_TEXT_STYLE,
-            label_small=BASE_TEXT_STYLE,
-            body_small=BASE_TEXT_STYLE,
-            body_medium=BASE_TEXT_STYLE,
-            body_large=BASE_TEXT_STYLE,
-        ),
-        scrollbar_theme=ScrollbarTheme(
-            track_color=PRIMARY_COLOR_DARK,
-            track_border_color=PRIMARY_COLOR_DARK,
-            thickness=0
-        )
-    )
-
-
-

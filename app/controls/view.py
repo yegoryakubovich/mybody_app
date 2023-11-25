@@ -19,4 +19,9 @@ from flet_manager.views import BaseView
 
 
 class View(BaseView):
-    pass
+    title = 'My Body'
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.padding = 0
+        self.spacing = 0

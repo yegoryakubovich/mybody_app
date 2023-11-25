@@ -15,16 +15,19 @@
 #
 
 
-from flet_core import Text
-
-from app.controls import View
+from flet_manager.utils import Font
 
 
-class MainView(View):
-    route = '/'
+class Fonts:
+    REGULAR = Font(path='fonts/GolosText-Regular.ttf')
+    MEDIUM = Font(path='fonts/GolosText-Medium.ttf')
+    SEMIBOLD = Font(path='fonts/GolosText-SemiBold.ttf')
+    BOLD = Font(path='fonts/GolosText-Bold.ttf')
 
-    async def build(self):
-        self.controls = [
-            Text(value='Hello, world!')
-        ]
 
+fonts = [
+    Fonts.REGULAR,
+    Fonts.MEDIUM,
+    Fonts.SEMIBOLD,
+    Fonts.BOLD,
+]

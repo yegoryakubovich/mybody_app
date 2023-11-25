@@ -15,14 +15,13 @@
 #
 
 
-from .fonts import Fonts, fonts
-from .themes import themes
-from .session import Session
+from mybody_api_client import MyBodyApiClient
+
+from config import DEBUG_TOKEN
 
 
-__all__ = [
-    'Fonts',
-    'fonts',
-    'themes',
-    'Session',
-]
+class Session:
+    api: MyBodyApiClient
+
+    def __init__(self):
+        self.api = MyBodyApiClient(token=DEBUG_TOKEN)

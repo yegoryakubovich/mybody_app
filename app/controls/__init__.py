@@ -19,5 +19,5 @@ from app.controls.view import View
 
 
 __all__ = [
-    'View'
+    'View',
 ]

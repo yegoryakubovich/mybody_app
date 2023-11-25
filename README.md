@@ -1,4 +1,4 @@
-# My Body APP
+# My Body App
 
 ## 1. License
 
