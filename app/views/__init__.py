@@ -15,15 +15,18 @@
 #
 
 
+from .authentication import AuthenticationView
 from .splash import SplashView
 
 
 views = [
     SplashView,
+    AuthenticationView,
 ]
 
 
 __all__ = [
     'views',
     'SplashView',
+    'AuthenticationView',
 ]

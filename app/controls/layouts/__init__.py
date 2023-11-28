@@ -15,12 +15,11 @@
 #
 
 
-from . import layouts, informations, inputs, buttons
+from .auth import AuthView
+from .view import View
 
 
 __all__ = [
-    'layouts',
-    'informations',
-    'inputs',
-    'buttons',
+    'View',
+    'AuthView',
 ]

@@ -15,12 +15,10 @@
 #
 
 
-from . import layouts, informations, inputs, buttons
+from flet_core import TextField as FletTextField
 
 
-__all__ = [
-    'layouts',
-    'informations',
-    'inputs',
-    'buttons',
-]
+class TextField(FletTextField):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.width = 640

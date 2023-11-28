@@ -15,10 +15,12 @@
 #
 
 
-from flet_core import Text, Container, alignment, Column
+from flet_core import Container, alignment, Column
 
-from app.controls import View
-from app.utils import Fonts, Session
+from app.controls.buttons import FilledButton
+from app.controls.layouts import View
+from app.utils import Session
+from app.views import AuthenticationView
 
 
 class SplashView(View):
@@ -27,15 +29,20 @@ class SplashView(View):
     async def init_session(self):
         self.client.session = Session()
 
+    async def go_authentication(self, _):
+        await self.client.change_view(view=AuthenticationView())
+
     async def build(self):
+        # FIXME
+        await self.init_session()
+
         self.controls = [
             Column(
                 controls=[
                     Container(
-                        content=Text(
-                            value='My Body',
-                            font_family=Fonts.SEMIBOLD,
-                            size=32,
+                        content=FilledButton(
+                            text='Authentication',
+                            on_click=self.go_authentication,
                         ),
                         expand=True,
                         alignment=alignment.center,

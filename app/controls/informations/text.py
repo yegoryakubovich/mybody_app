@@ -15,12 +15,11 @@
 #
 
 
-from . import layouts, informations, inputs, buttons
+from flet_core import Text as FletText
 
 
-__all__ = [
-    'layouts',
-    'informations',
-    'inputs',
-    'buttons',
-]
+class Text(FletText):
+    def __init__(self, key=None, **kwargs):
+        if key:
+            self.value = '404'
+        super().__init__(**kwargs)

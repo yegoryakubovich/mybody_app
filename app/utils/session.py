@@ -25,3 +25,11 @@ class Session:
 
     def __init__(self):
         self.api = MyBodyApiClient(token=DEBUG_TOKEN)
+
+    @staticmethod
+    async def get_text_value(key):
+        # FIXME
+        return key.title()
+
+    async def gtv(self, key):
+        return await self.get_text_value(key=key)

@@ -15,12 +15,17 @@
 #
 
 
-from . import layouts, informations, inputs, buttons
+from flet_core import FilledButton as FletFilledButton, ButtonStyle, MaterialState, RoundedRectangleBorder, padding
 
 
-__all__ = [
-    'layouts',
-    'informations',
-    'inputs',
-    'buttons',
-]
+class FilledButton(FletFilledButton):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.style = ButtonStyle(
+            padding={
+                MaterialState.DEFAULT: padding.symmetric(horizontal=54, vertical=14),
+            },
+            shape={
+                MaterialState.DEFAULT: RoundedRectangleBorder(radius=4),
+            },
+        )

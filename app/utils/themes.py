@@ -15,14 +15,16 @@
 #
 
 
-from flet_core import Theme
+from flet_core import Theme, ColorScheme
 
 from flet_manager.utils import Themes
 
 
 themes = Themes(
     light=Theme(
-        color_scheme_seed='#1d1d1d',
+        color_scheme=ColorScheme(
+            primary='#008F12',
+        ),
     ),
     dark=Theme(
         color_scheme_seed='#1d1d1d',

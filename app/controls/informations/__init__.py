@@ -15,12 +15,9 @@
 #
 
 
-from . import layouts, informations, inputs, buttons
+from .text import Text
 
 
 __all__ = [
-    'layouts',
-    'informations',
-    'inputs',
-    'buttons',
+    'Text',
 ]

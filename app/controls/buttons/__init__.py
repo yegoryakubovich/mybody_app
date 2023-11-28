@@ -15,12 +15,9 @@
 #
 
 
-from . import layouts, informations, inputs, buttons
+from .filledbutton import FilledButton
 
 
 __all__ = [
-    'layouts',
-    'informations',
-    'inputs',
-    'buttons',
+    'FilledButton',
 ]
