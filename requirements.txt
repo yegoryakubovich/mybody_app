@@ -1,3 +1,3 @@
 uvicorn
-flet_manager
-mybody_api_client
+flet_manager==0.3.1
+mybody_api_client==0.2

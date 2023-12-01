@@ -17,32 +17,59 @@
 
 from flet_core import Column
 
-from app.controls.buttons import FilledButton
-from app.controls.informations import Text
-from app.controls.inputs import TextField
-from app.controls.layouts import AuthView
+from app.controls.button import FilledButton
+from app.controls.information import Text
+from app.controls.input import TextField
+from app.controls.layout import AuthView
 
 
 class AuthenticationView(AuthView):
     route = '/authentication'
+    tf_username: TextField
+    tf_password: TextField
+
+    async def auntificate(self, _):
+        await self.set_type(loading=True)
+
+        # Create session
+        username = self.tf_username.value
+        password = self.tf_password.value
+        session = await self.client.session.api.session.create(
+            username=username,
+            password=password,
+        )
+
+        # Get result, set in CS
+        token = session.token
+        await self.client.session.set_cs(key='token', value=token)
+
+        # Change view
+        view = await self.client.session.init()
+        await self.set_type(loading=False)
+        await self.client.change_view(view=view)
 
     async def build(self):
+        self.tf_username = TextField(
+            label=await self.client.session.gtv(key='username'),
+        )
+        self.tf_password = TextField(
+            label=await self.client.session.gtv(key='password'),
+            password=True,
+        )
+
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='login'),
             controls=[
                 Column(
                     controls=[
-                        TextField(
-                            label=await self.client.session.gtv(key='username'),
-                        ),
-                        TextField(
-                            label=await self.client.session.gtv(key='password'),
-                        ),
+                        self.tf_username,
+                        self.tf_password,
                         FilledButton(
                             content=Text(
                                 value=await self.client.session.gtv(key='login'),
                                 size=16,
                             ),
+                            on_click=self.auntificate,
                         ),
                     ],
                     spacing=20,

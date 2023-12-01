@@ -20,7 +20,3 @@ from configparser import ConfigParser
 
 config = ConfigParser()
 config.read('config.ini')
-
-
-debug = config['debug']
-DEBUG_TOKEN = debug.get('token')

@@ -15,9 +15,25 @@
 #
 
 
-from .textfield import TextField
+from flet_core import Container, alignment
+
+from app.controls.information import Text
+from app.controls.layout import View
+from app.utils import Fonts
 
 
-__all__ = [
-    'TextField',
-]
+class MainView(View):
+    route = '/'
+
+    async def build(self):
+        self.controls = [
+            Container(
+                content=Text(
+                    value='My Body - Main View',
+                    font_family=Fonts.BOLD,
+                    size=36,
+                ),
+                expand=True,
+                alignment=alignment.center,
+            ),
+        ]

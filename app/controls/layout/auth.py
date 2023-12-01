@@ -15,11 +15,11 @@
 #
 
 
-from flet_core import Image, Container, padding, alignment, Column, Row
+from flet_core import Image, Container, padding, alignment, Column
 from flet_manager.utils import get_svg
 
-from app.controls.informations import Text
-from app.controls.layouts.view import View
+from app.controls.information import Text
+from app.controls.layout.view import View
 from app.utils import Fonts
 
 

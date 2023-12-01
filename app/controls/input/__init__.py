@@ -15,24 +15,11 @@
 #
 
 
-from .main import MainView
-from .authentication import AuthenticationView
-from .splash import SplashView
-from .set_language import SetLanguageView
-
-
-views = [
-    SplashView,
-    AuthenticationView,
-    MainView,
-    SetLanguageView,
-]
+from .textfield import TextField
+from .dropdown import Dropdown
 
 
 __all__ = [
-    'views',
-    'SplashView',
-    'AuthenticationView',
-    'MainView',
-    'SetLanguageView',
+    'TextField',
+    'Dropdown',
 ]

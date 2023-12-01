@@ -15,17 +15,74 @@
 #
 
 
-from mybody_api_client import MyBodyApiClient
+from typing import Any
 
-from config import DEBUG_TOKEN
+from flet_core import Page
+from flet_manager.utils import Client
+from mybody_api_client import MyBodyApiClient
 
 
 class Session:
+    client: Client
+    page: Page
+    token: str | None
+    language: str | None
     api: MyBodyApiClient
 
-    def __init__(self):
-        self.api = MyBodyApiClient(token=DEBUG_TOKEN)
+    def __init__(self, client: Client):
+        self.client = client
+        self.page = client.page
 
+    async def init(self):
+        self.token = await self.get_cs(key='token')
+        self.language = await self.get_cs(key='language')
+
+        self.api = MyBodyApiClient(token=self.token)
+        account = await self.api.account.get()
+
+        if account.state == 'error':
+            self.token = None
+            await self.set_cs(key='token', value=self.token)
+
+            from app.views.authentication import AuthenticationView
+
+            # Return view
+            if not self.client.session.language:
+                from app.views.set_language import SetLanguageView
+
+                # Go to Set Language
+                return SetLanguageView(
+                    languages=await self.client.session.api.language.get_list(),
+                    next_view=AuthenticationView(),
+                )
+            else:
+                # Go to Auth
+                return AuthenticationView()
+
+        else:
+            if self.language != account.language:
+                await self.set_cs(key='language', value=self.language)
+            self.language = account.language
+            from app.views.main import MainView
+            # Go to Main
+            return MainView()
+
+    # Client storage
+    async def get_cs(self, key: str) -> Any:
+        try:
+            value = await self.page.client_storage.get_async(key=f'mybody.{key}')
+            if value == 'null':
+                value = None
+            return value
+        except RecursionError:
+            return None
+
+    async def set_cs(self, key: str, value: Any) -> None:
+        if value is None:
+            value = 'null'
+        return await self.page.client_storage.set_async(key=f'mybody.{key}', value=value)
+
+    # Texts
     @staticmethod
     async def get_text_value(key):
         # FIXME

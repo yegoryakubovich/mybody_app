@@ -15,12 +15,13 @@
 #
 
 
-from . import layouts, informations, inputs, buttons
+from . import layout, information, input, button, navigation
 
 
 __all__ = [
-    'layouts',
-    'informations',
-    'inputs',
-    'buttons',
+    'layout',
+    'information',
+    'input',
+    'button',
+    'navigation',
 ]

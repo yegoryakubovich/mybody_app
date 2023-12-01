@@ -15,24 +15,9 @@
 #
 
 
-from .main import MainView
-from .authentication import AuthenticationView
-from .splash import SplashView
-from .set_language import SetLanguageView
-
-
-views = [
-    SplashView,
-    AuthenticationView,
-    MainView,
-    SetLanguageView,
-]
+from .bottom import BottomNavigation
 
 
 __all__ = [
-    'views',
-    'SplashView',
-    'AuthenticationView',
-    'MainView',
-    'SetLanguageView',
+    'BottomNavigation',
 ]

@@ -15,13 +15,8 @@
 #
 
 
-from flet_manager.views import BaseView
+from flet_core import Container
 
 
-class View(BaseView):
-    title = 'My Body'
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.padding = 0
-        self.spacing = 0
+class BottomNavigation(Container):
+    pass

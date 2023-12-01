@@ -15,10 +15,9 @@
 #
 
 
-from flet_core import TextField as FletTextField
+from flet_core import Dropdown as FletDropdown
 
 
-class TextField(FletTextField):
+class Dropdown(FletDropdown):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.width = 640

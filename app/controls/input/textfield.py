@@ -15,24 +15,9 @@
 #
 
 
-from .main import MainView
-from .authentication import AuthenticationView
-from .splash import SplashView
-from .set_language import SetLanguageView
+from flet_core import TextField as FletTextField
 
 
-views = [
-    SplashView,
-    AuthenticationView,
-    MainView,
-    SetLanguageView,
-]
-
-
-__all__ = [
-    'views',
-    'SplashView',
-    'AuthenticationView',
-    'MainView',
-    'SetLanguageView',
-]
+class TextField(FletTextField):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
