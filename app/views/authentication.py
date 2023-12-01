@@ -15,12 +15,13 @@
 #
 
 
-from flet_core import Column
+from flet_core import Column, TextButton
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField
 from app.controls.layout import AuthView
+from app.views.registration.registration import RegistrationView
 
 
 class AuthenticationView(AuthView):
@@ -28,7 +29,7 @@ class AuthenticationView(AuthView):
     tf_username: TextField
     tf_password: TextField
 
-    async def auntificate(self, _):
+    async def authenticate(self, _):
         await self.set_type(loading=True)
 
         # Create session
@@ -48,6 +49,9 @@ class AuthenticationView(AuthView):
         await self.set_type(loading=False)
         await self.client.change_view(view=view)
 
+    async def go_registration(self, _):
+        await self.client.change_view(view=RegistrationView())
+
     async def build(self):
         self.tf_username = TextField(
             label=await self.client.session.gtv(key='username'),
@@ -64,12 +68,19 @@ class AuthenticationView(AuthView):
                     controls=[
                         self.tf_username,
                         self.tf_password,
+                        TextButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='next'),
+                                size=16,
+                            ),
+                            on_click=self.go_registration,
+                        ),
                         FilledButton(
                             content=Text(
                                 value=await self.client.session.gtv(key='login'),
                                 size=16,
                             ),
-                            on_click=self.auntificate,
+                            on_click=self.authenticate,
                         ),
                     ],
                     spacing=20,

@@ -15,16 +15,15 @@
 #
 
 
-from .fonts import Fonts, fonts
-from .themes import themes
-from .session import Session
-from .registration import Registration
+from .registration import RegistrationView
+from .registration_data import RegistrationDataView
+from .registration_successful import RegistrationSuccessfulView
+from .user_agreement import UserAgreement
 
 
 __all__ = [
-    'Fonts',
-    'fonts',
-    'themes',
-    'Session',
-    'Registration',
+    'RegistrationView',
+    'RegistrationDataView',
+    'UserAgreement',
+    'RegistrationSuccessfulView',
 ]

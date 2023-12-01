@@ -15,16 +15,15 @@
 #
 
 
-from .fonts import Fonts, fonts
-from .themes import themes
-from .session import Session
-from .registration import Registration
+from typing import Optional
 
 
-__all__ = [
-    'Fonts',
-    'fonts',
-    'themes',
-    'Session',
-    'Registration',
-]
+class Registration:
+    username: str
+    password: str
+    firstname: str
+    lastname: str
+    surname: Optional[str]
+    country: str
+    timezone: str
+    currency: str

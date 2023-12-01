@@ -17,6 +17,7 @@
 
 from .main import MainView
 from .authentication import AuthenticationView
+from .registration import RegistrationView, RegistrationDataView
 from .splash import SplashView
 from .set_language import SetLanguageView
 
@@ -26,6 +27,8 @@ views = [
     AuthenticationView,
     MainView,
     SetLanguageView,
+    RegistrationView,
+    RegistrationDataView,
 ]
 
 
@@ -35,4 +38,5 @@ __all__ = [
     'AuthenticationView',
     'MainView',
     'SetLanguageView',
+    'registration',
 ]
