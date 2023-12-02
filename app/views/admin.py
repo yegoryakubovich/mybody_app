@@ -15,4 +15,25 @@
 #
 
 
-VERSION = '0.1'
+from flet_core import Container, alignment
+
+from app.controls.information import Text
+from app.controls.layout import View
+from app.utils import Fonts
+
+
+class AdminView(View):
+    route = '/admin'
+
+    async def build(self):
+        self.controls = [
+            Container(
+                content=Text(
+                    value='My Body - Admin View',
+                    font_family=Fonts.BOLD,
+                    size=36,
+                ),
+                expand=True,
+                alignment=alignment.center,
+            ),
+        ]

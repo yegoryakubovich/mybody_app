@@ -32,6 +32,7 @@ class Session:
     def __init__(self, client: Client):
         self.client = client
         self.page = client.page
+        self.account = None
 
     async def init(self):
         self.token = await self.get_cs(key='token')
@@ -63,6 +64,9 @@ class Session:
             if self.language != account.language:
                 await self.set_cs(key='language', value=self.language)
             self.language = account.language
+
+            self.account = account
+
             from app.views.main import MainView
             # Go to Main
             return MainView()
@@ -86,6 +90,7 @@ class Session:
     @staticmethod
     async def get_text_value(key):
         # FIXME
+        key = key.replace('_', ' ')
         return key.title()
 
     async def gtv(self, key):
