@@ -18,6 +18,7 @@
 from .fonts import Fonts, fonts
 from .themes import themes
 from .session import Session
+from .registration import Registration
 
 
 __all__ = [
@@ -25,4 +26,5 @@ __all__ = [
     'fonts',
     'themes',
     'Session',
+    'Registration',
 ]

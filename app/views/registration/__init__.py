@@ -15,31 +15,15 @@
 #
 
 
-from .main import MainView
-from .authentication import AuthenticationView
-from .registration import RegistrationView, RegistrationDataView
-from .splash import SplashView
-from .set_language import SetLanguageView
-from .admin import AdminView
-
-
-views = [
-    SplashView,
-    AuthenticationView,
-    MainView,
-    SetLanguageView,
-    AdminView,
-    RegistrationView,
-    RegistrationDataView,
-]
+from .registration import RegistrationView
+from .registration_data import RegistrationDataView
+from .registration_successful import RegistrationSuccessfulView
+from .user_agreement import UserAgreement
 
 
 __all__ = [
-    'views',
-    'SplashView',
-    'AuthenticationView',
-    'MainView',
-    'SetLanguageView',
-    'AdminView',
-    'registration',
+    'RegistrationView',
+    'RegistrationDataView',
+    'UserAgreement',
+    'RegistrationSuccessfulView',
 ]

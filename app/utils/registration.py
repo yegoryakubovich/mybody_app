@@ -15,31 +15,15 @@
 #
 
 
-from .main import MainView
-from .authentication import AuthenticationView
-from .registration import RegistrationView, RegistrationDataView
-from .splash import SplashView
-from .set_language import SetLanguageView
-from .admin import AdminView
+from typing import Optional
 
 
-views = [
-    SplashView,
-    AuthenticationView,
-    MainView,
-    SetLanguageView,
-    AdminView,
-    RegistrationView,
-    RegistrationDataView,
-]
-
-
-__all__ = [
-    'views',
-    'SplashView',
-    'AuthenticationView',
-    'MainView',
-    'SetLanguageView',
-    'AdminView',
-    'registration',
-]
+class Registration:
+    username: str
+    password: str
+    firstname: str
+    lastname: str
+    surname: Optional[str]
+    country: str
+    timezone: str
+    currency: str

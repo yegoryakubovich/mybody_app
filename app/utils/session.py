@@ -21,6 +21,8 @@ from flet_core import Page
 from flet_manager.utils import Client
 from mybody_api_client import MyBodyApiClient
 
+from app.utils.registration import Registration
+
 
 class Session:
     client: Client
@@ -28,6 +30,7 @@ class Session:
     token: str | None
     language: str | None
     api: MyBodyApiClient
+    registration: Registration
 
     def __init__(self, client: Client):
         self.client = client
