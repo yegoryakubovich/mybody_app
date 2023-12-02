@@ -15,25 +15,38 @@
 #
 
 
-from flet_core import Container, alignment
+from flet_core import Container, alignment, Column, MainAxisAlignment, CrossAxisAlignment
 
-from app.controls.information import Text
+from app.controls.button import FilledButton
 from app.controls.layout import View
-from app.utils import Fonts
 
 
 class AdminView(View):
     route = '/admin'
 
+    async def clear_cs(self, _):
+        await self.client.session.set_cs(key='language', value=None)
+        await self.client.session.set_cs(key='token', value=None)
+
     async def build(self):
         self.controls = [
-            Container(
-                content=Text(
-                    value='My Body - Admin View',
-                    font_family=Fonts.BOLD,
-                    size=36,
-                ),
+            Column(
+                controls=[
+                    Container(
+                        content=Column(
+                            controls=[
+                                FilledButton(
+                                    text='Clear CS',
+                                    on_click=self.clear_cs,
+                                ),
+                            ],
+                            alignment=MainAxisAlignment.CENTER,
+                            horizontal_alignment=CrossAxisAlignment.CENTER,
+                        ),
+                        expand=True,
+                        alignment=alignment.center,
+                    ),
+                ],
                 expand=True,
-                alignment=alignment.center,
             ),
         ]

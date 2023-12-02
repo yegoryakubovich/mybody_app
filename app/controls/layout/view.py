@@ -35,7 +35,7 @@ class View(BaseView):
         if loading:
             self.controls_last = self.controls
             self.controls = [
-                Loading(infinity=True, color='#1d1d1d'),
+                Loading(infinity=True, color='#008F12'),
             ]
             await self.update_async()
         else:

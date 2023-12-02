@@ -15,9 +15,6 @@
 #
 
 
-from flet_core import Container, alignment, Column, MainAxisAlignment, CrossAxisAlignment
-
-from app.controls.button import FilledButton
 from app.controls.layout import View
 from app.utils import Session
 
@@ -25,41 +22,12 @@ from app.utils import Session
 class SplashView(View):
     route = '/splash'
 
-    async def init(self, _):
+    async def on_load(self):
         await self.set_type(loading=True)
         self.client.session = Session(client=self.client)
         view = await self.client.session.init()
         await self.set_type(loading=False)
         await self.client.change_view(view=view)
 
-    async def clear_cs(self, _):
-        self.client.session = Session(client=self.client)
-        await self.client.session.set_cs(key='language', value=None)
-        await self.client.session.set_cs(key='token', value=None)
-
     async def build(self):
-        self.controls = [
-            Column(
-                controls=[
-                    Container(
-                        content=Column(
-                            controls=[
-                                FilledButton(
-                                    text='Start',
-                                    on_click=self.init,
-                                ),
-                                FilledButton(
-                                    text='Clear CS',
-                                    on_click=self.clear_cs,
-                                ),
-                            ],
-                            alignment=MainAxisAlignment.CENTER,
-                            horizontal_alignment=CrossAxisAlignment.CENTER,
-                        ),
-                        expand=True,
-                        alignment=alignment.center,
-                    ),
-                ],
-                expand=True,
-            ),
-        ]
+        self.controls = []
