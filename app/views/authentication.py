@@ -15,13 +15,13 @@
 #
 
 
-from flet_core import Column, TextButton
+from flet_core import Column, Row, Container, padding
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField
 from app.controls.layout import AuthView
-from app.views.registration.registration import RegistrationView
+from app.utils import Fonts
 
 
 class AuthenticationView(AuthView):
@@ -50,6 +50,7 @@ class AuthenticationView(AuthView):
         await self.client.change_view(view=view)
 
     async def go_registration(self, _):
+        from app.views.registration import RegistrationView
         await self.client.change_view(view=RegistrationView())
 
     async def build(self):
@@ -68,19 +69,33 @@ class AuthenticationView(AuthView):
                     controls=[
                         self.tf_username,
                         self.tf_password,
-                        TextButton(
-                            content=Text(
-                                value=await self.client.session.gtv(key='next'),
-                                size=16,
-                            ),
-                            on_click=self.go_registration,
-                        ),
                         FilledButton(
                             content=Text(
                                 value=await self.client.session.gtv(key='login'),
                                 size=16,
                             ),
                             on_click=self.authenticate,
+                        ),
+                        Container(
+                            content=Row(
+                                controls=[
+                                    Text(
+                                        value=await self.client.session.gtv(key='Dont have an account?'),
+                                        size=16,
+                                        font_family=Fonts.REGULAR,
+                                    ),
+                                    Text(
+                                        value=await self.client.session.gtv(key='Sign Up'),
+                                        size=16,
+                                        font_family=Fonts.SEMIBOLD,
+                                        color='#008F12',  # FIXME
+                                    ),
+                                ],
+                                spacing=4,
+                            ),
+                            on_click=self.go_registration,
+                            ink=True,
+                            padding=padding.symmetric(vertical=4),
                         ),
                     ],
                     spacing=20,

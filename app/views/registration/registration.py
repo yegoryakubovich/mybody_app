@@ -15,11 +15,14 @@
 #
 
 
+from flet_core import Row, Column, Container, padding
+
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField
 from app.controls.layout import AuthView
-from app.utils import Registration
+from app.utils import Fonts
+from app.utils.registration import Registration
 from app.views.registration.registration_data import RegistrationDataView
 
 
@@ -27,30 +30,6 @@ class RegistrationView(AuthView):
     route = '/registration'
     tf_username: TextField
     tf_password: TextField
-
-    async def build(self):
-        self.tf_username = TextField(
-            label=await self.client.session.gtv(key='username'),
-        )
-        self.tf_password = TextField(
-            label=await self.client.session.gtv(key='password'),
-            password=True,
-        )
-
-        self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='account_creation'),
-            controls=[
-                self.tf_username,
-                self.tf_password,
-                FilledButton(
-                    content=Text(
-                        value=await self.client.session.gtv(key='next'),
-                        size=16,
-                    ),
-                    on_click=self.change_view,
-                ),
-            ],
-        )
 
     async def change_view(self, _):
         username_error = await self.client.session.gtv(key='username_min_max_letter')
@@ -79,5 +58,62 @@ class RegistrationView(AuthView):
             )
 
         await self.update_async()
-        self.tf_username.error_text = None
-        self.tf_password.error_text = None
+        for field in [
+            self.tf_username,
+            self.tf_password,
+        ]:
+            field.error_text = None
+
+    async def go_authentication(self, _):
+        from app.views.authentication import AuthenticationView
+        await self.client.change_view(view=AuthenticationView())
+
+    async def build(self):
+        self.tf_username = TextField(
+            label=await self.client.session.gtv(key='username'),
+        )
+        self.tf_password = TextField(
+            label=await self.client.session.gtv(key='password'),
+            password=True,
+        )
+
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key='account_creation'),
+            controls=[
+                Column(
+                    controls=[
+                        self.tf_username,
+                        self.tf_password,
+                        FilledButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='next'),
+                                size=16,
+                            ),
+                            on_click=self.change_view,
+                        ),
+                        Container(
+                            content=Row(
+                                controls=[
+                                    Text(
+                                        value=await self.client.session.gtv(key='Already have an account?'),
+                                        size=16,
+                                        font_family=Fonts.REGULAR,
+                                    ),
+                                    Text(
+                                        value=await self.client.session.gtv(key='Sign In'),
+                                        size=16,
+                                        font_family=Fonts.SEMIBOLD,
+                                        color='#008F12',  # FIXME
+                                    ),
+                                ],
+                                spacing=4,
+                            ),
+                            on_click=self.go_authentication,
+                            ink=True,
+                            padding=padding.symmetric(vertical=4),
+                        ),
+                    ],
+                    spacing=20,
+                ),
+            ]
+        )

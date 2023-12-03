@@ -15,31 +15,23 @@
 #
 
 
-from .splash import SplashView
-from .set_language import SetLanguageView
-from .authentication import AuthenticationView
-from .registration import RegistrationView, RegistrationDataView
-from .main import MainView
-from .admin import AdminView
+from flet_core import Column
+from flet_manager.utils import Client
+
+from app.controls.layout import View
 
 
-views = [
-    SplashView,
-    SetLanguageView,
-    AuthenticationView,
-    RegistrationView,
-    RegistrationDataView,
-    MainView,
-    AdminView,
-]
+class BaseTab(Column):
+    def __init__(self, client: Client, view: View, **kwargs):
+        super().__init__(**kwargs)
+        self.client = client
+        self.view = view
 
+    async def build(self):
+        pass
 
-__all__ = [
-    'views',
-    'SplashView',
-    'SetLanguageView',
-    'AuthenticationView',
-    'registration',
-    'MainView',
-    'AdminView',
-]
+    async def on_load(self):
+        await self.view.client.page.update_async()
+
+    async def get(self):
+        return self

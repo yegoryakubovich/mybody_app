@@ -15,31 +15,13 @@
 #
 
 
-from .splash import SplashView
-from .set_language import SetLanguageView
-from .authentication import AuthenticationView
-from .registration import RegistrationView, RegistrationDataView
-from .main import MainView
-from .admin import AdminView
-
-
-views = [
-    SplashView,
-    SetLanguageView,
-    AuthenticationView,
-    RegistrationView,
-    RegistrationDataView,
-    MainView,
-    AdminView,
-]
+from .home import HomeTab
+from .stats import StatsTab
+from .account import AccountTab
 
 
 __all__ = [
-    'views',
-    'SplashView',
-    'SetLanguageView',
-    'AuthenticationView',
-    'registration',
-    'MainView',
-    'AdminView',
+    'HomeTab',
+    'StatsTab',
+    'AccountTab',
 ]

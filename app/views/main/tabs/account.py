@@ -18,13 +18,13 @@
 from typing import Any
 
 from flet_core import Container, alignment, padding, Column, CrossAxisAlignment, CircleAvatar, \
-    Image, BottomSheet, margin, TextAlign, Row, ScrollMode
+    Image, BottomSheet, margin, TextAlign, Row
 from flet_manager.utils import get_svg
 
 from app.controls.information import Text
-from app.controls.layout import View
 from app.utils import Fonts
 from app.views.admin import AdminView
+from app.views.main.tabs.base import BaseTab
 from config import VERSION
 
 
@@ -48,9 +48,7 @@ class Section:
         self.settings = settings
 
 
-class MainView(View):
-    route = '/'
-
+class AccountTab(BaseTab):
     bs_comming_soon: BottomSheet
     go_admin_couner: int
 
@@ -66,18 +64,52 @@ class MainView(View):
         await self.bs_comming_soon.update_async()
 
     async def logout(self, _):
-        await self.set_type(loading=True)
+        await self.view.set_type(loading=True)
         await self.client.session.set_cs(key='token', value=None)
 
         # Change view
         view = await self.client.session.init()
-        await self.set_type(loading=False)
+        await self.view.set_type(loading=False)
         await self.client.change_view(view=view)
 
+    async def bs_init(self):
+        self.bs_comming_soon = BottomSheet(
+            Container(
+                Column(
+                    controls=[
+                        Container(
+                            content=Image(
+                                src=get_svg(
+                                    path='assets/icons/chill.svg',
+                                ),
+                                color='#1d1d1d',  # FIXME
+                            ),
+                            margin=margin.only(bottom=16),
+                        ),
+                        Text(
+                            value=await self.client.session.gtv(key='coming_soon'),
+                            font_family=Fonts.SEMIBOLD,
+                            size=28,
+                        ),
+                        Text(
+                            value='This feature is temporarily unavailable. We are already working on it!',  # FIXME
+                            font_family=Fonts.REGULAR,
+                            size=16,
+                            text_align=TextAlign.CENTER,
+                        ),
+                    ],
+                    spacing=4,
+                    tight=True,
+                    horizontal_alignment=CrossAxisAlignment.CENTER,
+                ),
+                padding=padding.symmetric(vertical=24, horizontal=128),
+            ),
+            open=False,
+        )
+        self.view.client.page.overlay.append(self.bs_comming_soon)
+
     async def build(self):
-        # FIXME
-        self.bgcolor = '#E4E4E4'
-        self.scroll = ScrollMode.ALWAYS
+        await self.bs_init()
 
         # Go Admin
         self.go_admin_couner = 0
@@ -136,7 +168,7 @@ class MainView(View):
                             content=Text(
                                 value=await self.client.session.gtv(section.name),
                                 font_family=Fonts.SEMIBOLD,
-                                size=36,
+                                size=30,
                             ),
                             margin=margin.symmetric(horizontal=16),
                         ),
@@ -158,6 +190,7 @@ class MainView(View):
                                         spacing=12,
                                     ),
                                     margin=margin.symmetric(horizontal=16),
+                                    ink=True,
                                     on_click=setting.on_click,
                                 )
                                 for setting in section.settings
@@ -172,41 +205,6 @@ class MainView(View):
             ) for section in sections
         ]
 
-        self.bs_comming_soon = BottomSheet(
-            Container(
-                Column(
-                    controls=[
-                        Container(
-                            content=Image(
-                                src=get_svg(
-                                    path='assets/icons/chill.svg',
-                                ),
-                                color='#1d1d1d',  # FIXME
-                            ),
-                            margin=margin.only(bottom=16),
-                        ),
-                        Text(
-                            value=await self.client.session.gtv(key='coming_soon'),
-                            font_family=Fonts.SEMIBOLD,
-                            size=28,
-                        ),
-                        Text(
-                            value='This feature is temporarily unavailable. We are already working on it!',  # FIXME
-                            font_family=Fonts.REGULAR,
-                            size=16,
-                            text_align=TextAlign.CENTER,
-                        ),
-                    ],
-                    spacing=4,
-                    tight=True,
-                    horizontal_alignment=CrossAxisAlignment.CENTER,
-                ),
-                padding=padding.symmetric(vertical=24, horizontal=128),
-            ),
-            open=False,
-        )
-        self.client.page.overlay.append(self.bs_comming_soon)
-
         self.controls = [
             Container(
                 content=Column(
@@ -218,7 +216,7 @@ class MainView(View):
                                 ),
                                 color='#1d1d1d',  # FIXME
                             ),
-                            bgcolor=self.bgcolor,
+                            bgcolor='#E4E4E4',
                             radius=38,
                         ),
                         Text(

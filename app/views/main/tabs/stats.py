@@ -15,31 +15,8 @@
 #
 
 
-from .splash import SplashView
-from .set_language import SetLanguageView
-from .authentication import AuthenticationView
-from .registration import RegistrationView, RegistrationDataView
-from .main import MainView
-from .admin import AdminView
+from app.views.main.tabs.base import BaseTab
 
 
-views = [
-    SplashView,
-    SetLanguageView,
-    AuthenticationView,
-    RegistrationView,
-    RegistrationDataView,
-    MainView,
-    AdminView,
-]
-
-
-__all__ = [
-    'views',
-    'SplashView',
-    'SetLanguageView',
-    'AuthenticationView',
-    'registration',
-    'MainView',
-    'AdminView',
-]
+class StatsTab(BaseTab):
+    pass

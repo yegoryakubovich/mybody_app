@@ -33,6 +33,26 @@ class RegistrationSuccessfulView(AuthView):
         await self.set_type(loading=False)
         await self.client.change_view(view=view)
 
+    async def change_view(self, _):
+        await self.set_type(loading=True)
+
+        session = await self.client.session.api.session.create(
+            username=self.client.session.registration.username,
+            password=self.client.session.registration.password,
+        )
+
+        # Get result, set in CS
+        token = session.token
+        await self.client.session.set_cs(key='token', value=token)
+
+        # Clean Registration
+        self.client.session.registration = None
+
+        # Change view
+        view = await self.client.session.init()
+        await self.set_type(loading=False)
+        await self.client.change_view(view=view)
+
     async def build(self):
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key=''),
@@ -72,23 +92,3 @@ class RegistrationSuccessfulView(AuthView):
                 )
             ],
         )
-
-    async def change_view(self, _):
-        await self.set_type(loading=True)
-
-        session = await self.client.session.api.session.create(
-            username=self.client.session.registration.username,
-            password=self.client.session.registration.password,
-        )
-
-        # Get result, set in CS
-        token = session.token
-        await self.client.session.set_cs(key='token', value=token)
-
-        # Clean Registration
-        self.client.session.registration = None
-
-        # Change view
-        view = await self.client.session.init()
-        await self.set_type(loading=False)
-        await self.client.change_view(view=view)

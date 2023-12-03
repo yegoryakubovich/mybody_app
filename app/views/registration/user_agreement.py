@@ -27,6 +27,22 @@ from app.views.registration.registration_successful import RegistrationSuccessfu
 class UserAgreement(AuthView):
     route = '/registration'
 
+    async def change_view(self, _):
+        await Account().create(
+            username=self.client.session.registration.username,
+            password=self.client.session.registration.password,
+            firstname=self.client.session.registration.firstname,
+            lastname=self.client.session.registration.lastname,
+            surname=self.client.session.registration.surname or None,
+            country=self.client.session.registration.country,
+            language=self.client.session.language,
+            timezone=self.client.session.registration.timezone,
+            currency=self.client.session.registration.currency,
+        )
+        await self.client.change_view(view=RegistrationSuccessfulView())
+
+        await self.update_async()
+
     async def build(self):
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='account_creation'),
@@ -49,19 +65,3 @@ class UserAgreement(AuthView):
                 ),
             ],
         )
-
-    async def change_view(self, _):
-        await Account().create(
-            username=self.client.session.registration.username,
-            password=self.client.session.registration.password,
-            firstname=self.client.session.registration.firstname,
-            lastname=self.client.session.registration.lastname,
-            surname=self.client.session.registration.surname or None,
-            country=self.client.session.registration.country,
-            language=self.client.session.language,
-            timezone=self.client.session.registration.timezone,
-            currency=self.client.session.registration.currency,
-        )
-        await self.client.change_view(view=RegistrationSuccessfulView())
-
-        await self.update_async()

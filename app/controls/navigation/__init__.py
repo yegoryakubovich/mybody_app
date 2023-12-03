@@ -15,9 +15,10 @@
 #
 
 
-from .bottom import BottomNavigation
+from .bottom import BottomNavigation, BottomNavigationTab
 
 
 __all__ = [
     'BottomNavigation',
+    'BottomNavigationTab',
 ]

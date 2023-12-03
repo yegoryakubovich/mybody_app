@@ -15,21 +15,40 @@
 #
 
 
+from flet_core import Container, Image, alignment, padding, BoxShadow
+from flet_manager.utils import get_svg
 from flet_manager.views import BaseView
 
 from app.controls.information.loading import Loading
-from app.utils import Session
 
 
 class View(BaseView):
     title = 'My Body'
     controls_last: list = []
-    session: Session
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.padding = 0
         self.spacing = 0
+
+    @staticmethod
+    async def get_header():
+        return Container(
+            content=Image(
+                src=get_svg(
+                    path='assets/icons/logos/logo_2_full.svg',
+                ),
+                height=34,
+            ),
+            alignment=alignment.center,
+            padding=padding.symmetric(vertical=18, horizontal=96),
+            bgcolor='#FFFFFF',  # FIXME
+            shadow=BoxShadow(
+                color='#DDDDDD',  # FIXME
+                spread_radius=1,
+                blur_radius=20,
+            ),
+        )
 
     async def set_type(self, loading: bool = False):
         if loading:
