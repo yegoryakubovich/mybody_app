@@ -50,6 +50,7 @@ TABS = [
 
 
 class MainView(View):
+    tabs: list[BottomNavigationTab]
     tab_selected: BottomNavigationTab
     tab_default: BottomNavigationTab
     body: ListView
@@ -61,23 +62,26 @@ class MainView(View):
         await self.tab_selected.set_state(activated=False)
         self.tab_selected = tab
         await self.tab_selected.set_state(activated=True)
-        await self.set_body(control=self.tab_selected.control)
+        await self.set_body(controls=self.tab_selected.controls)
 
-    async def set_body(self, control):
-        control = control(client=self.client, view=self)
-        await control.build()
-        await control.on_load()
-        self.body.controls = [await control.get()]
+    async def set_body(self, controls):
+        self.body.controls = controls
         await self.body.update_async()
 
     async def on_load(self):
+        for tab in self.tabs:
+            control = tab.control(client=self.client, view=self)
+            await control.build()
+            await control.on_load()
+            tab.controls = [await control.get()]
+
         self.tab_selected = self.tab_default
         await self.tab_default.set_state(activated=True)
-        await self.set_body(control=self.tab_selected.control)
+        await self.set_body(controls=self.tab_selected.controls)
 
     async def build(self):
         self.body = ListView(expand=True, padding=padding.only(bottom=36))
-        tabs = [
+        self.tabs = [
             BottomNavigationTab(
                 name=tab.name,
                 icon=tab.icon,
@@ -85,7 +89,7 @@ class MainView(View):
             )
             for tab in TABS
         ]
-        self.tab_default = tabs[0]
+        self.tab_default = self.tabs[0]
 
         self.controls = [
             # Header
@@ -97,6 +101,6 @@ class MainView(View):
             # Bottom Navigation
             BottomNavigation(
                 on_click_tab=self.change_tab,
-                tabs=tabs,
+                tabs=self.tabs,
             ),
         ]

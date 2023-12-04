@@ -15,9 +15,18 @@
 #
 
 
-from flet_core import Theme, ColorScheme
+from flet_core import Theme, ColorScheme, PageTransitionsTheme, PageTransitionTheme
 
 from flet_manager.utils import Themes
+
+
+page_transitions = PageTransitionsTheme(
+    android=PageTransitionTheme.CUPERTINO,
+    ios=PageTransitionTheme.CUPERTINO,
+    linux=PageTransitionTheme.CUPERTINO,
+    macos=PageTransitionTheme.CUPERTINO,
+    windows=PageTransitionTheme.CUPERTINO,
+)
 
 
 themes = Themes(
@@ -25,8 +34,10 @@ themes = Themes(
         color_scheme=ColorScheme(
             primary='#008F12',
         ),
+        page_transitions=page_transitions,
     ),
     dark=Theme(
         color_scheme_seed='#1d1d1d',
+        page_transitions=page_transitions,
     ),
 )

@@ -23,6 +23,7 @@ from flet_core import Column, Container, CrossAxisAlignment, Image, MainAxisAlig
 
 class BottomNavigationTab(Container):
     on_click_tab: Any
+    controls: list
 
     async def click(self, _):
         await self.on_click_tab(tab=self)
