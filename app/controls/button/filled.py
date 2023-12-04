@@ -15,17 +15,25 @@
 #
 
 
-from flet_core import FilledButton as FletFilledButton, ButtonStyle, MaterialState, RoundedRectangleBorder, padding
+from flet_core import ElevatedButton as FletElevatedButton, ButtonStyle, MaterialState, RoundedRectangleBorder, padding
 
 
-class FilledButton(FletFilledButton):
+class FilledButton(FletElevatedButton):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.style = ButtonStyle(
             padding={
-                MaterialState.DEFAULT: padding.symmetric(horizontal=54, vertical=14),
+                MaterialState.DEFAULT: padding.symmetric(horizontal=27, vertical=12),
             },
             shape={
-                MaterialState.DEFAULT: RoundedRectangleBorder(radius=4),
+                MaterialState.DEFAULT: RoundedRectangleBorder(radius=6),
             },
+            overlay_color={
+                MaterialState.DEFAULT: '#51B62E',
+                MaterialState.HOVERED: '#51B62E',  # FIXME
+            },
+            shadow_color=None,
         )
+        self.elevation = 0
+        self.bgcolor = '#008F12'  # FIXME
+        self.color = 'white'
