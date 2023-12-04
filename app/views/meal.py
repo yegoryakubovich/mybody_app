@@ -22,6 +22,7 @@ from flet_core import ButtonStyle, Container, ElevatedButton as FletElevatedButt
 from flet_manager.utils import get_svg
 
 from app.controls.button import FilledButton
+from app.controls.button.product_chip import ProductChipButton
 from app.controls.layout import View
 
 
@@ -50,117 +51,42 @@ class Section:
 
 
 class MealView(View):
-    route = '/today'
 
     async def build(self):
         self.bgcolor = '#FFFFFF'  # FIXME
         self.scroll = ScrollMode.ALWAYS
         self.padding = 15
 
+        products = ['Rise', 'Buckwheat', 'Oatmeal', 'Barley']  # FIXME
+
+        sections_list = [
+            {
+                'name': '#Carbohydrates',
+                'icon': 'carbohydrates',
+            },
+            {
+                'name': '#Proteins',
+                'icon': 'protein',
+            },
+            {
+                'name': '#Fats',
+                'icon': 'fats',
+            },
+        ]  # FIXME
+
         sections = [
             Section(
-                name='#Carbohydrates',  # FIXME
-                icon='carbohydrates',
+                name=section['name'],  # FIXME
+                icon=section['icon'],
                 meals=[
                     Meal(
-                        name='Rise',  # FIXME в будущем заполняться итерацией массива
+                        name=product,
                         weight='120g',
                         on_click=None,
                         is_active=False,
-                    ),
-                    Meal(
-                        name='Buckwheat',
-                        weight='120g',
-                        on_click=None,
-                        is_active=False,
-                    ),
-                    Meal(
-                        name='Oatmeal',
-                        weight='120g',
-                        on_click=None,
-                        is_active=False,
-                    ),
-                    Meal(
-                        name='Barley',
-                        weight='120g',
-                        on_click=None,
-                        is_active=False,
-                    ),
-                    Meal(
-                        name='Oatmeal',
-                        weight='120g',
-                        on_click=None,
-                        is_active=False,
-                    ),
-                    Meal(
-                        name='Oatmeal',
-                        weight='120g',
-                        on_click=None,
-                        is_active=False,
-                    ),
-
-                ]
-            ),
-            Section(
-                name='#Proteins',  # FIXME
-                icon='protein',
-                meals=[
-                    Meal(
-                        name='Rise',
-                        weight='120g',
-                        on_click=None,
-                        is_active=False,
-                    ),
-                    Meal(
-                        name='Oatmeal',
-                        weight='120g',
-                        on_click=None,
-                        is_active=False,
-                    ),
-                    Meal(
-                        name='Barley',
-                        weight='120g',
-                        on_click=None,
-                        is_active=False,
-                    ),
-                    Meal(
-                        name='Buckwheat',
-                        weight='120g',
-                        on_click=None,
-                        is_active=False,
-                    ),
-                ]
-            ),
-            Section(
-                name='#Fats',  # FIXME
-                icon='fats',
-                meals=[
-                    Meal(
-                        name='Rise',
-                        weight='120g',
-                        on_click=None,
-                        is_active=False,
-                    ),
-                    Meal(
-                        name='Rise',
-                        weight='120g',
-                        on_click=None,
-                        is_active=False,
-                    ),
-                    Meal(
-                        name='Rise',
-                        weight='120g',
-                        on_click=None,
-                        is_active=False,
-                    ),
-                    Meal(
-                        name='Rise',
-                        weight='120g',
-                        on_click=None,
-                        is_active=False,
-                    ),
-                ]
-            )
+                    ) for product in products
+                ],
+            ) for section in sections_list
         ]
         sections_controls = [
             Container(
@@ -188,26 +114,7 @@ class MealView(View):
                                     ),
                                     Row(
                                         controls=[
-                                            FletElevatedButton(
-                                                content=Text(
-                                                    value=f'{meal.name} {meal.weight}',
-                                                    style=TextThemeStyle.BODY_MEDIUM,
-                                                    weight=FontWeight.BOLD,
-                                                    text_align=TextAlign.CENTER,
-                                                    color='#000000',  # FIXME
-                                                ),
-                                                style=ButtonStyle(
-                                                    shape={MaterialState.DEFAULT: RoundedRectangleBorder(radius=10)},
-                                                    padding={},
-                                                    overlay_color={
-                                                        MaterialState.DEFAULT: '#51B62E',
-                                                        MaterialState.HOVERED: '#B3DDB8',  # FIXME
-                                                    },
-                                                ),
-                                                bgcolor='#B3DDB8',
-                                                elevation=0,
-                                                height=25,
-                                            ) for meal in section.meals
+                                            ProductChipButton(f'{meal.name} {meal.weight}') for meal in section.meals
                                         ],
                                         wrap=True
                                     ),
@@ -268,19 +175,8 @@ class MealView(View):
                     content=Text(
                         value='#Make_a_Report',
                         size=14,
-                        color='#ffffff'
+                        color='#ffffff',
                     ),
-                    style=ButtonStyle(
-                        shape={MaterialState.DEFAULT: RoundedRectangleBorder(radius=4)},
-                        padding={},
-                        overlay_color={
-                            MaterialState.DEFAULT: '#51B62E',
-                            MaterialState.HOVERED: '#7ADA58',  # FIXME
-                        },
-                        shadow_color=None,
-                    ),
-                    bgcolor='#51B62E',
-                    elevation=0,
                 ),
             )
         ]
