@@ -23,6 +23,7 @@ from .registration import RegistrationView, RegistrationDataView
 from .main import MainView
 from .admin import AdminView
 from .meal import MealView
+from .training import TrainingView
 
 views = [
     SplashView,
@@ -34,6 +35,7 @@ views = [
     MealReportView,
     MainView,
     AdminView,
+    TrainingView,
 ]
 
 
@@ -47,4 +49,5 @@ __all__ = [
     'registration',
     'MainView',
     'AdminView',
+    'TrainingView',
 ]

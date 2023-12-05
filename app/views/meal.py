@@ -17,8 +17,7 @@
 
 from typing import Any
 
-from flet_core import ButtonStyle, Container, ElevatedButton as FletElevatedButton, FontWeight, MaterialState, \
-    RoundedRectangleBorder, TextThemeStyle, padding, Column, Image, TextAlign, Row, ScrollMode, Text
+from flet_core import Column, Container, FontWeight, Image, Row, ScrollMode, Text, padding
 from flet_manager.utils import get_svg
 
 from app.controls.button import FilledButton
@@ -55,7 +54,6 @@ class MealView(View):
     async def build(self):
         self.bgcolor = '#FFFFFF'  # FIXME
         self.scroll = ScrollMode.ALWAYS
-        self.padding = 15
 
         products = ['Rise', 'Buckwheat', 'Oatmeal', 'Barley']  # FIXME
 
@@ -130,53 +128,62 @@ class MealView(View):
         ]
 
         self.controls = [
+            await self.get_header(),
             Container(
-                Row(
+                content=Column(
                     controls=[
                         Container(
-                            Image(
-                                src=get_svg(
-                                    path=f'assets/icons/arrow_back.svg',
-                                ),
-                                color='#000000',  # FIXME
-                                height=20,
+                            Row(
+                                controls=[
+                                    Container(
+                                        Image(
+                                            src=get_svg(
+                                                path=f'assets/icons/arrow_back.svg',
+                                            ),
+                                            color='#000000',  # FIXME
+                                            height=20,
+                                        ),
+                                        on_click=lambda _: None  # FIXME
+                                    ),
+                                    Text(
+                                        value='#Mealtime',  # FIXME
+                                        size=30,
+                                        weight=FontWeight.BOLD,
+                                        color='#000000'  # FIXME
+                                    ),
+                                ]
                             ),
-                            on_click=lambda _: None # FIXME
+                            padding=padding.only(bottom=15)
                         ),
-                        Text(
-                            value='#Mealtime',  # FIXME
-                            size=30,
-                            weight=FontWeight.BOLD,
-                            color='#000000'  # FIXME
+                        Container(
+                            Text(
+                                value='#Dont_Forget_To_Make_a_Report',  # FIXME
+                                size=18,
+                                color='#000000',
+                            ),
+                            padding=padding.only(bottom=15)
                         ),
-                    ]
+                    ] + sections_controls + [
+                        Container(
+                            Text(
+                                value='#Indicated_Finish_Weight',  # FIXME
+                                size=18,
+                                color='#000000'
+                            ),
+                            padding=padding.only(bottom=15)  # FIXME
+                        ),
+                        Container(
+                            FilledButton(
+                                content=Text(
+                                    value='#Make_a_Report',
+                                    size=14,
+                                    color='#ffffff',
+                                ),
+                            ),
+                        )
+                    ],
+                    spacing=0,
                 ),
-                padding=padding.only(bottom=15)
-            ),
-            Container(
-                Text(
-                    value='#Dont_Forget_To_Make_a_Report',  # FIXME
-                    size=18,
-                    color='#000000',
-                ),
-                padding=padding.only(bottom=15)
-            ),
-        ] + sections_controls + [
-            Container(
-                Text(
-                    value='#Indicated_Finish_Weight',  # FIXME
-                    size=18,
-                    color='#000000'
-                ),
-                padding=padding.only(bottom=15)  # FIXME
-            ),
-            Container(
-                FilledButton(
-                    content=Text(
-                        value='#Make_a_Report',
-                        size=14,
-                        color='#ffffff',
-                    ),
-                ),
+                padding=15,
             )
         ]

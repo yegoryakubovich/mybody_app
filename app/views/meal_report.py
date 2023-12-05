@@ -1,6 +1,7 @@
 from typing import Any
 
-from flet_core import ButtonStyle, Column, Container, FontWeight, Image, MaterialState, RoundedRectangleBorder, Row, \
+from flet_core import AlertDialog, ButtonStyle, Column, Container, FontWeight, Image, MaterialState, \
+    RoundedRectangleBorder, Row, \
     ScrollMode, Text, padding
 from flet_manager.utils import get_svg
 
@@ -47,7 +48,6 @@ class MealReportView(View):
     async def build(self):
         self.bgcolor = '#FFFFFF'  # FIXME
         self.scroll = ScrollMode.ALWAYS
-        self.padding = 15
 
         products = ['Rise', 'Buckwheat', 'Oatmeal', 'Barley']  # FIXME
 
@@ -59,87 +59,96 @@ class MealReportView(View):
         ]
 
         self.controls = [
+            await self.get_header(),
             Container(
-                Row(
+                content=Column(
                     controls=[
                         Container(
-                            Image(
-                                src=get_svg(
-                                    path=f'assets/icons/back.svg',
-                                ),
-                                color='#000000',  # FIXME
-                                height=20,
+                            Row(
+                                controls=[
+                                    Container(
+                                        Image(
+                                            src=get_svg(
+                                                path=f'assets/icons/arrow_back.svg',
+                                            ),
+                                            color='#000000',  # FIXME
+                                            height=20,
+                                        ),
+                                        on_click=lambda _: None  # FIXME
+                                    ),
+                                    Text(
+                                        value='#Meal_Report',  # FIXME
+                                        size=30,
+                                        weight=FontWeight.BOLD,
+                                        color='#000000',  # FIXME
+                                    ),
+                                ],
                             ),
-                            on_click=lambda _: None  # FIXME
+                            padding=padding.only(bottom=15)
                         ),
-                        Text(
-                            value='#Meal_Report',  # FIXME
-                            size=30,
-                            weight=FontWeight.BOLD,
-                            color='#000000',  # FIXME
+                        Container(
+                            Text(
+                                value='#Report_Guide',  # FIXME
+                                size=18,
+                                color='#000000',
+                            ),
+                            padding=padding.only(bottom=15),
+                        ),
+                        Column(
+                            controls=[
+                                Text(
+                                    value='#Products',
+                                    size=25,
+                                    weight=FontWeight.BOLD,
+                                    color='#000000',  # FIXME
+                                ),
+                                Row(
+                                    controls=[
+                                        ProductChipButton(f'{meal.name} {meal.weight}') for meal in meals
+                                    ],
+                                    wrap=True,
+                                ),
+                                AddButton(
+                                    on_click=lambda _: None,  # FIXME
+                                ),
+                            ],
+                            spacing=10,
+                        ),
+                        Container(
+                            TextField(
+                                label='#Notes',  # FIXME
+                            ),
+                            padding=padding.symmetric(vertical=15)
+                        ),
+                        Column(
+                            controls=[
+                                Text(
+                                    value='#Photos',
+                                    size=25,
+                                    weight=FontWeight.BOLD,
+                                    color='#000000',  # FIXME
+                                ),
+                                Text(
+                                    value='#Add_photos',  # FIXME
+                                    size=18,
+                                    color='#000000',
+                                ),
+                                AddButton(
+                                    on_click=lambda _: None,  # FIXME
+                                ),
+                                FilledButton(
+                                    content=Text(
+                                        value='#Make_a_Report',
+                                        size=14,
+                                        color='#ffffff',
+                                    ),
+                                ),
+                            ],
+                            spacing=10,
                         ),
                     ],
+                    spacing=0,
                 ),
-                padding=padding.only(bottom=15)
-            ),
-            Container(
-                Text(
-                    value='#Report_Guide',  # FIXME
-                    size=18,
-                    color='#000000',
-                ),
-                padding=padding.only(bottom=15),
-            ),
-            Column(
-                controls=[
-                    Text(
-                        value='#Products',
-                        size=25,
-                        weight=FontWeight.BOLD,
-                        color='#000000',  # FIXME
-                    ),
-                    Row(
-                        controls=[
-                            ProductChipButton(f'{meal.name} {meal.weight}') for meal in meals
-                        ],
-                        wrap=True,
-                    ),
-                    AddButton(
-                        on_click=lambda _: None,  # FIXME
-                    ),
-                ],
-                spacing=10,
-            ),
-            Container(
-                TextField(
-                    label='#Notes',  # FIXME
-                ),
-                padding=padding.symmetric(vertical=15)
-            ),
-            Column(
-                controls=[
-                    Text(
-                        value='#Photos',
-                        size=25,
-                        weight=FontWeight.BOLD,
-                        color='#000000',  # FIXME
-                    ),
-                    Text(
-                        value='#Add_photos',  # FIXME
-                        size=18,
-                        color='#000000',
-                    ),
-                    AddButton(
-                        on_click=lambda _: None,  # FIXME
-                    ),
-                    FilledButton(
-                        content=Text(
-                            value='#Make_a_Report',
-                            size=14,
-                            color='#ffffff',
-                        ),
-                    ),
-                ],
-                spacing=10,
+                padding=15,
             ),
         ]
