@@ -1,7 +1,7 @@
 from typing import Any
 
-from flet_core import AlertDialog, ButtonStyle, Column, Container, FontWeight, Image, InputBorder, MaterialState, \
-    RoundedRectangleBorder, Row, ScrollMode, Text, TextStyle, padding, TextField as FletTextField
+from flet_core import (ButtonStyle, Column, Container, Image, MaterialState, RoundedRectangleBorder, Row, ScrollMode,
+                       Text, TextStyle, padding)
 from flet_manager.utils import get_svg
 
 from app.controls.button import FilledButton
@@ -78,7 +78,7 @@ class MealReportView(View):
                                             color='#000000',  # FIXME
                                             height=20,
                                         ),
-                                        on_click=self.go_back, # FIXME
+                                        on_click=self.go_back,  # FIXME
                                     ),
                                     Text(
                                         value=await self.client.session.gtv(key='Meal_Report'),  # FIXME
@@ -109,7 +109,10 @@ class MealReportView(View):
                                 ),
                                 Row(
                                     controls=[
-                                        ProductChipButton(f"""{meal.name} {meal.weight}{await self.client.session.gtv(key='g')}""") for meal in meals
+                                        ProductChipButton(
+                                            f"{meal.name} {meal.weight}{await self.client.session.gtv(key='g')}"
+                                        )
+                                        for meal in meals
                                     ],
                                     wrap=True,
                                 ),

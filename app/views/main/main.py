@@ -37,7 +37,7 @@ TABS = [
         control=HomeTab,
     ),
     Tab(
-        name='Statistcs',
+        name='Statistics',
         icon_path='assets/icons/stats.svg',
         control=StatsTab,
     ),

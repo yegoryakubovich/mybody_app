@@ -15,14 +15,10 @@
 #
 
 
-from typing import Any
-
-from flet_core import Column, Container, CrossAxisAlignment, FontWeight, Image, Row, ScrollMode, Text, alignment, \
-    margin, padding
+from flet_core import Column, Container, CrossAxisAlignment, Image, Row, ScrollMode, Text, margin, padding
 from flet_manager.utils import get_svg
 
 from app.controls.button import FilledButton
-from app.controls.button.product_chip import ProductChipButton
 from app.controls.layout import View
 from app.utils import Fonts
 
@@ -47,10 +43,14 @@ class TrainingView(View):
         self.scroll = ScrollMode.ALWAYS
 
         exercises = [  # FIXME
-            Exercise(name=await self.client.session.gtv(key='Exercise_Quantity'), quantity=30, is_time=False) for i in range(5)
-        ] + [
-            Exercise(name=await self.client.session.gtv(key='Exercise_Time'), quantity=60, is_time=True) for i in range(5)
-        ]
+                        Exercise(name=await self.client.session.gtv(key='Exercise_Quantity'), quantity=30,
+                                 is_time=False)
+                        for _ in range(5)
+                    ] + [
+                        Exercise(name=await self.client.session.gtv(key='Exercise_Time'), quantity=60,
+                                 is_time=True)
+                        for _ in range(5)
+                    ]
         self.controls = [
             await self.get_header(),
             Container(
@@ -162,7 +162,9 @@ class TrainingView(View):
                                                         Column(
                                                             [
                                                                 Text(
-                                                                    value=f'{exercises[i].quantity} {await self.client.session.gtv(key="""sec""")}' if exercises[i].is_time else str(exercises[i].quantity),
+                                                                    value=f'{exercises[i].quantity} {await self.client.session.gtv(key="""sec""")}' if
+                                                                    exercises[i].is_time else str(
+                                                                        exercises[i].quantity),
                                                                     color='#000000',
                                                                     font_family=Fonts.MEDIUM,
                                                                 ),

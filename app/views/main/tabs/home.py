@@ -243,7 +243,8 @@ class HomeTab(BaseTab):
                                                          color='#FFFFFF'
                                                      ),
                                                      Text(
-                                                         value=f"{api_response_training['chill_time']} " + await self.client.session.gtv(key='min'),
+                                                         value=f"{api_response_training['chill_time']} "
+                                                               + await self.client.session.gtv(key='min'),
                                                          color='#FFFFFF',
                                                          font_family=Fonts.REGULAR,
                                                      ),

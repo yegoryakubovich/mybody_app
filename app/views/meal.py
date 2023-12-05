@@ -119,7 +119,10 @@ class MealView(View):
                                     ),
                                     Row(
                                         controls=[
-                                            ProductChipButton(f"""{meal.name} {meal.weight}{await self.client.session.gtv(key='g')}""") for meal in section.meals
+                                            ProductChipButton(
+                                                f"{meal.name} {meal.weight}{await self.client.session.gtv(key='g')}"
+                                            )
+                                            for meal in section.meals
                                         ],
                                         wrap=True,
                                     ),

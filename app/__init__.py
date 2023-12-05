@@ -19,7 +19,7 @@ from os.path import abspath
 
 from flet_manager import App
 
-from app.views import MealView, views, SplashView
+from app.views import views, SplashView
 from .utils import fonts, themes
 
 

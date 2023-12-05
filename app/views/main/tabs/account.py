@@ -18,11 +18,14 @@
 from typing import Any
 
 from flet_core import Container, alignment, padding, Column, CrossAxisAlignment, CircleAvatar, \
-    Image, BottomSheet, margin, TextAlign, Row
+    Image, BottomSheet, margin, TextAlign, Row, MainAxisAlignment, Stack, IconButton, icons
 from flet_manager.utils import get_svg
 
+from app.views.splash import SplashView
+from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.utils import Fonts
+from app.views.set_language import SetLanguageView
 from app.views.admin import AdminView
 from app.views.main.tabs.base import BaseTab
 from config import VERSION
@@ -49,19 +52,36 @@ class Section:
 
 
 class AccountTab(BaseTab):
-    bs_comming_soon: BottomSheet
-    go_admin_couner: int
+    bs_coming_soon: BottomSheet
+    bs_log_out = BottomSheet
+    go_admin_counter: int
 
     async def go_admin(self, _):
-        self.go_admin_couner += 1
-        if self.go_admin_couner < 5:
+        self.go_admin_counter += 1
+        if self.go_admin_counter < 5:
             return
-        self.go_admin_couner = 0
+        self.go_admin_counter = 0
         await self.client.change_view(view=AdminView())
 
     async def coming_soon(self, _):
-        self.bs_comming_soon.open = True
-        await self.bs_comming_soon.update_async()
+        self.bs_coming_soon.open = True
+        await self.bs_coming_soon.update_async()
+
+    async def bs_close(self, _):
+        self.bs_log_out.open = False
+        await self.bs_log_out.update_async()
+
+    async def log_out(self, _):
+        self.bs_log_out.open = True
+        await self.bs_log_out.update_async()
+
+    async def language_set(self, _):
+        await self.client.change_view(
+            view=SetLanguageView(
+                languages=await self.client.session.api.language.get_list(),
+                next_view=SplashView(),
+            ),
+        )
 
     async def logout(self, _):
         await self.view.set_type(loading=True)
@@ -73,7 +93,7 @@ class AccountTab(BaseTab):
         await self.client.change_view(view=view)
 
     async def bs_init(self):
-        self.bs_comming_soon = BottomSheet(
+        self.bs_coming_soon = BottomSheet(
             Container(
                 Column(
                     controls=[
@@ -106,13 +126,76 @@ class AccountTab(BaseTab):
             ),
             open=False,
         )
-        self.view.client.page.overlay.append(self.bs_comming_soon)
+        self.view.client.page.overlay.append(self.bs_coming_soon)
+
+    async def bs_go_out_init(self):
+        self.bs_log_out = BottomSheet(
+            Container(
+                Stack(
+                    controls=[
+                        Container(
+                            Column(
+                                controls=[
+                                    Container(
+                                        content=Image(
+                                            src=get_svg(
+                                                path='assets/icons/go_out.svg',
+                                            ),
+                                        ),
+                                        margin=margin.only(bottom=16),
+                                    ),
+                                    Text(
+                                        value=await self.client.session.gtv(key='log_out'),
+                                        font_family=Fonts.SEMIBOLD,
+                                        size=28,
+                                    ),
+                                    Text(
+                                        value='Are you sure you want to log out of your account?',  # FIXME
+                                        font_family=Fonts.REGULAR,
+                                        size=16,
+                                        text_align=TextAlign.CENTER,
+                                    ),
+                                    Row(
+                                        controls=[
+                                            FilledButton(
+                                                content=Text(
+                                                    value=await self.client.session.gtv(key='Logout'),
+                                                    color='#000000'
+                                                ),
+                                                width=300,
+                                                on_click=self.logout,
+                                            ),
+                                        ],
+                                        alignment=MainAxisAlignment.CENTER
+                                    ),
+                                ],
+                                spacing=10,
+                                tight=True,
+                                horizontal_alignment=CrossAxisAlignment.CENTER,
+                            ),
+                            padding=padding.symmetric(vertical=24, horizontal=128),
+                        ),
+                        IconButton(
+                            icon=icons.CLOSE,
+                            on_click=self.bs_close,
+                            top=1,
+                            right=0,
+                        ),
+                    ],
+                ),
+                padding=10,
+            ),
+            open=False,
+        )
+
+        self.view.client.page.overlay.append(self.bs_log_out)
 
     async def build(self):
         await self.bs_init()
+        await self.bs_go_out_init()
 
         # Go Admin
-        self.go_admin_couner = 0
+        self.go_admin_counter = 0
 
         firstname = self.client.session.account.firstname
         lastname = self.client.session.account.lastname
@@ -135,12 +218,12 @@ class AccountTab(BaseTab):
                     Setting(
                         name='language',
                         icon='language',
-                        on_click=self.coming_soon,
+                        on_click=self.language_set,
                     ),
                     Setting(
                         name='logout',
                         icon='logout',
-                        on_click=self.logout,
+                        on_click=self.log_out,
                     ),
                 ],
             ),
@@ -206,46 +289,46 @@ class AccountTab(BaseTab):
         ]
 
         self.controls = [
-            Container(
-                content=Column(
-                    controls=[
-                        CircleAvatar(
-                            content=Image(
-                                src=get_svg(
-                                    path='assets/icons/account.svg',
+                            Container(
+                                content=Column(
+                                    controls=[
+                                        CircleAvatar(
+                                            content=Image(
+                                                src=get_svg(
+                                                    path='assets/icons/account.svg',
+                                                ),
+                                                color='#1d1d1d',  # FIXME
+                                            ),
+                                            bgcolor='#E4E4E4',
+                                            radius=38,
+                                        ),
+                                        Text(
+                                            value=f'{firstname} {lastname}',
+                                            font_family=Fonts.SEMIBOLD,
+                                            size=30,
+                                        ),
+                                        Text(
+                                            value=f'@{username}',
+                                            font_family=Fonts.SEMIBOLD,
+                                            size=12,
+                                        ),
+                                    ],
+                                    spacing=0,
+                                    horizontal_alignment=CrossAxisAlignment.CENTER,
                                 ),
-                                color='#1d1d1d',  # FIXME
+                                bgcolor='#FFFFFF',  # FIXME
+                                padding=padding.symmetric(vertical=24),
+                                alignment=alignment.center,
                             ),
-                            bgcolor='#E4E4E4',
-                            radius=38,
-                        ),
-                        Text(
-                            value=f'{firstname} {lastname}',
-                            font_family=Fonts.SEMIBOLD,
-                            size=30,
-                        ),
-                        Text(
-                            value=f'@{username}',
-                            font_family=Fonts.SEMIBOLD,
-                            size=12,
-                        ),
-                    ],
-                    spacing=0,
-                    horizontal_alignment=CrossAxisAlignment.CENTER,
-                ),
-                bgcolor='#FFFFFF',  # FIXME
-                padding=padding.symmetric(vertical=24),
-                alignment=alignment.center,
-            ),
-        ] + sections_controls + [
-            Container(
-                content=Text(
-                    value=await self.client.session.gtv(key='version: ') + VERSION,  # FIXME
-                    font_family=Fonts.REGULAR,
-                    size=16,
-                ),
-                alignment=alignment.center,
-                on_click=self.go_admin,
-                padding=padding.symmetric(vertical=4),
-            ),
-        ]
+                        ] + sections_controls + [
+                            Container(
+                                content=Text(
+                                    value=await self.client.session.gtv(key='version: ') + VERSION,  # FIXME
+                                    font_family=Fonts.REGULAR,
+                                    size=16,
+                                ),
+                                alignment=alignment.center,
+                                on_click=self.go_admin,
+                                padding=padding.symmetric(vertical=4),
+                            ),
+                        ]

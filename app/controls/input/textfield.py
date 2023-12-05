@@ -15,9 +15,7 @@
 #
 
 
-from flet_core import TextField as FletTextField, TextStyle
-
-from app.utils import Fonts
+from flet_core import TextField as FletTextField
 
 
 class TextField(FletTextField):
