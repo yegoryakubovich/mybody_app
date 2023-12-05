@@ -20,6 +20,8 @@ from typing import Any
 from flet_core import Column, Container, CrossAxisAlignment, Image, MainAxisAlignment, Row, Text, \
     TextThemeStyle, padding, BoxShadow
 
+from app.utils import Fonts
+
 
 class BottomNavigationTab(Container):
     on_click_tab: Any
@@ -57,6 +59,7 @@ class BottomNavigationTab(Container):
         )
         self.text = Text(
             style=TextThemeStyle.BODY_MEDIUM,
+            font_family=Fonts.MEDIUM,
             value=self.name,
             size=12,
             color='#B7B7B7',  # FIXME

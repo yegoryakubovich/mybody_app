@@ -24,6 +24,7 @@ from flet_manager.utils import get_svg
 from app.controls.button import FilledButton
 from app.controls.button.product_chip import ProductChipButton
 from app.controls.layout import View
+from app.utils import Fonts
 
 
 class Exercise:
@@ -38,14 +39,17 @@ class Exercise:
 
 
 class TrainingView(View):
+    async def go_back(self, _):
+        await self.client.change_view(go_back=True)
+
     async def build(self):
         self.bgcolor = '#FFFFFF'  # FIXME
         self.scroll = ScrollMode.ALWAYS
 
         exercises = [  # FIXME
-            Exercise(name='#Exercise_Quantity', quantity=30, is_time=False) for i in range(5)
+            Exercise(name=await self.client.session.gtv(key='Exercise_Quantity'), quantity=30, is_time=False) for i in range(5)
         ] + [
-            Exercise(name='#Exercise_Time', quantity=60, is_time=True) for i in range(5)
+            Exercise(name=await self.client.session.gtv(key='Exercise_Time'), quantity=60, is_time=True) for i in range(5)
         ]
         self.controls = [
             await self.get_header(),
@@ -63,23 +67,24 @@ class TrainingView(View):
                                             color='#000000',  # FIXME
                                             height=20,
                                         ),
-                                        on_click=lambda _: None  # FIXME
+                                        on_click=self.go_back,
                                     ),
                                     Text(
-                                        value='#Training',  # FIXME
+                                        value=await self.client.session.gtv(key='Training'),  # FIXME
                                         size=30,
-                                        weight=FontWeight.BOLD,
-                                        color='#000000'  # FIXME
+                                        font_family=Fonts.BOLD,
+                                        color='#000000',  # FIXME
                                     ),
                                 ]
                             ),
-                            padding=padding.only(bottom=15)
+                            padding=padding.only(bottom=15),
                         ),
                         Container(
                             Text(
-                                value='#Your_Plan_for_Today',  # FIXME
+                                value=await self.client.session.gtv(key='Your_Plan_for_Today'),  # FIXME
                                 size=18,
                                 color='#000000',
+                                font_family=Fonts.REGULAR,
                             ),
                             padding=padding.only(bottom=15)
                         ),
@@ -93,7 +98,8 @@ class TrainingView(View):
                                                     [
                                                         Text(
                                                             value='№',
-                                                            weight=FontWeight.BOLD,
+                                                            font_family=Fonts.SEMIBOLD,
+                                                            color='#ffffff',
                                                         ),
                                                     ],
                                                     expand=True,
@@ -102,8 +108,9 @@ class TrainingView(View):
                                                 Column(
                                                     [
                                                         Text(
-                                                            value='#Name',
-                                                            weight=FontWeight.BOLD,
+                                                            value=await self.client.session.gtv(key='Name'),
+                                                            font_family=Fonts.SEMIBOLD,
+                                                            color='#ffffff',
                                                         ),
                                                     ],
                                                     expand=True,
@@ -112,8 +119,9 @@ class TrainingView(View):
                                                 Column(
                                                     [
                                                         Text(
-                                                            value='#Quantity',
-                                                            weight=FontWeight.BOLD,
+                                                            value=await self.client.session.gtv(key='Quantity'),
+                                                            font_family=Fonts.SEMIBOLD,
+                                                            color='#ffffff',
                                                         ),
                                                     ],
                                                     expand=True,
@@ -134,7 +142,7 @@ class TrainingView(View):
                                                                 Text(
                                                                     value=str(i),
                                                                     color='#000000',
-                                                                    weight=FontWeight.BOLD,
+                                                                    font_family=Fonts.MEDIUM,
                                                                 ),
                                                             ],
                                                             width=60,
@@ -145,7 +153,7 @@ class TrainingView(View):
                                                                 Text(
                                                                     value=exercises[i].name,
                                                                     color='#000000',
-                                                                    weight=FontWeight.BOLD,
+                                                                    font_family=Fonts.MEDIUM,
                                                                 ),
                                                             ],
                                                             expand=True,
@@ -154,10 +162,9 @@ class TrainingView(View):
                                                         Column(
                                                             [
                                                                 Text(
-                                                                    value=f'{exercises[i].quantity} #sec' if exercises[
-                                                                        i].is_time else str(exercises[i].quantity),
+                                                                    value=f'{exercises[i].quantity} {await self.client.session.gtv(key="""sec""")}' if exercises[i].is_time else str(exercises[i].quantity),
                                                                     color='#000000',
-                                                                    weight=FontWeight.BOLD,
+                                                                    font_family=Fonts.MEDIUM,
                                                                 ),
                                                             ],
                                                             width=60,
@@ -166,13 +173,13 @@ class TrainingView(View):
                                                     ],
                                                 ) for i in range(len(exercises))
                                             ],
-                                            spacing=5
+                                            spacing=5,
                                         ),
                                         padding=10,
                                         bgcolor='#D9D9D9',
                                     )
                                 ],
-                                spacing=0
+                                spacing=0,
                             ),
                             border_radius=15,
                             margin=margin.only(bottom=15),
@@ -180,15 +187,16 @@ class TrainingView(View):
                         Container(
                             FilledButton(
                                 content=Text(
-                                    value='#Start',
+                                    value=await self.client.session.gtv(key='Start'),
                                     size=14,
                                     color='#ffffff',
+                                    font_family=Fonts.REGULAR,
                                 ),
                             ),
-                        )
+                        ),
                     ],
                     spacing=0,
                 ),
                 padding=15
-            )
+            ),
         ]

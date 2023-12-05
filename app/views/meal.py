@@ -17,12 +17,14 @@
 
 from typing import Any
 
-from flet_core import Column, Container, FontWeight, Image, Row, ScrollMode, Text, padding
+from flet_core import Column, Container, Image, Row, ScrollMode, Text, padding
 from flet_manager.utils import get_svg
 
+from app.views.meal_report import MealReportView
 from app.controls.button import FilledButton
 from app.controls.button.product_chip import ProductChipButton
 from app.controls.layout import View
+from app.utils import Fonts
 
 
 class Meal:
@@ -50,6 +52,11 @@ class Section:
 
 
 class MealView(View):
+    async def go_back(self, _):
+        await self.client.change_view(go_back=True)
+
+    async def go_meal_report(self, _):
+        await self.client.change_view(view=MealReportView())
 
     async def build(self):
         self.bgcolor = '#FFFFFF'  # FIXME
@@ -59,15 +66,15 @@ class MealView(View):
 
         sections_list = [
             {
-                'name': '#Carbohydrates',
+                'name': await self.client.session.gtv(key='Carbohydrates'),
                 'icon': 'carbohydrates',
             },
             {
-                'name': '#Proteins',
+                'name': await self.client.session.gtv(key='Proteins'),
                 'icon': 'protein',
             },
             {
-                'name': '#Fats',
+                'name': await self.client.session.gtv(key='Fats'),
                 'icon': 'fats',
             },
         ]  # FIXME
@@ -79,8 +86,8 @@ class MealView(View):
                 meals=[
                     Meal(
                         name=product,
-                        weight='120g',
-                        on_click=None,
+                        weight='120',
+                        on_click=None,  # FIXME
                         is_active=False,
                     ) for product in products
                 ],
@@ -98,8 +105,8 @@ class MealView(View):
                                             Text(
                                                 value=section.name,
                                                 size=25,
-                                                weight=FontWeight.BOLD,
-                                                color='#000000'  # FIXME
+                                                font_family=Fonts.BOLD,
+                                                color='#000000',  # FIXME
                                             ),
                                             Image(
                                                 src=get_svg(
@@ -112,12 +119,12 @@ class MealView(View):
                                     ),
                                     Row(
                                         controls=[
-                                            ProductChipButton(f'{meal.name} {meal.weight}') for meal in section.meals
+                                            ProductChipButton(f"""{meal.name} {meal.weight}{await self.client.session.gtv(key='g')}""") for meal in section.meals
                                         ],
-                                        wrap=True
+                                        wrap=True,
                                     ),
                                 ],
-                                spacing=0
+                                spacing=0,
                             ),
                             padding=padding.only(bottom=15),
                         ) for section in sections
@@ -143,42 +150,46 @@ class MealView(View):
                                             color='#000000',  # FIXME
                                             height=20,
                                         ),
-                                        on_click=lambda _: None  # FIXME
+                                        on_click=self.go_back,  # FIXME
                                     ),
                                     Text(
-                                        value='#Mealtime',  # FIXME
+                                        value=await self.client.session.gtv(key='Mealtime'),  # FIXME
                                         size=30,
-                                        weight=FontWeight.BOLD,
-                                        color='#000000'  # FIXME
+                                        font_family=Fonts.BOLD,
+                                        color='#000000',  # FIXME
                                     ),
-                                ]
+                                ],
                             ),
                             padding=padding.only(bottom=15)
                         ),
                         Container(
                             Text(
-                                value='#Dont_Forget_To_Make_a_Report',  # FIXME
+                                value=await self.client.session.gtv(key='Dont_Forget_To_Make_a_Report'),  # FIXME
                                 size=18,
                                 color='#000000',
+                                font_family=Fonts.REGULAR,
                             ),
-                            padding=padding.only(bottom=15)
+                            padding=padding.only(bottom=15),
                         ),
                     ] + sections_controls + [
                         Container(
                             Text(
-                                value='#Indicated_Finish_Weight',  # FIXME
+                                value=await self.client.session.gtv(key='Indicated_Finish_Weight'),  # FIXME
                                 size=18,
-                                color='#000000'
+                                color='#000000',
+                                font_family=Fonts.REGULAR,
                             ),
-                            padding=padding.only(bottom=15)  # FIXME
+                            padding=padding.only(bottom=15),  # FIXME
                         ),
                         Container(
                             FilledButton(
                                 content=Text(
-                                    value='#Make_a_Report',
+                                    value=await self.client.session.gtv(key='Make_a_Report'),
                                     size=14,
                                     color='#ffffff',
+                                    font_family=Fonts.REGULAR,
                                 ),
+                                on_click=self.go_meal_report,
                             ),
                         )
                     ],

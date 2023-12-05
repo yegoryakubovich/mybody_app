@@ -25,6 +25,7 @@ from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.utils import Fonts
 from app.views.meal import MealView
+from app.views.training import TrainingView
 from app.views.main.tabs.base import BaseTab
 
 
@@ -66,8 +67,11 @@ class MealButton(Container):
             get_svg(path=f'assets/icons/protein.svg'),
             get_svg(path=f'assets/icons/fats.svg'),
         ]
-        self.name_text = Text(value=name)
-        self.nutrient_texts = list(map(lambda value: Text(value=value), nutrients))
+        self.name_text = Text(
+            value=name,
+            font_family=Fonts.REGULAR,
+        )
+        self.nutrient_texts = list(map(lambda value: Text(value=value, font_family=Fonts.REGULAR), nutrients))
         self.images = list(map(lambda src: Image(src=src, width=15), images))
         self.arrow_image = Image(src=get_svg(path=f'assets/icons/arrow_next.svg'), width=15)
         self.content = Row(
@@ -126,11 +130,11 @@ class HomeTab(BaseTab):
         firstname = self.client.session.account.firstname
 
         api_response = {'state': 'suc', 'meals': [
-            {'name': 'Завтрак', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '7:00', 'end_time': '10:00'},
-            {'name': 'Второй завтрак', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '10:00', 'end_time': '13:00'},
-            {'name': 'Обед', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '13:00', 'end_time': '16:00'},
-            {'name': 'Полдник', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '16:00', 'end_time': '19:00'},
-            {'name': 'Ужин', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '19:00', 'end_time': '20:00'},
+            {'name': 'Breakfast', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '7:00', 'end_time': '10:00'},
+            {'name': 'Tiffin', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '10:00', 'end_time': '13:00'},
+            {'name': 'Lunch', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '13:00', 'end_time': '16:00'},
+            {'name': 'Afternoon meal', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '16:00', 'end_time': '19:00'},
+            {'name': 'Dinner', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '19:00', 'end_time': '20:00'},
         ]}
 
         meals = [
@@ -144,10 +148,10 @@ class HomeTab(BaseTab):
         ]
 
         api_response_training = {'state': 'suc', 'training': [
-            {'name': 'Отжимание'},
-            {'name': 'Приседания'},
-            {'name': 'Жим гантелей'},
-            {'name': 'Планка'},
+            {'name': 'Exercise_Name'},
+            {'name': 'Exercise_Name'},
+            {'name': 'Exercise_Name'},
+            {'name': 'Exercise_Name'},
         ], 'chill_time': 1}
 
         trainings = [
@@ -163,7 +167,7 @@ class HomeTab(BaseTab):
                 content=Column(
                     controls=[
                         Text(
-                            value=await self.client.session.gtv(key=f'Доброе утро, {firstname}!'),
+                            value=await self.client.session.gtv(key=f'Good_Morning, {firstname}!'),
                             size=25,
                             font_family=Fonts.SEMIBOLD,
                         ),
@@ -173,6 +177,7 @@ class HomeTab(BaseTab):
                                     content=Text(
                                         value=await self.client.session.gtv(key='Current_meal'),
                                         size=16,
+                                        font_family=Fonts.MEDIUM,
                                     ),
                                     on_click=self.current_meal,
                                 ),
@@ -180,6 +185,7 @@ class HomeTab(BaseTab):
                                     content=Text(
                                         value=await self.client.session.gtv(key='training'),
                                         size=16,
+                                        font_family=Fonts.MEDIUM,
                                     ),
                                     on_click=self.training,
                                 ),
@@ -187,13 +193,14 @@ class HomeTab(BaseTab):
                                     content=Text(
                                         value=await self.client.session.gtv(key='support'),
                                         size=16,
+                                        font_family=Fonts.MEDIUM,
                                     ),
                                     on_click=self.support,
                                 ),
                             ],
                         ),
                         Text(
-                            value=await self.client.session.gtv(key='Приёмы пищи на сегодня'),
+                            value=await self.client.session.gtv(key='Today_Meals'),
                             size=20,
                             font_family=Fonts.SEMIBOLD,
                         ),
@@ -209,7 +216,7 @@ class HomeTab(BaseTab):
                             ],
                         ),
                         Text(
-                            value=await self.client.session.gtv(key='Тренировка'),
+                            value=await self.client.session.gtv(key='Training'),
                             size=20,
                             font_family=Fonts.SEMIBOLD,
                         ),
@@ -221,6 +228,7 @@ class HomeTab(BaseTab):
                                                      Text(
                                                          value=f"{i + 1}. {training.name}",
                                                          color='#FFFFFF',
+                                                         font_family=Fonts.REGULAR,
                                                      ),
                                                  ],
                                                  alignment=MainAxisAlignment.SPACE_BETWEEN,
@@ -235,8 +243,9 @@ class HomeTab(BaseTab):
                                                          color='#FFFFFF'
                                                      ),
                                                      Text(
-                                                         value=f"{api_response_training['chill_time']} мин",
+                                                         value=f"{api_response_training['chill_time']} " + await self.client.session.gtv(key='min'),
                                                          color='#FFFFFF',
+                                                         font_family=Fonts.REGULAR,
                                                      ),
                                                  ],
                                              ),
@@ -258,7 +267,7 @@ class HomeTab(BaseTab):
         pass
 
     async def training(self, _):
-        pass
+        await self.client.change_view(view=TrainingView())
 
     async def support(self, _):
         pass

@@ -15,9 +15,12 @@
 #
 
 
-from flet_core import TextField as FletTextField
+from flet_core import TextField as FletTextField, TextStyle
+
+from app.utils import Fonts
 
 
 class TextField(FletTextField):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+

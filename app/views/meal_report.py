@@ -1,14 +1,14 @@
 from typing import Any
 
-from flet_core import AlertDialog, ButtonStyle, Column, Container, FontWeight, Image, MaterialState, \
-    RoundedRectangleBorder, Row, \
-    ScrollMode, Text, padding
+from flet_core import AlertDialog, ButtonStyle, Column, Container, FontWeight, Image, InputBorder, MaterialState, \
+    RoundedRectangleBorder, Row, ScrollMode, Text, TextStyle, padding, TextField as FletTextField
 from flet_manager.utils import get_svg
 
 from app.controls.button import FilledButton
 from app.controls.button.product_chip import ProductChipButton
 from app.controls.input import TextField
 from app.controls.layout import View
+from app.utils import Fonts
 
 
 class Meal:
@@ -24,9 +24,10 @@ class AddButton(FilledButton):
     def __init__(self, on_click: Any, **kwargs):
         super().__init__(**kwargs)
         self.content = Text(
-            value='#+Add',
+            value='Add',  # FIXME await self.client.session.gtv(key='+Add')
             size=14,
             color='#ffffff',
+            font_family=Fonts.REGULAR,
         )
         self.on_click = on_click
         self.style = ButtonStyle(
@@ -45,6 +46,9 @@ class AddButton(FilledButton):
 
 
 class MealReportView(View):
+    async def go_back(self, _):
+        await self.client.change_view(go_back=True)
+
     async def build(self):
         self.bgcolor = '#FFFFFF'  # FIXME
         self.scroll = ScrollMode.ALWAYS
@@ -53,8 +57,8 @@ class MealReportView(View):
 
         meals = [
             Meal(
-                name=f'#{product}',
-                weight='120g',
+                name=await self.client.session.gtv(key=f'{product}'),
+                weight='120',
             ) for product in products
         ]
 
@@ -74,12 +78,12 @@ class MealReportView(View):
                                             color='#000000',  # FIXME
                                             height=20,
                                         ),
-                                        on_click=lambda _: None  # FIXME
+                                        on_click=self.go_back, # FIXME
                                     ),
                                     Text(
-                                        value='#Meal_Report',  # FIXME
+                                        value=await self.client.session.gtv(key='Meal_Report'),  # FIXME
                                         size=30,
-                                        weight=FontWeight.BOLD,
+                                        font_family=Fonts.BOLD,
                                         color='#000000',  # FIXME
                                     ),
                                 ],
@@ -88,23 +92,24 @@ class MealReportView(View):
                         ),
                         Container(
                             Text(
-                                value='#Report_Guide',  # FIXME
+                                value=await self.client.session.gtv(key='Report_Guide'),  # FIXME
                                 size=18,
                                 color='#000000',
+                                font_family=Fonts.REGULAR,
                             ),
                             padding=padding.only(bottom=15),
                         ),
                         Column(
                             controls=[
                                 Text(
-                                    value='#Products',
+                                    value=await self.client.session.gtv(key='Products'),
                                     size=25,
-                                    weight=FontWeight.BOLD,
+                                    font_family=Fonts.BOLD,
                                     color='#000000',  # FIXME
                                 ),
                                 Row(
                                     controls=[
-                                        ProductChipButton(f'{meal.name} {meal.weight}') for meal in meals
+                                        ProductChipButton(f"""{meal.name} {meal.weight}{await self.client.session.gtv(key='g')}""") for meal in meals
                                     ],
                                     wrap=True,
                                 ),
@@ -116,32 +121,48 @@ class MealReportView(View):
                         ),
                         Container(
                             TextField(
-                                label='#Notes',  # FIXME
+                                label=await self.client.session.gtv(key='Notes'),  # FIXME
+                                text_style=TextStyle(
+                                    font_family=Fonts.MEDIUM,
+                                    color='#000000',
+
+                                ),
+                                label_style=TextStyle(
+                                    font_family=Fonts.BOLD,
+                                    color='#868686',
+                                ),
+                                cursor_color='#868686',
+                                border_width=1.5,
+                                border_color='#868686',
+                                multiline=True,
                             ),
                             padding=padding.symmetric(vertical=15)
                         ),
                         Column(
                             controls=[
                                 Text(
-                                    value='#Photos',
+                                    value=await self.client.session.gtv(key='Photos'),
                                     size=25,
-                                    weight=FontWeight.BOLD,
+                                    font_family=Fonts.BOLD,
                                     color='#000000',  # FIXME
                                 ),
                                 Text(
-                                    value='#Add_photos',  # FIXME
+                                    value=await self.client.session.gtv(key='Add_photos'),  # FIXME
                                     size=18,
                                     color='#000000',
+                                    font_family=Fonts.REGULAR,
                                 ),
                                 AddButton(
                                     on_click=lambda _: None,  # FIXME
                                 ),
                                 FilledButton(
                                     content=Text(
-                                        value='#Make_a_Report',
+                                        value=await self.client.session.gtv(key='Send_a_Report'),
                                         size=14,
                                         color='#ffffff',
+                                        font_family=Fonts.REGULAR,
                                     ),
+                                    on_click=lambda _: None,
                                 ),
                             ],
                             spacing=10,
