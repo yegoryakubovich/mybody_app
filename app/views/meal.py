@@ -136,7 +136,7 @@ class MealView(View):
                         Container(
                             Image(
                                 src=get_svg(
-                                    path=f'assets/icons/back.svg',
+                                    path=f'assets/icons/arrow_back.svg',
                                 ),
                                 color='#000000',  # FIXME
                                 height=20,

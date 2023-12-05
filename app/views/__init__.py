@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+
 from .meal_report import MealReportView
 from .splash import SplashView
 from .set_language import SetLanguageView

@@ -27,7 +27,7 @@ def create_app():
     app = App(
         name='My Body',
         views=views,
-        view_main=MealView,
+        view_main=SplashView,
         assets_dir=abspath('assets'),
         fonts=fonts,
         themes=themes,
