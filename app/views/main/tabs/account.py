@@ -21,12 +21,12 @@ from flet_core import Container, alignment, padding, Column, CrossAxisAlignment,
     Image, BottomSheet, margin, TextAlign, Row, MainAxisAlignment, Stack, IconButton, icons
 from flet_manager.utils import get_svg
 
+from app.views.admin.admin import AdminView
 from app.views.splash import SplashView
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.utils import Fonts
 from app.views.set_language import SetLanguageView
-from app.views.admin import AdminView
 from app.views.main.tabs.base import BaseTab
 from config import VERSION
 
