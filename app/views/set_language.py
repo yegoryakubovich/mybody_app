@@ -66,6 +66,7 @@ class SetLanguageView(AuthView):
                 FilledButton(
                     text=await self.client.session.gtv(key='next'),
                     on_click=self.select,
+                    horizontal_padding=54,
                 ),
             ],
         )

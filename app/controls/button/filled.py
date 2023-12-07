@@ -19,11 +19,11 @@ from flet_core import ElevatedButton as FletElevatedButton, ButtonStyle, Materia
 
 
 class FilledButton(FletElevatedButton):
-    def __init__(self, **kwargs):
+    def __init__(self, horizontal_padding: int = 27, **kwargs):
         super().__init__(**kwargs)
         self.style = ButtonStyle(
             padding={
-                MaterialState.DEFAULT: padding.symmetric(horizontal=27, vertical=12),
+                MaterialState.DEFAULT: padding.symmetric(horizontal=horizontal_padding, vertical=12),
             },
             shape={
                 MaterialState.DEFAULT: RoundedRectangleBorder(radius=6),

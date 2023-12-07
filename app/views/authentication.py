@@ -75,6 +75,7 @@ class AuthenticationView(AuthView):
                                 size=16,
                             ),
                             on_click=self.authenticate,
+                            horizontal_padding=54,
                         ),
                         Container(
                             content=Row(

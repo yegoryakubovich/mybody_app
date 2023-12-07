@@ -79,6 +79,7 @@ class RegistrationSuccessfulView(AuthView):
                                             size=16,
                                         ),
                                         on_click=self.change_view,
+                                        horizontal_padding=54,
                                     ),
                                 ],
                                 spacing=70,
