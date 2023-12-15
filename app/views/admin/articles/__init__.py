@@ -15,12 +15,12 @@
 #
 
 
-from .articles_list import ArticleView
-from .create_article import CreateArticleView
-from .get_article import ReviewArticleView
+from .list import ArticleListView
+from .create import CreateArticleView
+from .get import ArticleView
 
 __all__ = [
-    'ArticleView',
+    'ArticleListView',
     'CreateArticleView',
-    'ReviewArticleView',
+    'ArticleView',
 ]

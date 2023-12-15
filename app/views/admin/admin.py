@@ -24,8 +24,8 @@ from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.layout import View
 from app.utils import Fonts
-from app.views.admin.articles import ArticleView
-from app.views.admin.texts import TextView
+from app.views.admin.articles import ArticleListView
+from app.views.admin.texts import TextListView
 
 
 class Setting:
@@ -139,7 +139,7 @@ class AdminView(View):
 
     async def get_articles(self, _):
         articles_data = await self.client.session.api.article.get_list()
-        await self.client.change_view(view=ArticleView(articles_data=articles_data))
+        await self.client.change_view(view=ArticleListView(articles_data=articles_data))
 
     async def get_texts(self, _):
-        await self.client.change_view(view=TextView())
+        await self.client.change_view(view=TextListView())

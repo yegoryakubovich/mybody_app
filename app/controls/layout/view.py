@@ -15,11 +15,13 @@
 #
 
 
-from flet_core import Container, Image, alignment, padding, BoxShadow
+from flet_core import Container, Image, alignment, padding, BoxShadow, Row, MainAxisAlignment
 from flet_manager.utils import get_svg
 from flet_manager.views import BaseView
 
+from app.controls.information import Text
 from app.controls.information.loading import Loading
+from app.utils import Fonts
 
 
 class View(BaseView):
@@ -48,6 +50,51 @@ class View(BaseView):
                 spread_radius=1,
                 blur_radius=20,
             ),
+        )
+
+    async def get_title(self, title: str, go_back_button=True, on_create_click=None):
+
+        async def go_back(_):
+            await self.client.change_view(go_back=True)
+
+        return Row(
+            controls=[
+                Container(
+                    content=Image(
+                        src=get_svg(path='assets/icons/arrow_back.svg'),
+                    ),
+                    ink=True,
+                    on_click=go_back,
+                ),
+                Text(
+                    value=title,
+                    size=36,
+                    font_family=Fonts.SEMIBOLD,
+                ),
+                Container(
+                    content=Row(
+                        controls=[
+                            Container(
+                                content=Image(
+                                    src=get_svg(path='assets/icons/arrow_back.svg'),
+                                ),
+                                width=20,
+                                ink=True,
+                                on_click=self.client.change_view(go_back=True),
+                            ),
+                            Text(
+                                value='Create',
+                                size=20,
+                                font_family=Fonts.SEMIBOLD,
+                            ),
+                        ],
+                    ),
+                    border_radius=24,
+                    bgcolor='red',
+                    on_click=on_create_click,
+                ),
+            ],
+            alignment=MainAxisAlignment.SPACE_BETWEEN,
         )
 
     async def set_type(self, loading: bool = False):

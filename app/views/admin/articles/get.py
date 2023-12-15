@@ -24,11 +24,11 @@ from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.layout import View
 from app.utils import Fonts
-from app.views.admin.articles.create_article import CreateArticleView
+from app.views.admin.articles.create import CreateArticleView
 from config import URL_ARTICLES
 
 
-class ReviewArticleView(View):
+class ArticleView(View):
     route = '/admin'
 
     def __init__(self, articles_data):
@@ -47,7 +47,7 @@ class ReviewArticleView(View):
                          Row(
                              controls=[
                                  Text(
-                                     value=article_data['name_text'],
+                                     value=await self.client.session.gtv(key=article_data['name_text']),
                                      font_family=Fonts.BOLD,
                                      size=30,
                                  ),

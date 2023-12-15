@@ -13,25 +13,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import functools
 
-from flet_core import Container, Row, MainAxisAlignment, Card, Text, Column, ScrollMode
+
+from flet_core import Container, Column, Row, MainAxisAlignment, Card, ScrollMode
 
 from app.controls.button import FilledButton
+from app.controls.information import Text
 from app.controls.layout import View
 from app.utils import Fonts
-from app.views.admin.articles.create_article import CreateArticleView
-from app.views.admin.articles.get_article import ReviewArticleView
+from app.views.admin.texts.create import CreateTextView
+from app.views.admin.texts.get_text import TextGetView
 
 
-class ArticleView(View):
+class TextListView(View):
     route = '/admin'
-
-    def __init__(self, articles_data):
-        super().__init__()
-        self.articles_data = articles_data
+    texts: list[dict]
 
     async def build(self):
+        await self.set_type(loading=True)
+        response = await self.client.session.api.text.get_list()
+        self.texts = response.texts
+        await self.set_type(loading=False)
+
         self.scroll = ScrollMode.AUTO
         self.controls = [
             await self.get_header(),
@@ -41,7 +44,7 @@ class ArticleView(View):
                          Row(
                              controls=[
                                  Text(
-                                     value=await self.client.session.gtv(key='Articles'),
+                                     value=await self.client.session.gtv(key='Texts'),
                                      font_family=Fonts.BOLD,
                                      size=30,
                                  ),
@@ -49,7 +52,7 @@ class ArticleView(View):
                                      content=Text(
                                          value=await self.client.session.gtv(key='Create'),
                                      ),
-                                     on_click=self.create_article,
+                                     on_click=self.create_text,
                                  ),
                              ],
                              alignment=MainAxisAlignment.SPACE_BETWEEN,
@@ -60,32 +63,33 @@ class ArticleView(View):
                                  content=Column(
                                      controls=[
                                          Text(
-                                             value=article['name_text'].upper(),
+                                             value=text['key'].upper(),
                                              size=18,
                                              font_family=Fonts.SEMIBOLD,
+                                         ),
+                                         Text(
+                                             value=text['value_default'],
+                                             size=10,
+                                             font_family=Fonts.MEDIUM,
                                          ),
                                          Row(),
                                      ],
                                  ),
                                  ink=True,
                                  padding=10,
-                                 on_click=functools.partial(self.article_view, article),
+                                 on_click=self.text_view,
                              ),
                              margin=0,
                          )
-                         for article in self.articles_data.articles
+                         for text in self.texts
                      ],
                 ),
                 padding=10,
             ),
-
         ]
 
-    async def go_back(self, _):
-        await self.client.change_view(go_back=True)
+    async def create_text(self, _):
+        await self.client.change_view(view=CreateTextView())
 
-    async def create_article(self, _):
-        await self.client.change_view(view=CreateArticleView())
-
-    async def article_view(self, articles_data, _):
-        await self.client.change_view(view=ReviewArticleView(articles_data=articles_data))
+    async def text_view(self, _):
+        await self.client.change_view(view=TextGetView())

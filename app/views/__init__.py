@@ -32,10 +32,7 @@ views = [
     AuthenticationView,
     RegistrationView,
     RegistrationDataView,
-    MealView,
-    MealReportView,
     MainView,
-    TrainingView,
     AdminView,
 ]
 
