@@ -15,5 +15,10 @@
 #
 
 
-VERSION = '0.1'
-URL_ARTICLES = 'https://articles.mybody.by/{id_}/get?'
+from .texts_list import TextView
+from .create_text import CreateTextView
+
+__all__ = [
+    'TextView',
+    'CreateTextView'
+]

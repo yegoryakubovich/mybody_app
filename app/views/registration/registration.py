@@ -31,12 +31,19 @@ class RegistrationView(AuthView):
     tf_username: TextField
     tf_password: TextField
 
+    async def check_username(self, tf_username):
+        response = await self.client.session.api.account.check_username(username=tf_username)
+        return response.state == 'error'
+
     async def change_view(self, _):
+        check_username_error = await self.client.session.gtv(key='check_username_error')
         username_error = await self.client.session.gtv(key='username_min_max_letter')
         password_error = await self.client.session.gtv(key='password_min_max_letter')
 
         if len(self.tf_username.value) < 6 or len(self.tf_username.value) > 32:
             self.tf_username.error_text = username_error
+        elif await self.check_username(self.tf_username.value):
+            self.tf_username.error_text = check_username_error
         elif len(self.tf_password.value) < 6 or len(self.tf_password.value) > 128:
             self.tf_password.error_text = password_error
         else:
