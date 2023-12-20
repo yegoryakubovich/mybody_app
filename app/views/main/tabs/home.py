@@ -127,7 +127,6 @@ class HomeTab(BaseTab):
         await self.client.change_view(view=MealView())
 
     async def build(self):
-        firstname = self.client.session.account.firstname
 
         api_response = {'state': 'suc', 'meals': [
             {'name': 'Breakfast', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '7:00', 'end_time': '10:00'},
@@ -136,6 +135,8 @@ class HomeTab(BaseTab):
             {'name': 'Afternoon meal', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '16:00', 'end_time': '19:00'},
             {'name': 'Dinner', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '19:00', 'end_time': '20:00'},
         ]}
+
+        firstname = self.client.session.account.firstname
 
         meals = [
             Meal(

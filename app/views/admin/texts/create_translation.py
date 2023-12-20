@@ -22,8 +22,6 @@ from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField, Dropdown
 from app.controls.layout import View
-from app.utils import Fonts
-
 
 
 class CreateTranslationView(View):
@@ -31,14 +29,20 @@ class CreateTranslationView(View):
     dd_language_id_str: Dropdown
     tf_text_key: TextField
     tf_value: TextField
+    text = list[dict]
 
-    def __init__(self, texts):
+    def __init__(self, text_id):
         super().__init__()
-        self.texts = texts
+        self.text_id = text_id
         self.languages = None
 
     async def build(self):
-        print(self.texts)
+        await self.set_type(loading=True)
+        response = await self.client.session.api.text.get(
+            id_=self.text_id
+        )
+        self.text = response.text
+        await self.set_type(loading=False)
         self.languages = await self.client.session.api.language.get_list()
 
         languages_options = [
@@ -60,10 +64,9 @@ class CreateTranslationView(View):
             Container(
                 Column(
                     controls=[
-                        Text(
-                            value=await self.client.session.gtv(key='Create Translation'),
-                            size=30,
-                            font_family=Fonts.BOLD,
+                        await self.get_title(
+                            title=await self.client.session.gtv(key='crate_translation'),
+                            create_button=False,
                         ),
                         self.tf_value,
                         self.dd_language_id_str,
@@ -87,9 +90,9 @@ class CreateTranslationView(View):
             self.dd_language_id_str.error_text = await self.client.session.gtv(key='language_id_str_min_max_letter')
         else:
             await self.client.session.api.text.create_translation(
+                text_key=self.text['key'],
+                language=self.dd_language_id_str.value,
                 value=self.tf_value.value,
-                text_key=self.texts['key'],
-                language_id_str=self.dd_language_id_str.value,
             )
             await self.client.change_view(go_back=True)
             await self.client.page.views[-1].restart()

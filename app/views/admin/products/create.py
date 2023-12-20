@@ -16,20 +16,34 @@
 
 
 from flet_core import Container, Column
+from flet_core.dropdown import Option
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
-from app.controls.input import TextField
+from app.controls.input import TextField, Dropdown
 from app.controls.layout import View
 
 
-class CreateArticleView(View):
+class CreateProductView(View):
     route = '/admin'
     tf_name: TextField
+    dd_nutrient_type = Dropdown
 
     async def build(self):
+        nutrients_type = ['proteins', 'fats', 'carbohydrates']
+        nutrient_type_options = [
+            Option(
+                text=nutrient_type,
+            ) for nutrient_type in nutrients_type
+        ]
+
         self.tf_name = TextField(
-            label=await self.client.session.gtv(key='Name Article'),
+            label=await self.client.session.gtv(key='name_product'),
+        )
+        self.dd_nutrient_type = Dropdown(
+            label=await self.client.session.gtv(key='nutrients_type'),
+            value=nutrients_type[0],
+            options=nutrient_type_options,
         )
         self.controls = [
             await self.get_header(),
@@ -37,16 +51,17 @@ class CreateArticleView(View):
                 content=Column(
                     controls=[
                         await self.get_title(
-                            title=await self.client.session.gtv(key='create_article'),
-                            on_create_click=False,
+                            title=await self.client.session.gtv(key='create_product'),
+                            create_button=False,
                         ),
                         self.tf_name,
+                        self.dd_nutrient_type,
                         FilledButton(
                             content=Text(
-                                value=await self.client.session.gtv(key='Create'),
+                                value=await self.client.session.gtv(key='create'),
                                 size=16,
                             ),
-                            on_click=self.create_article,
+                            on_click=self.create_product,
                         ),
                     ],
                 ),
@@ -54,13 +69,14 @@ class CreateArticleView(View):
             ),
         ]
 
-    async def create_article(self, _):
-        from app.views.admin.articles import ArticleView
-        if len(self.tf_name.value) < 1 or len(self.tf_name.value) > 1024:
+    async def create_product(self, _):
+        from app.views.admin.products.get import ProductView
+        if len(self.tf_name.value) < 2 or len(self.tf_name.value) > 1024:
             self.tf_name.error_text = await self.client.session.gtv(key='name_min_max_letter')
         else:
-            response = await self.client.session.api.article.create(
+            response = await self.client.session.api.product.create(
                 name=self.tf_name.value,
+                nutrient_type=self.dd_nutrient_type.value,
             )
-            article_id = response.id
-            await self.client.change_view(view=ArticleView(article_id=article_id))
+            product_id = response.product_id
+            await self.client.change_view(view=ProductView(product_id=product_id))

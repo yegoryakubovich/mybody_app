@@ -14,7 +14,9 @@
 # limitations under the License.
 #
 
+from app.views.admin.accounts.list import AccountListView
 
-VERSION = '0.1'
-URL_ARTICLES_GET = 'https://articles.mybody.by/get?'
-URL_ARTICLES_UPDATE = 'https://articles.mybody.by/update?'
+
+__all__ = [
+    'AccountListView',
+]

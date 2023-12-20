@@ -28,7 +28,7 @@ class UserAgreement(AuthView):
     route = '/registration'
 
     async def change_view(self, _):
-        await Account().create(
+        await self.client.session.api.account.create(
             username=self.client.session.registration.username,
             password=self.client.session.registration.password,
             firstname=self.client.session.registration.firstname,

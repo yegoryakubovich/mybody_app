@@ -24,7 +24,9 @@ from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.layout import View
 from app.utils import Fonts
+from app.views.admin.accounts.list import AccountListView
 from app.views.admin.articles import ArticleListView
+from app.views.admin.products.list import ProductListView
 from app.views.admin.texts import TextListView
 
 
@@ -71,6 +73,16 @@ class AdminView(View):
                         name='texts',
                         icon='notifications',
                         on_click=self.get_texts,
+                    ),
+                    Setting(
+                        name='accounts',
+                        icon='notifications',
+                        on_click=self.get_accounts,
+                    ),
+                    Setting(
+                        name='products',
+                        icon='notifications',
+                        on_click=self.get_products,
                     ),
                 ],
             ),
@@ -138,8 +150,13 @@ class AdminView(View):
         await self.client.change_view(go_back=True)
 
     async def get_articles(self, _):
-        articles_data = await self.client.session.api.article.get_list()
-        await self.client.change_view(view=ArticleListView(articles_data=articles_data))
+        await self.client.change_view(view=ArticleListView())
 
     async def get_texts(self, _):
         await self.client.change_view(view=TextListView())
+
+    async def get_accounts(self, _):
+        await self.client.change_view(view=AccountListView())
+
+    async def get_products(self, _):
+        await self.client.change_view(view=ProductListView())

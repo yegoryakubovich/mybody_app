@@ -13,11 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+
 import functools
 
-from flet_core import Container, Row, MainAxisAlignment, Card, Text, Column, ScrollMode
+from flet_core import Container, Row, Card, Text, Column, ScrollMode
 
-from app.controls.button import FilledButton
 from app.controls.layout import View
 from app.utils import Fonts
 from app.views.admin.articles.create import CreateArticleView
@@ -26,12 +27,14 @@ from app.views.admin.articles.get import ArticleView
 
 class ArticleListView(View):
     route = '/admin'
-
-    def __init__(self, articles_data):
-        super().__init__()
-        self.articles_data = articles_data
+    articles: list[dict]
 
     async def build(self):
+        await self.set_type(loading=True)
+        response = await self.client.session.api.article.get_list()
+        self.articles = response.articles
+        await self.set_type(loading=False)
+
         self.scroll = ScrollMode.AUTO
         self.controls = [
             await self.get_header(),
@@ -39,7 +42,7 @@ class ArticleListView(View):
                 content=Column(
                     controls=[
                         await self.get_title(
-                            title=await self.client.session.gtv(key='Articles'),
+                            title=await self.client.session.gtv(key='articles'),
                             on_create_click=self.create_article,
                         ),
                     ] + [
@@ -57,23 +60,19 @@ class ArticleListView(View):
                                 ),
                                 ink=True,
                                 padding=10,
-                                on_click=functools.partial(self.article_view, article),
+                                on_click=functools.partial(self.article_view, article['id']),
                             ),
                             margin=0,
                         )
-                        for article in self.articles_data.articles
+                        for article in self.articles
                     ],
                 ),
                 padding=10,
             ),
-
         ]
-
-    async def go_back(self, _):
-        await self.client.change_view(go_back=True)
 
     async def create_article(self, _):
         await self.client.change_view(view=CreateArticleView())
 
-    async def article_view(self, articles_data, _):
-        await self.client.change_view(view=ArticleView(articles_data=articles_data))
+    async def article_view(self, article_id, _):
+        await self.client.change_view(view=ArticleView(article_id=article_id))

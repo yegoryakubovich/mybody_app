@@ -13,16 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import functools
 
+from flet_core import Container, Column, Row, Card, ScrollMode
 
-from flet_core import Container, Column, Row, MainAxisAlignment, Card, ScrollMode
-
-from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.layout import View
 from app.utils import Fonts
 from app.views.admin.texts.create import CreateTextView
-from app.views.admin.texts.get_text import TextGetView
+from app.views.admin.texts.get import TextView
 
 
 class TextListView(View):
@@ -41,48 +40,36 @@ class TextListView(View):
             Container(
                 content=Column(
                     controls=[
-                         Row(
-                             controls=[
-                                 Text(
-                                     value=await self.client.session.gtv(key='Texts'),
-                                     font_family=Fonts.BOLD,
-                                     size=30,
-                                 ),
-                                 FilledButton(
-                                     content=Text(
-                                         value=await self.client.session.gtv(key='Create'),
-                                     ),
-                                     on_click=self.create_text,
-                                 ),
-                             ],
-                             alignment=MainAxisAlignment.SPACE_BETWEEN,
-                         ),
-                     ] + [
-                         Card(
-                             content=Container(
-                                 content=Column(
-                                     controls=[
-                                         Text(
-                                             value=text['key'].upper(),
-                                             size=18,
-                                             font_family=Fonts.SEMIBOLD,
-                                         ),
-                                         Text(
-                                             value=text['value_default'],
-                                             size=10,
-                                             font_family=Fonts.MEDIUM,
-                                         ),
-                                         Row(),
-                                     ],
-                                 ),
-                                 ink=True,
-                                 padding=10,
-                                 on_click=self.text_view,
-                             ),
-                             margin=0,
-                         )
-                         for text in self.texts
-                     ],
+                        await self.get_title(
+                            title=await self.client.session.gtv(key='texts'),
+                            on_create_click=self.create_text,
+                        ),
+                    ] + [
+                        Card(
+                            content=Container(
+                                content=Column(
+                                    controls=[
+                                        Text(
+                                            value=text['key'].upper(),
+                                            size=18,
+                                            font_family=Fonts.SEMIBOLD,
+                                        ),
+                                        Text(
+                                            value=text['value_default'],
+                                            size=10,
+                                            font_family=Fonts.MEDIUM,
+                                        ),
+                                        Row(),
+                                    ],
+                                ),
+                                ink=True,
+                                padding=10,
+                                on_click=functools.partial(self.text_view, text['id']),
+                            ),
+                            margin=0,
+                        )
+                        for text in self.texts
+                    ],
                 ),
                 padding=10,
             ),
@@ -91,5 +78,5 @@ class TextListView(View):
     async def create_text(self, _):
         await self.client.change_view(view=CreateTextView())
 
-    async def text_view(self, _):
-        await self.client.change_view(view=TextGetView())
+    async def text_view(self, text_id, _):
+        await self.client.change_view(view=TextView(text_id=text_id))

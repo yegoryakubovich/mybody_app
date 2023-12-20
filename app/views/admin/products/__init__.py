@@ -15,6 +15,13 @@
 #
 
 
-VERSION = '0.1'
-URL_ARTICLES_GET = 'https://articles.mybody.by/get?'
-URL_ARTICLES_UPDATE = 'https://articles.mybody.by/update?'
+from app.views.admin.products.create import CreateProductView
+from app.views.admin.products.get import ProductView
+from app.views.admin.products.list import ProductListView
+
+
+__all__ = [
+    'ProductListView',
+    'CreateProductView',
+    'ProductView',
+]

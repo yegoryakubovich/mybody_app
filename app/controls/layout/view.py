@@ -52,31 +52,40 @@ class View(BaseView):
             ),
         )
 
-    async def get_title(self, title: str, go_back_button=True, on_create_click=None):
+    async def get_title(self, title: str, go_back_button=True, on_create_click=None, create_button=True):
 
         async def go_back(_):
             await self.client.change_view(go_back=True)
 
-        return Row(
-            controls=[
-                Container(
-                    content=Image(
-                        src=get_svg(path='assets/icons/arrow_back.svg'),
-                    ),
-                    ink=True,
-                    on_click=go_back,
+        left_controls = [
+            Container(
+                content=Image(
+                    src=get_svg(path='assets/icons/arrow_back.svg'),
+                    height=20,
+                    color='#000000',
                 ),
-                Text(
-                    value=title,
-                    size=36,
-                    font_family=Fonts.SEMIBOLD,
-                ),
+                ink=True,
+                on_click=go_back,
+            ),
+            Text(
+                value=title,
+                size=36,
+                font_family=Fonts.SEMIBOLD,
+            ),
+        ]
+
+        right_controls = []
+
+        if create_button:
+            right_controls.append(
                 Container(
                     content=Row(
                         controls=[
                             Container(
                                 content=Image(
                                     src=get_svg(path='assets/icons/arrow_back.svg'),
+                                    height=20,
+                                    color='#FFFFFF',
                                 ),
                                 width=20,
                                 ink=True,
@@ -86,12 +95,24 @@ class View(BaseView):
                                 value='Create',
                                 size=20,
                                 font_family=Fonts.SEMIBOLD,
+                                color='#FFFFFF',
                             ),
                         ],
                     ),
+                    padding=5,
                     border_radius=24,
-                    bgcolor='red',
+                    bgcolor='#008F12',
                     on_click=on_create_click,
+                )
+            )
+
+        return Row(
+            controls=[
+                Container(
+                    content=Row(controls=left_controls),
+                ),
+                Container(
+                    content=Row(controls=right_controls),
                 ),
             ],
             alignment=MainAxisAlignment.SPACE_BETWEEN,
