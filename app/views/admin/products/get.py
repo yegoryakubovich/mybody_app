@@ -49,8 +49,8 @@ class ProductView(View):
         ]
 
         self.dd_nutrient_type = Dropdown(
-            label=await self.client.session.gtv(key='nutrient_type'),
-            value=self.product['nutrient_type'],
+            label=await self.client.session.gtv(key='type'),
+            value=self.product['type'],
             options=nutrient_type_options,
         )
 
@@ -87,20 +87,17 @@ class ProductView(View):
         ]
 
     async def delete_product(self, _):
-        from app.views.admin.products.list import ProductListView
         await self.client.session.api.product.delete(
             id_=self.product_id
         )
-        await self.client.change_view(view=ProductListView())
+        await self.client.change_view(go_back=True)
+        await self.client.page.views[-1].restart()
 
     async def update_product(self, _):
-        from app.views.admin.products.list import ProductListView
         await self.client.session.api.product.update(
             id_=self.product_id,
-            nutrient_type=self.dd_nutrient_type.value,
+            type_=self.dd_nutrient_type.value,
 
         ),
-        await self.client.change_view(view=ProductListView())
-
-    async def create_articles(self, _):
-        pass
+        await self.client.change_view(go_back=True)
+        await self.client.page.views[-1].restart()

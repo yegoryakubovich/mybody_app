@@ -70,7 +70,7 @@ class TextView(View):
                                     controls=[
                                         FilledButton(
                                             content=Text(
-                                                value=await self.client.session.gtv(key='update'),
+                                                value=await self.client.session.gtv(key='save'),
                                             ),
                                             on_click=self.update_text,
                                         ),

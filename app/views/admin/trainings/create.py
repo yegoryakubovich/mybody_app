@@ -22,7 +22,6 @@ from app.controls.information import Text
 from app.controls.input import TextField
 from app.controls.layout import View
 from app.utils import Fonts
-from app.views.admin.texts import TextView
 
 
 class CreateTextView(View):
@@ -42,9 +41,10 @@ class CreateTextView(View):
             Container(
                 Column(
                     controls=[
-                        await self.get_title(
-                            title=await self.client.session.gtv(key='create_text'),
-                            create_button=False,
+                        Text(
+                            value=await self.client.session.gtv(key='Create Texts'),
+                            size=30,
+                            font_family=Fonts.BOLD,
                         ),
                         self.tf_value_default,
                         self.tf_key,
@@ -68,12 +68,10 @@ class CreateTextView(View):
         elif len(self.tf_key.value) < 2 or len(self.tf_key.value) > 128:
             self.tf_key.error_text = await self.client.session.gtv(key='key_min_max_letter')
         else:
-            response = await self.client.session.api.text.create(
+            await self.client.session.api.text.create(
                 value_default=self.tf_value_default.value,
                 key=self.tf_key.value,
             )
-            text_id = response.id
-            await self.client.change_view(view=TextView(text_id=text_id))
         await self.update_async()
         for field in [
             self.tf_value_default,

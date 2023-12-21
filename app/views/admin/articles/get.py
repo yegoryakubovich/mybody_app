@@ -13,23 +13,25 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-
+import functools
 from urllib.parse import urlencode
 
-from flet_core import Container, Row, MainAxisAlignment, Card, Column
+from flet_core import Container, Row, MainAxisAlignment, Card, Column, Switch
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.layout import View
 from app.utils import Fonts
+from app.views.admin.articles.create_translation import CreateTranslationView
+from app.views.admin.articles.get_translation import TranslationView
 from app.views.admin.articles.create import CreateArticleView
 from config import URL_ARTICLES_UPDATE, URL_ARTICLES_GET
 
 
 class ArticleView(View):
     route = '/admin'
-    articles = list[dict]
+    article = list[dict]
+    is_hide = bool
 
     def __init__(self, article_id):
         super().__init__()
@@ -37,11 +39,11 @@ class ArticleView(View):
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.article.get()
-        self.articles = response.articles
+        response = await self.client.session.api.article.get(
+            id_=self.article_id
+        )
+        self.article = response.article
         await self.set_type(loading=False)
-
-        translations = self.articles.get('translations', [])
 
         self.controls = [
             await self.get_header(),
@@ -49,8 +51,13 @@ class ArticleView(View):
                 content=Column(
                     controls=[
                         await self.get_title(
-                         title=await self.client.session.gtv(key=self.articles['name_text']),
-                         on_create_click=self.create_article,
+                         title=await self.client.session.gtv(key=self.article['name_text']),
+                         create_button=False,
+                        ),
+                        Switch(
+                            label=await self.client.session.gtv(key='hide'),
+                            value=self.article['is_hide'],
+                            on_change=self.change_visibility
                         ),
                         Row(
                             controls=[
@@ -60,7 +67,7 @@ class ArticleView(View):
                                     ),
                                     url=URL_ARTICLES_GET + urlencode(
                                         {
-                                            'id_': self.articles.get('id'),
+                                            'id_': self.article.get('id'),
                                             'token': '00000001:608c6cf5eb052a47e41e0ae21ff5c106',
                                             'is_admin': False,
                                         },
@@ -72,17 +79,11 @@ class ArticleView(View):
                                     ),
                                     url=URL_ARTICLES_UPDATE + urlencode(
                                         {
-                                            'id_': self.articles.get('id'),
+                                            'id_': self.article.get('id'),
                                             'token': '00000001:608c6cf5eb052a47e41e0ae21ff5c106',
                                             'is_admin': True,
                                         },
                                     ),
-                                ),
-                                FilledButton(
-                                    content=Text(
-                                        value=await self.client.session.gtv(key='change_visibility'),
-                                    ),
-                                    on_click=self.change_visibility,
                                 ),
                                 FilledButton(
                                     content=Text(
@@ -126,17 +127,11 @@ class ArticleView(View):
                                 ),
                                 ink=True,
                                 padding=10,
-                                url=URL_ARTICLES_GET.format(
-                                    id_=self.articles.get('id')) + urlencode(
-                                    {
-                                        'is_admin': True,
-                                        'token': '00000001:608c6cf5eb052a47e41e0ae21ff5c106',
-                                    },
-                                ),
+                                on_click=functools.partial(self.translate_view, translation),
                             ),
                             margin=0,
                         )
-                        for translation in translations
+                        for translation in self.article['translations']
                      ],
                 ),
                 padding=10,
@@ -144,17 +139,28 @@ class ArticleView(View):
         ]
 
     async def delete_article(self, _):
-        from app.views.admin.articles.list import ArticleListView
         await self.client.session.api.article.delete(
-            id=self.article_id
+            id_=self.article_id
         )
-        await self.client.change_view(view=ArticleListView())
+        await self.client.change_view(go_back=True)
+        await self.client.page.views[-1].restart()
 
     async def change_visibility(self, _):
-        pass
+        await self.client.session.api.article.update(
+            id_=self.article_id,
+            is_hide=not self.article['is_hide'],
+        )
+        await self.update_async()
 
     async def create_translation(self, _):
-        pass
+        await self.client.change_view(view=CreateTranslationView(article_id=self.article_id))
 
     async def create_article(self, _):
         await self.client.change_view(view=CreateArticleView())
+
+    async def translate_view(self, translation, _):
+        await self.client.change_view(view=TranslationView(
+            article_id=self.article_id,
+            language=translation
+            ),
+        )

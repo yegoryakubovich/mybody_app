@@ -17,22 +17,23 @@
 
 import functools
 
-from flet_core import Container, Row, Card, Text, Column, ScrollMode
+from flet_core import Container, Column, Row, Card, ScrollMode
 
+from app.controls.information import Text
 from app.controls.layout import View
 from app.utils import Fonts
-from app.views.admin.articles.create import CreateArticleView
-from app.views.admin.articles.get import ArticleView
+from app.views.admin.texts.create import CreateTextView
+from app.views.admin.texts.get import TextView
 
 
-class ArticleListView(View):
+class TrainingListView(View):
     route = '/admin'
-    articles: list[dict]
+    trainings: list[dict]
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.article.get_list()
-        self.articles = response.articles
+        response = await self.client.session.api.training.get_list()
+        self.trainings = response.trainings
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO
@@ -42,8 +43,8 @@ class ArticleListView(View):
                 content=Column(
                     controls=[
                         await self.get_title(
-                            title=await self.client.session.gtv(key='articles'),
-                            on_create_click=self.create_article,
+                            title=await self.client.session.gtv(key='trainings'),
+                            on_create_click=self.create_training,
                         ),
                     ] + [
                         Card(
@@ -51,28 +52,33 @@ class ArticleListView(View):
                                 content=Column(
                                     controls=[
                                         Text(
-                                            value=article['name_text'],
+                                            value=training['key'].upper(),
                                             size=18,
                                             font_family=Fonts.SEMIBOLD,
+                                        ),
+                                        Text(
+                                            value=text['value_default'],
+                                            size=10,
+                                            font_family=Fonts.MEDIUM,
                                         ),
                                         Row(),
                                     ],
                                 ),
                                 ink=True,
                                 padding=10,
-                                on_click=functools.partial(self.article_view, article['id']),
+                                on_click=functools.partial(self.text_view, text['id']),
                             ),
                             margin=0,
                         )
-                        for article in self.articles
+                        for text in self.texts
                     ],
                 ),
                 padding=10,
             ),
         ]
 
-    async def create_article(self, _):
-        await self.client.change_view(view=CreateArticleView())
+    async def create_text(self, _):
+        await self.client.change_view(view=CreateTextView())
 
-    async def article_view(self, article_id, _):
-        await self.client.change_view(view=ArticleView(article_id=article_id))
+    async def text_view(self, text_id, _):
+        await self.client.change_view(view=TextView(text_id=text_id))

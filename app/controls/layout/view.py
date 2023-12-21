@@ -83,17 +83,16 @@ class View(BaseView):
                         controls=[
                             Container(
                                 content=Image(
-                                    src=get_svg(path='assets/icons/arrow_back.svg'),
-                                    height=20,
+                                    src=get_svg(path='assets/icons/addition.svg'),
+                                    height=13,
                                     color='#FFFFFF',
                                 ),
-                                width=20,
                                 ink=True,
                                 on_click=self.client.change_view(go_back=True),
                             ),
                             Text(
                                 value='Create',
-                                size=20,
+                                size=13,
                                 font_family=Fonts.SEMIBOLD,
                                 color='#FFFFFF',
                             ),

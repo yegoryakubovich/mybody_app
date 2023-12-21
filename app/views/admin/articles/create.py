@@ -38,7 +38,7 @@ class CreateArticleView(View):
                     controls=[
                         await self.get_title(
                             title=await self.client.session.gtv(key='create_article'),
-                            on_create_click=False,
+                            create_button=False,
                         ),
                         self.tf_name,
                         FilledButton(

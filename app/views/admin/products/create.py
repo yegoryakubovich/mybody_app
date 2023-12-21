@@ -76,7 +76,8 @@ class CreateProductView(View):
         else:
             response = await self.client.session.api.product.create(
                 name=self.tf_name.value,
-                nutrient_type=self.dd_nutrient_type.value,
+                type_=self.dd_nutrient_type.value,
             )
+            print(response)
             product_id = response.product_id
             await self.client.change_view(view=ProductView(product_id=product_id))

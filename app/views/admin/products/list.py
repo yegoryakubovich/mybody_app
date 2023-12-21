@@ -34,7 +34,7 @@ class ProductListView(View):
     async def build(self):
         await self.set_type(loading=True)
         response = await self.client.session.api.product.get_list(
-            nutrient_type=self.nutrient_type or None,
+            type_=self.nutrient_type or None,
         )
         self.products = response.products
         await self.set_type(loading=False)
