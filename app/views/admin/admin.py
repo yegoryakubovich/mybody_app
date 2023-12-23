@@ -25,9 +25,12 @@ from app.controls.information import Text
 from app.controls.layout import View
 from app.utils import Fonts
 from app.views.admin.accounts.list import AccountListView
-from app.views.admin.articles import ArticleListView
+from app.views.admin.articles.list import ArticleListView
+from app.views.admin.currencies.list import CurrencyListView
+from app.views.admin.languages.list import LanguageListView
 from app.views.admin.products.list import ProductListView
-from app.views.admin.texts import TextListView
+from app.views.admin.texts.list import TextListView
+from app.views.admin.timezones import TimezoneListView
 
 
 class Setting:
@@ -83,6 +86,21 @@ class AdminView(View):
                         name='products',
                         icon='notifications',
                         on_click=self.get_products,
+                    ),
+                    Setting(
+                        name='languages',
+                        icon='notifications',
+                        on_click=self.get_languages,
+                    ),
+                    Setting(
+                        name='currencies',
+                        icon='notifications',
+                        on_click=self.get_currencies,
+                    ),
+                    Setting(
+                        name='timezones',
+                        icon='notifications',
+                        on_click=self.get_timezones,
                     ),
                 ],
             ),
@@ -160,3 +178,12 @@ class AdminView(View):
 
     async def get_products(self, _):
         await self.client.change_view(view=ProductListView())
+
+    async def get_languages(self, _):
+        await self.client.change_view(view=LanguageListView())
+
+    async def get_currencies(self, _):
+        await self.client.change_view(view=CurrencyListView())
+
+    async def get_timezones(self, _):
+        await self.client.change_view(view=TimezoneListView())

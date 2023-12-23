@@ -16,34 +16,24 @@
 
 
 from flet_core import Container, Column
-from flet_core.dropdown import Option
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
-from app.controls.input import TextField, Dropdown
+from app.controls.input import TextField
 from app.controls.layout import View
 
 
-class CreateProductView(View):
+class CreateCurrencyView(View):
     route = '/admin'
     tf_name: TextField
-    dd_nutrient_type = Dropdown
+    tf_id_str: TextField
 
     async def build(self):
-        nutrients_type = ['proteins', 'fats', 'carbohydrates']
-        nutrient_type_options = [
-            Option(
-                text=nutrient_type,
-            ) for nutrient_type in nutrients_type
-        ]
-
-        self.tf_name = TextField(
-            label=await self.client.session.gtv(key='name_product'),
+        self.tf_id_str = TextField(
+            label=await self.client.session.gtv(key='id_str'),
         )
-        self.dd_nutrient_type = Dropdown(
-            label=await self.client.session.gtv(key='nutrients_type'),
-            value=nutrients_type[0],
-            options=nutrient_type_options,
+        self.tf_name = TextField(
+            label=await self.client.session.gtv(key='name_currency'),
         )
         self.controls = [
             await self.get_header(),
@@ -51,17 +41,17 @@ class CreateProductView(View):
                 content=Column(
                     controls=[
                         await self.get_title(
-                            title=await self.client.session.gtv(key='create_product'),
+                            title=await self.client.session.gtv(key='create_currency'),
                             create_button=False,
                         ),
+                        self.tf_id_str,
                         self.tf_name,
-                        self.dd_nutrient_type,
                         FilledButton(
                             content=Text(
                                 value=await self.client.session.gtv(key='create'),
                                 size=16,
                             ),
-                            on_click=self.create_product,
+                            on_click=self.create_currency,
                         ),
                     ],
                 ),
@@ -69,15 +59,15 @@ class CreateProductView(View):
             ),
         ]
 
-    async def create_product(self, _):
-        from app.views.admin.products.get import ProductView
-        if len(self.tf_name.value) < 2 or len(self.tf_name.value) > 1024:
+    async def create_currency(self, _):
+        if len(self.tf_id_str.value) < 2 or len(self.tf_id_str.value) > 32:
+            self.tf_id_str.error_text = await self.client.session.gtv(key='id_str_min_max_letter')
+        elif len(self.tf_name.value) < 1 or len(self.tf_name.value) > 1024:
             self.tf_name.error_text = await self.client.session.gtv(key='name_min_max_letter')
         else:
-            response = await self.client.session.api.product.create(
+            await self.client.session.api.currency.create(
+                id_str=self.tf_id_str.value,
                 name=self.tf_name.value,
-                type_=self.dd_nutrient_type.value,
             )
-            print(response)
-            product_id = response.id
-            await self.client.change_view(view=ProductView(product_id=product_id))
+            await self.client.change_view(go_back=True)
+            await self.client.page.views[-1].restart()
