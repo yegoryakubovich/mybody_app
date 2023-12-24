@@ -42,8 +42,8 @@ class CreateTranslationView(View):
             id_=self.text_id
         )
         self.text = response.text
-        await self.set_type(loading=False)
         self.languages = await self.client.session.api.language.get_list()
+        await self.set_type(loading=False)
 
         languages_options = [
             Option(

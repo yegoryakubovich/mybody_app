@@ -35,7 +35,7 @@ class TimezoneView(View):
         response = await self.client.session.api.timezone.get(
             id_str=self.timezone_id_str
         )
-        self.timezone = response.language
+        self.timezone = response.timezone
         await self.set_type(loading=False)
 
         self.controls = [
