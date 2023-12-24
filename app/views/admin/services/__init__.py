@@ -15,13 +15,13 @@
 #
 
 
-from app.views.admin.trainings.create import CreateTrainingView
-from app.views.admin.trainings.get import TrainingView
-from app.views.admin.trainings.list import TrainingListView
+from app.views.admin.services.create import CreateServiceView
+from app.views.admin.services.get import ServiceView
+from app.views.admin.services.list import ServiceListView
 
 
 __all__ = [
-    'TrainingListView',
-    'CreateTrainingView',
-    'TrainingView',
+    'ServiceListView',
+    'CreateServiceView',
+    'ServiceView',
 ]

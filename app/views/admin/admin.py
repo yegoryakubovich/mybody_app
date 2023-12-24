@@ -28,8 +28,10 @@ from app.views.admin.accounts.list import AccountListView
 from app.views.admin.articles.list import ArticleListView
 from app.views.admin.countries import CountryListView
 from app.views.admin.currencies.list import CurrencyListView
+from app.views.admin.exercises.list import ExerciseListView
 from app.views.admin.languages.list import LanguageListView
 from app.views.admin.products.list import ProductListView
+from app.views.admin.services import ServiceListView
 from app.views.admin.texts.list import TextListView
 from app.views.admin.timezones import TimezoneListView
 
@@ -107,6 +109,16 @@ class AdminView(View):
                         name='country',
                         icon='notifications',
                         on_click=self.get_countries,
+                    ),
+                    Setting(
+                        name='service',
+                        icon='notifications',
+                        on_click=self.get_services,
+                    ),
+                    Setting(
+                        name='exercises',
+                        icon='notifications',
+                        on_click=self.get_exercises,
                     ),
                 ],
             ),
@@ -196,3 +208,9 @@ class AdminView(View):
 
     async def get_countries(self, _):
         await self.client.change_view(view=CountryListView())
+
+    async def get_services(self, _):
+        await self.client.change_view(view=ServiceListView())
+
+    async def get_exercises(self, _):
+        await self.client.change_view(view=ExerciseListView())

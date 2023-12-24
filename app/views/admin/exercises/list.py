@@ -17,23 +17,22 @@
 
 import functools
 
-from flet_core import Container, Column, Row, Card, ScrollMode
+from flet_core import Container, Row, Card, Text, Column, ScrollMode
 
-from app.controls.information import Text
 from app.controls.layout import View
 from app.utils import Fonts
-from app.views.admin.trainings.create import CreateTrainingView
-from app.views.admin.trainings.get import TrainingView
+from app.views.admin.exercises.create import CreateExerciseView
+from app.views.admin.exercises.get import ExerciseView
 
 
-class TrainingListView(View):
+class ExerciseListView(View):
     route = '/admin'
-    trainings: list[dict]
+    exercises: list[dict]
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.training.get_list()
-        self.trainings = response.trainings
+        response = await self.client.session.api.exercise.get_list()
+        self.exercises = response.exercises
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO
@@ -43,8 +42,8 @@ class TrainingListView(View):
                 content=Column(
                     controls=[
                         await self.get_title(
-                            title=await self.client.session.gtv(key='trainings'),
-                            on_create_click=self.create_training,
+                            title=await self.client.session.gtv(key='exercises'),
+                            on_create_click=self.create_exercise,
                         ),
                     ] + [
                         Card(
@@ -52,12 +51,12 @@ class TrainingListView(View):
                                 content=Column(
                                     controls=[
                                         Text(
-                                            value=training['key'].upper(),
+                                            value=exercise['name_text'].upper(),
                                             size=18,
                                             font_family=Fonts.SEMIBOLD,
                                         ),
                                         Text(
-                                            value=training['value_default'],
+                                            value=exercise['type'],
                                             size=10,
                                             font_family=Fonts.MEDIUM,
                                         ),
@@ -66,19 +65,19 @@ class TrainingListView(View):
                                 ),
                                 ink=True,
                                 padding=10,
-                                on_click=functools.partial(self.training_view, training['id']),
+                                on_click=functools.partial(self.exercise_view, exercise['id']),
                             ),
                             margin=0,
                         )
-                        for training in self.trainings
+                        for exercise in self.exercises
                     ],
                 ),
                 padding=10,
             ),
         ]
 
-    async def create_training(self, _):
-        await self.client.change_view(view=CreateTrainingView())
+    async def create_exercise(self, _):
+        await self.client.change_view(view=CreateExerciseView())
 
-    async def training_view(self, text_id, _):
-        await self.client.change_view(view=TrainingView(text_id=text_id))
+    async def exercise_view(self, exercise_id, _):
+        await self.client.change_view(view=ExerciseView(exercise_id=exercise_id))

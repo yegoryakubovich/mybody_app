@@ -24,7 +24,7 @@ from app.controls.layout import View
 from app.utils import Fonts
 
 
-class CreateTextView(View):
+class CreateTrainingView(View):
     route = '/admin'
     tf_value_default: TextField
     tf_key: TextField

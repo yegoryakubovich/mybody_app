@@ -24,7 +24,7 @@ from app.controls.layout import View
 
 class LanguageView(View):
     route = '/admin'
-    language = list[dict]
+    language = dict
 
     def __init__(self, language_id_str):
         super().__init__()

@@ -19,24 +19,36 @@ from flet_core import Container, Column
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
+from app.controls.input import TextField
 from app.controls.layout import View
 
 
-class TimezoneView(View):
+class ServiceView(View):
     route = '/admin'
-    timezone = dict
+    service:  dict
+    tf_name: TextField
+    tf_questions: TextField
 
-    def __init__(self, timezone_id_str):
+    def __init__(self, service_id_str):
         super().__init__()
-        self.timezone_id_str = timezone_id_str
+        self.service_id_str = service_id_str
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.timezone.get(
-            id_str=self.timezone_id_str
+        response = await self.client.session.api.service.get(
+            id_str=self.service_id_str
         )
-        self.timezone = response.timezone
+        self.service = response.service
         await self.set_type(loading=False)
+
+        self.tf_name = TextField(
+            label=await self.client.session.gtv(key='name'),
+            value=self.service['name'],
+        )
+        self.tf_questions = TextField(
+            label=await self.client.session.gtv(key='value_default'),
+            value=self.service['questions'],
+        )
 
         self.controls = [
             await self.get_header(),
@@ -44,14 +56,14 @@ class TimezoneView(View):
                 content=Column(
                     controls=[
                         await self.get_title(
-                         title=await self.client.session.gtv(key=self.timezone['id_str']),
+                         title=await self.client.session.gtv(key=self.service['name_text']),
                          create_button=False,
                         ),
                         FilledButton(
                             content=Text(
-                                value=await self.client.session.gtv(key='delete_timezone'),
+                                value=await self.client.session.gtv(key='delete_service'),
                             ),
-                            on_click=self.delete_timezone,
+                            on_click=self.delete_service,
                         ),
                     ],
                 ),
@@ -59,9 +71,9 @@ class TimezoneView(View):
             ),
         ]
 
-    async def delete_timezone(self, _):
-        await self.client.session.api.timezone.delete(
-            id_str=self.timezone_id_str
+    async def delete_service(self, _):
+        await self.client.session.api.service.delete(
+            id_str=self.service_id_str
         )
         await self.client.change_view(go_back=True)
         await self.client.page.views[-1].restart()

@@ -26,7 +26,7 @@ from app.views.admin.texts.create_translation import CreateTranslationView
 from app.views.admin.texts.get_translation import TranslationView
 
 
-class TextView(View):
+class TrainingView(View):
     route = '/admin'
     tf_key = TextField
     tf_value_default = TextField

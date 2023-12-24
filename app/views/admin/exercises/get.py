@@ -15,43 +15,42 @@
 #
 
 
-from flet_core import Container, Row, Column
-from flet_core.dropdown import Option
+from flet_core import Container, Column, Row
+from flet_core.dropdown import Option, Dropdown
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
-from app.controls.input import Dropdown
 from app.controls.layout import View
 
 
-class ProductView(View):
+class ExerciseView(View):
     route = '/admin'
-    product = dict
-    dd_nutrient_type = Dropdown
+    exercise = dict
+    dd_exercise_type: Dropdown
 
-    def __init__(self, product_id):
+    def __init__(self, exercise_id):
         super().__init__()
-        self.product_id = product_id
+        self.exercise_id = exercise_id
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.product.get(
-            id_=self.product_id
+        response = await self.client.session.api.exercise.get(
+            id_=self.exercise_id
         )
-        self.product = response.product
+        self.exercise = response.exercise
         await self.set_type(loading=False)
 
-        nutrients_type = ['proteins', 'fats', 'carbohydrates']
-        nutrient_type_options = [
+        exercise_type = ['time', 'quantity']
+        exercise_type_options = [
             Option(
-                text=nutrient_type,
-            ) for nutrient_type in nutrients_type
+                text=exercise_type,
+            ) for exercise_type in exercise_type
         ]
 
-        self.dd_nutrient_type = Dropdown(
+        self.dd_exercise_type = Dropdown(
             label=await self.client.session.gtv(key='type'),
-            value=self.product['type'],
-            options=nutrient_type_options,
+            value=self.exercise['type'],
+            options=exercise_type_options,
         )
 
         self.controls = [
@@ -60,44 +59,44 @@ class ProductView(View):
                 content=Column(
                     controls=[
                         await self.get_title(
-                         title=await self.client.session.gtv(key=self.product['name_text']),
+                         title=await self.client.session.gtv(key=self.exercise['name_text']),
                          create_button=False,
                         ),
-                        self.dd_nutrient_type,
+                        self.dd_exercise_type,
                         Row(
                             controls=[
                                 FilledButton(
                                     content=Text(
-                                        value=await self.client.session.gtv(key='update_product'),
+                                        value=await self.client.session.gtv(key='update_exercise'),
                                     ),
-                                    on_click=self.update_product,
+                                    on_click=self.update_exercise,
                                 ),
                                 FilledButton(
                                     content=Text(
-                                        value=await self.client.session.gtv(key='delete_product'),
+                                        value=await self.client.session.gtv(key='delete_exercise'),
                                     ),
-                                    on_click=self.delete_product,
+                                    on_click=self.delete_exercise,
                                 ),
-                            ]
-                        )
+                            ],
+                        ),
                     ],
                 ),
-                padding=10
+                padding=10,
             ),
         ]
 
-    async def delete_product(self, _):
-        await self.client.session.api.product.delete(
-            id_=self.product_id
+    async def delete_exercise(self, _):
+        await self.client.session.api.exercise.delete(
+            id_=self.exercise_id
         )
         await self.client.change_view(go_back=True)
         await self.client.page.views[-1].restart()
 
-    async def update_product(self, _):
-        await self.client.session.api.product.update(
-            id_=self.product_id,
-            type_=self.dd_nutrient_type.value,
-
-        ),
+    async def update_exercise(self, _):
+        response = await self.client.session.api.exercise.update(
+            id_=self.exercise_id,
+            type_=self.dd_exercise_type.value,
+        )
+        print(response)
         await self.client.change_view(go_back=True)
         await self.client.page.views[-1].restart()

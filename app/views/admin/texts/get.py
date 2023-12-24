@@ -30,7 +30,7 @@ class TextView(View):
     route = '/admin'
     tf_key = TextField
     tf_value_default = TextField
-    text = list[dict]
+    text = dict
 
     def __init__(self, text_id):
         super().__init__()

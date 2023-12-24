@@ -24,7 +24,7 @@ from app.controls.layout import View
 
 class CurrencyView(View):
     route = '/admin'
-    currency = list[dict]
+    currency = dict
 
     def __init__(self, currency_id_str):
         super().__init__()

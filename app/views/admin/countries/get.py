@@ -20,13 +20,12 @@ from flet_core.dropdown import Option, Dropdown
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
-from app.controls.input import TextField
 from app.controls.layout import View
 
 
 class CountryView(View):
     route = '/admin'
-    country = list[dict]
+    country = dict
     dd_language = Dropdown
     dd_timezone = Dropdown
     dd_currency = Dropdown
