@@ -16,10 +16,10 @@
 
 
 from .create_translation import CreateTranslationView
+from .get import ArticleView
 from .get_translation import TranslationView
 from .list import ArticleListView
 from .create import CreateArticleView
-from .get import ArticleView
 
 __all__ = [
     'ArticleListView',

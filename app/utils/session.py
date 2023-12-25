@@ -41,7 +41,7 @@ class Session:
         self.language = await self.get_cs(key='language')
 
         self.api = MyBodyApiClient(token=self.token)
-        response = await self.api.account.get()
+        response = await self.api.account.get_additional()
 
         if response.state == 'error':
             self.token = None

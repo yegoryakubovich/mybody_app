@@ -19,21 +19,33 @@ import functools
 
 from flet_core import Container, Row, Card, Text, Column, ScrollMode
 
+from app.controls.button import FilledButton
+from app.controls.input import TextField
 from app.controls.layout import View
 from app.utils import Fonts
-from app.views.admin.articles.create import CreateArticleView
-from app.views.admin.articles.get import ArticleView
+from app.views.admin.accounts.get import AccountView
 
 
 class AccountListView(View):
     route = '/admin'
     accounts: list[dict]
+    page_account: int = 1
+    total_pages: int = 1
+    tf_search = TextField
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.account.get()
-        self.accounts = response  # FIXME
+        response = await self.client.session.api.account.search(
+            page=self.page_account,
+        )
+        self.accounts = response.accounts
+        self.total_pages = response.pages
         await self.set_type(loading=False)
+
+        self.tf_search = TextField(
+            label=await self.client.session.gtv(key='search'),
+            on_change=self.search
+        )
 
         self.scroll = ScrollMode.AUTO
         self.controls = [
@@ -42,58 +54,73 @@ class AccountListView(View):
                 content=Column(
                     controls=[
                         await self.get_title(
-                            title=await self.client.session.gtv(key='Account'),
-                            on_create_click=self.create_article,
+                            title=await self.client.session.gtv(key='accounts'),
+                            create_button=False,
                         ),
+                        self.tf_search,
                     ] + [
                         Card(
                             content=Container(
                                 content=Column(
                                     controls=[
+                                        Text(
+                                            value=await self.client.session.gtv(
+                                                    key=account['username']),
+                                            size=18,
+                                            font_family=Fonts.SEMIBOLD,
+                                        ),
                                         Row(
                                             controls=[
                                                 Text(
                                                     value=await self.client.session.gtv(
                                                         key=account['firstname']),
-                                                    size=18,
-                                                    font_family=Fonts.SEMIBOLD,
+                                                    size=13,
+                                                    font_family=Fonts.REGULAR,
                                                 ),
                                                 Text(
                                                     value=await self.client.session.gtv(
                                                         key=account['lastname']),
-                                                    size=18,
-                                                    font_family=Fonts.SEMIBOLD,
+                                                    size=13,
+                                                    font_family=Fonts.REGULAR,
                                                 ),
                                             ],
-                                        ),
-                                        Text(
-                                            value=await self.client.session.gtv(key=account['country']),
-                                            size=15,
-                                            font_family=Fonts.REGULAR,
-                                        ),
-                                        Text(
-                                            value=await self.client.session.gtv(key=account['language']),
-                                            size=15,
-                                            font_family=Fonts.REGULAR,
                                         ),
                                         Row(),
                                     ],
                                 ),
                                 ink=True,
                                 padding=10,
-                                on_click=functools.partial(self.article_view, account['id']),
+                                on_click=functools.partial(self.account_view, account['id']),
                             ),
                             margin=0,
                         )
                         for account in self.accounts
-                    ],
+                    ] + (
+                        [
+                            FilledButton(
+                                content=Text(
+                                    value=await self.client.session.gtv(key='next'),
+                                ),
+                                on_click=self.next_page
+                            ),
+                        ] if self.page_account < self.total_pages else []
+                    )
                 ),
                 padding=10,
             ),
         ]
 
-    async def create_article(self, _):
-        await self.client.change_view(view=CreateArticleView())
+    async def account_view(self, account_id, _):
+        await self.client.change_view(view=AccountView(account_id=account_id))
 
-    async def article_view(self, article_id, _):
-        await self.client.change_view(view=ArticleView(article_id=article_id))
+    async def next_page(self, _):
+        self.page_account += 1
+        await self.build()
+        await self.update_async()
+
+    async def search(self, _):
+        print(self.tf_search.value)
+        response = await self.client.session.api.account.search(
+            username=self.tf_search.value,
+        )
+        print(response)

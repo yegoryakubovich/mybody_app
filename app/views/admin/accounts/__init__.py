@@ -14,9 +14,12 @@
 # limitations under the License.
 #
 
+
+from app.views.admin.accounts.get import AccountView
 from app.views.admin.accounts.list import AccountListView
 
 
 __all__ = [
     'AccountListView',
+    'AccountView',
 ]
