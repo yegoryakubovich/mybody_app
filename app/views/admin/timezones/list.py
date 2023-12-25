@@ -82,5 +82,5 @@ class TimezoneListView(View):
     async def create_timezone(self, _):
         await self.client.change_view(view=CreateTimezoneView())
 
-    async def timezone_view(self,timezone_id_str, _):
+    async def timezone_view(self, timezone_id_str, _):
         await self.client.change_view(view=TimezoneView(timezone_id_str=timezone_id_str))

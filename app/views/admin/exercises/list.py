@@ -56,7 +56,7 @@ class ExerciseListView(View):
                                             font_family=Fonts.SEMIBOLD,
                                         ),
                                         Text(
-                                            value=exercise['type'],
+                                            value=await self.client.session.gtv(key=exercise['type']),
                                             size=10,
                                             font_family=Fonts.MEDIUM,
                                         ),

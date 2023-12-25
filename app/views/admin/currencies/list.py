@@ -52,7 +52,7 @@ class CurrencyListView(View):
                                 content=Column(
                                     controls=[
                                         Text(
-                                            value=currency['name_text'],
+                                            value=await self.client.session.gtv(key=currency['name_text']),
                                             size=18,
                                             font_family=Fonts.SEMIBOLD,
                                         ),

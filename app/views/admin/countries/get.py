@@ -59,8 +59,8 @@ class CountryView(View):
         ]
         currency_options = [
             Option(
-                text=currency.get('name'),
-                key=currency.get('name_text'),
+                text=currency.get('name_text'),
+                key=currency.get('id_str'),
             ) for currency in currencies.currencies
         ]
 

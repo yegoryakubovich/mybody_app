@@ -41,52 +41,52 @@ class AccountListView(View):
             Container(
                 content=Column(
                     controls=[
-                                 await self.get_title(
-                                     title=await self.client.session.gtv(key='Account'),
-                                     on_create_click=self.create_article,
-                                 ),
-                             ] + [
-                                 Card(
-                                     content=Container(
-                                         content=Column(
-                                             controls=[
-                                                 Row(
-                                                     controls=[
-                                                         Text(
-                                                             value=await self.client.session.gtv(
-                                                                 key=account['firstname']),
-                                                             size=18,
-                                                             font_family=Fonts.SEMIBOLD,
-                                                         ),
-                                                         Text(
-                                                             value=await self.client.session.gtv(
-                                                                 key=account['lastname']),
-                                                             size=18,
-                                                             font_family=Fonts.SEMIBOLD,
-                                                         ),
-                                                     ],
-                                                 ),
-                                                 Text(
-                                                     value=await self.client.session.gtv(key=account['country']),
-                                                     size=15,
-                                                     font_family=Fonts.REGULAR,
-                                                 ),
-                                                 Text(
-                                                     value=await self.client.session.gtv(key=account['language']),
-                                                     size=15,
-                                                     font_family=Fonts.REGULAR,
-                                                 ),
-                                                 Row(),
-                                             ],
-                                         ),
-                                         ink=True,
-                                         padding=10,
-                                         on_click=functools.partial(self.article_view, account['id']),
-                                     ),
-                                     margin=0,
-                                 )
-                                 for account in self.accounts
-                             ],
+                        await self.get_title(
+                            title=await self.client.session.gtv(key='Account'),
+                            on_create_click=self.create_article,
+                        ),
+                    ] + [
+                        Card(
+                            content=Container(
+                                content=Column(
+                                    controls=[
+                                        Row(
+                                            controls=[
+                                                Text(
+                                                    value=await self.client.session.gtv(
+                                                        key=account['firstname']),
+                                                    size=18,
+                                                    font_family=Fonts.SEMIBOLD,
+                                                ),
+                                                Text(
+                                                    value=await self.client.session.gtv(
+                                                        key=account['lastname']),
+                                                    size=18,
+                                                    font_family=Fonts.SEMIBOLD,
+                                                ),
+                                            ],
+                                        ),
+                                        Text(
+                                            value=await self.client.session.gtv(key=account['country']),
+                                            size=15,
+                                            font_family=Fonts.REGULAR,
+                                        ),
+                                        Text(
+                                            value=await self.client.session.gtv(key=account['language']),
+                                            size=15,
+                                            font_family=Fonts.REGULAR,
+                                        ),
+                                        Row(),
+                                    ],
+                                ),
+                                ink=True,
+                                padding=10,
+                                on_click=functools.partial(self.article_view, account['id']),
+                            ),
+                            margin=0,
+                        )
+                        for account in self.accounts
+                    ],
                 ),
                 padding=10,
             ),

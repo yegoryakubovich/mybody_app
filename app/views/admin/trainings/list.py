@@ -52,14 +52,9 @@ class TrainingListView(View):
                                 content=Column(
                                     controls=[
                                         Text(
-                                            value=training['key'].upper(),
+                                            value=training['date'],
                                             size=18,
                                             font_family=Fonts.SEMIBOLD,
-                                        ),
-                                        Text(
-                                            value=training['value_default'],
-                                            size=10,
-                                            font_family=Fonts.MEDIUM,
                                         ),
                                         Row(),
                                     ],

@@ -34,6 +34,7 @@ from app.views.admin.products.list import ProductListView
 from app.views.admin.services import ServiceListView
 from app.views.admin.texts.list import TextListView
 from app.views.admin.timezones import TimezoneListView
+from app.views.admin.trainings import CreateTrainingView, TrainingListView
 
 
 class Setting:
@@ -106,12 +107,12 @@ class AdminView(View):
                         on_click=self.get_timezones,
                     ),
                     Setting(
-                        name='country',
+                        name='countries',
                         icon='notifications',
                         on_click=self.get_countries,
                     ),
                     Setting(
-                        name='service',
+                        name='services',
                         icon='notifications',
                         on_click=self.get_services,
                     ),
@@ -119,6 +120,11 @@ class AdminView(View):
                         name='exercises',
                         icon='notifications',
                         on_click=self.get_exercises,
+                    ),
+                    Setting(
+                        name='trainings',
+                        icon='notifications',
+                        on_click=self.get_trainings,
                     ),
                 ],
             ),
@@ -214,3 +220,6 @@ class AdminView(View):
 
     async def get_exercises(self, _):
         await self.client.change_view(view=ExerciseListView())
+
+    async def get_trainings(self, _):
+        await self.client.change_view(view=TrainingListView())

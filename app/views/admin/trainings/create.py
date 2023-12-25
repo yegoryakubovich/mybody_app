@@ -16,25 +16,49 @@
 
 
 from flet_core import Container, Column
+from flet_core.dropdown import Option
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
-from app.controls.input import TextField
+from app.controls.input import TextField, Dropdown
 from app.controls.layout import View
 from app.utils import Fonts
 
 
 class CreateTrainingView(View):
     route = '/admin'
-    tf_value_default: TextField
-    tf_key: TextField
+    dd_account_service_id: Dropdown
+    dd_article_id: Dropdown
 
     async def build(self):
-        self.tf_value_default = TextField(
-            label=await self.client.session.gtv(key='Name Default'),
+        await self.set_type(loading=True)
+        articles = await self.client.session.api.article.get_list()
+        account_services = await self.client.session.api.account.services_get_list()
+        await self.set_type(loading=False)
+
+        article_options = [
+            Option(
+                text=article['name_text'],
+                key=article['id'],
+            ) for article in articles
+        ]
+
+        account_services_options = [
+            Option(
+                text=account_service['account'],
+                key=account_service['id'],
+            ) for account_service in account_services
+        ]
+
+        self.dd_account_service_id = Dropdown(
+            label=await self.client.session.gtv(key='account_service'),
+            value=self.product['type'],
+            options=article_options,
         )
-        self.tf_key = TextField(
-            label=await self.client.session.gtv(key='Key'),
+        self.dd_article_id = Dropdown(
+            label=await self.client.session.gtv(key='articles'),
+            value=self.product['type'],
+            options=account_services_options,
         )
         self.controls = [
             await self.get_header(),
