@@ -15,7 +15,7 @@
 #
 
 
-from .admin import AdminView
+from .admin import AdminView, Section
 from .auth import AuthView
 from .view import View
 
@@ -24,4 +24,5 @@ __all__ = [
     'View',
     'AuthView',
     'AdminView',
+    'Section',
 ]

@@ -62,7 +62,6 @@ class TextView(View):
                     controls=[
                         await self.get_title(
                             title=await self.client.session.gtv(key=self.text['value_default']),
-                            create_button=False,
                         ),
                         Column(
                             controls=[

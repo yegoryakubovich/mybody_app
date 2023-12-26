@@ -51,8 +51,7 @@ class ArticleView(View):
                 content=Column(
                     controls=[
                         await self.get_title(
-                         title=await self.client.session.gtv(key=self.article['name_text']),
-                         create_button=False,
+                            title=await self.client.session.gtv(key=self.article['name_text']),
                         ),
                         Switch(
                             label=await self.client.session.gtv(key='hide'),

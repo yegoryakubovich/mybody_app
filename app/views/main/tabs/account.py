@@ -21,6 +21,7 @@ from flet_core import Container, alignment, padding, Column, CrossAxisAlignment,
     Image, BottomSheet, margin, TextAlign, Row, MainAxisAlignment, Stack, IconButton, icons
 from flet_manager.utils import get_svg
 
+from app.controls.button import ListItemButton
 from app.views.admin.admin import AdminView
 from app.views.splash import SplashView
 from app.controls.button import FilledButton
@@ -257,78 +258,61 @@ class AccountTab(BaseTab):
                         ),
                         Column(
                             controls=[
-                                Container(
-                                    content=Row(
-                                        controls=[
-                                            Image(
-                                                src=get_svg(path=f'assets/icons/{setting.icon}.svg'),
-                                                width=36,
-                                            ),
-                                            Text(
-                                                value=await self.client.session.gtv(setting.name),
-                                                font_family=Fonts.REGULAR,
-                                                size=20,
-                                            ),
-                                        ],
-                                        spacing=12,
-                                    ),
-                                    margin=margin.symmetric(horizontal=16),
-                                    ink=True,
+                                ListItemButton(
+                                    icon=get_svg(path=f'assets/icons/{setting.icon}.svg'),
+                                    name=await self.client.session.gtv(key=setting.name),
                                     on_click=setting.on_click,
                                 )
                                 for setting in section.settings
                             ],
-                            spacing=12,
+                            spacing=4,
                         ),
                     ],
                 ),
-                bgcolor='#FFFFFF',  # FIXME
-                padding=padding.only(top=12, bottom=24),
-                margin=margin.only(top=12),
+                padding=padding.only(top=12),
             ) for section in sections
         ]
 
         self.controls = [
-                            Container(
-                                content=Column(
-                                    controls=[
-                                        CircleAvatar(
-                                            content=Image(
-                                                src=get_svg(
-                                                    path='assets/icons/account.svg',
-                                                ),
-                                                color='#1d1d1d',  # FIXME
-                                            ),
-                                            bgcolor='#E4E4E4',
-                                            radius=38,
-                                        ),
-                                        Text(
-                                            value=f'{firstname} {lastname}',
-                                            font_family=Fonts.SEMIBOLD,
-                                            size=30,
-                                        ),
-                                        Text(
-                                            value=f'@{username}',
-                                            font_family=Fonts.SEMIBOLD,
-                                            size=12,
-                                        ),
-                                    ],
-                                    spacing=0,
-                                    horizontal_alignment=CrossAxisAlignment.CENTER,
+            Container(
+                content=Column(
+                    controls=[
+                        CircleAvatar(
+                            content=Image(
+                                src=get_svg(
+                                    path='assets/icons/account.svg',
                                 ),
-                                bgcolor='#FFFFFF',  # FIXME
-                                padding=padding.symmetric(vertical=24),
-                                alignment=alignment.center,
+                                color='#1d1d1d',  # FIXME
                             ),
-                        ] + sections_controls + [
-                            Container(
-                                content=Text(
-                                    value=await self.client.session.gtv(key='version: ') + VERSION,  # FIXME
-                                    font_family=Fonts.REGULAR,
-                                    size=16,
-                                ),
-                                alignment=alignment.center,
-                                on_click=self.go_admin,
-                                padding=padding.symmetric(vertical=4),
-                            ),
-                        ]
+                            bgcolor='#E4E4E4',
+                            radius=38,
+                        ),
+                        Text(
+                            value=f'{firstname} {lastname}',
+                            font_family=Fonts.SEMIBOLD,
+                            size=30,
+                        ),
+                        Text(
+                            value=f'@{username}',
+                            font_family=Fonts.SEMIBOLD,
+                            size=12,
+                        ),
+                    ],
+                    spacing=0,
+                    horizontal_alignment=CrossAxisAlignment.CENTER,
+                ),
+                padding=padding.symmetric(vertical=24),
+                alignment=alignment.center,
+            ),
+        ] + sections_controls + [
+            Container(
+                content=Text(
+                    value=await self.client.session.gtv(key='version: ') + VERSION,  # FIXME
+                    font_family=Fonts.REGULAR,
+                    size=16,
+                ),
+                alignment=alignment.center,
+                on_click=self.go_admin,
+                padding=padding.symmetric(vertical=4),
+            ),
+        ]

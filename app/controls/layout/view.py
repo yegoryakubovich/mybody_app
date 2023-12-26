@@ -52,7 +52,7 @@ class View(BaseView):
             ),
         )
 
-    async def get_title(self, title: str, go_back_button=True, on_create_click=None, create_button=True):
+    async def get_title(self, title: str, go_back_button=True, on_create_click=None):
 
         async def go_back(_):
             await self.client.change_view(go_back=True)
@@ -76,7 +76,7 @@ class View(BaseView):
 
         right_controls = []
 
-        if create_button:
+        if on_create_click:
             right_controls.append(
                 Container(
                     content=Row(
