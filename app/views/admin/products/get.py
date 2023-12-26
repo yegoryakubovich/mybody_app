@@ -53,7 +53,6 @@ class ProductView(View):
             value=self.product['type'],
             options=nutrient_type_options,
         )
-
         self.controls = [
             await self.get_header(),
             Container(

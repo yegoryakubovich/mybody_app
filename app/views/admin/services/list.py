@@ -55,11 +55,6 @@ class ServiceListView(View):
                                             size=18,
                                             font_family=Fonts.SEMIBOLD,
                                         ),
-                                        Text(
-                                            value=service['questions'],
-                                            size=10,
-                                            font_family=Fonts.MEDIUM,
-                                        ),
                                         Row(),
                                     ],
                                 ),

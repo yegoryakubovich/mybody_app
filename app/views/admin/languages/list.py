@@ -21,7 +21,7 @@ from flet_core import Container, Row, Card, Text, Column, ScrollMode
 
 from app.controls.layout import View
 from app.utils import Fonts
-from app.views.admin.languages import LanguageView
+from app.views.admin.languages.get import LanguageView
 from app.views.admin.languages.create import CreateLanguageView
 
 

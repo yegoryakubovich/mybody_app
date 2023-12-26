@@ -15,9 +15,9 @@
 #
 
 
-from app.views.admin.languages.create import CreateLanguageView
-from app.views.admin.languages.get import LanguageView
-from app.views.admin.languages.list import LanguageListView
+from app.views.admin.exercises.create import CreateExerciseView
+from app.views.admin.exercises.get import ExerciseView
+from app.views.admin.exercises.list import ExerciseListView
 
 
 __all__ = [

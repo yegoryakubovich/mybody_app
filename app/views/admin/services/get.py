@@ -15,7 +15,7 @@
 #
 
 
-from flet_core import Container, Column
+from flet_core import Container, Column, ScrollMode
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -49,7 +49,7 @@ class ServiceView(View):
             label=await self.client.session.gtv(key='value_default'),
             value=self.service['questions'],
         )
-
+        self.scroll = ScrollMode.AUTO
         self.controls = [
             await self.get_header(),
             Container(

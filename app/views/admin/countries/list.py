@@ -51,7 +51,7 @@ class CountryListView(View):
                                 content=Column(
                                     controls=[
                                         Text(
-                                            value=await self.client.session.gtv(key=country['name_text_key']),
+                                            value=await self.client.session.gtv(key=country['name_text']),
                                             size=18,
                                             font_family=Fonts.SEMIBOLD,
                                         ),

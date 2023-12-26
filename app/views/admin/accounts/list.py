@@ -119,8 +119,6 @@ class AccountListView(View):
         await self.update_async()
 
     async def search(self, _):
-        print(self.tf_search.value)
         response = await self.client.session.api.account.search(
             username=self.tf_search.value,
         )
-        print(response)
