@@ -24,7 +24,7 @@ from app.controls.input import TextField, Dropdown
 from app.controls.layout import View
 
 
-class CreateTranslationView(View):
+class AdminArticleCreateTranslationView(View):
     route = '/admin'
     dd_language: Dropdown
     tf_text_key: TextField

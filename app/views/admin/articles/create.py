@@ -20,35 +20,34 @@ from flet_core import Container, Column
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField
-from app.controls.layout import View
+from app.controls.layout import AdminView
 
 
-class CreateArticleView(View):
+class CreateArticleView(AdminView):
     route = '/admin'
     tf_name: TextField
 
     async def build(self):
         self.tf_name = TextField(
-            label=await self.client.session.gtv(key='Name Article'),
+            label=await self.client.session.gtv(key='admin_article_create_view_name_article'),
         )
         self.controls = [
             await self.get_header(),
             Container(
                 content=Column(
-                    controls=[
-                        await self.get_title(
-                            title=await self.client.session.gtv(key='create_article'),
-                            create_button=False,
-                        ),
-                        self.tf_name,
-                        FilledButton(
-                            content=Text(
-                                value=await self.client.session.gtv(key='Create'),
-                                size=16,
+                    controls=await self.get_controls(
+                        title=await self.client.session.gtv(key='admin_article_create_view_title'),
+                        main_section_controls=[
+                            self.tf_name,
+                            FilledButton(
+                                content=Text(
+                                    value=await self.client.session.gtv(key='create'),
+                                    size=16,
+                                ),
+                                on_click=self.create_article,
                             ),
-                            on_click=self.create_article,
-                        ),
-                    ],
+                        ]
+                    ),
                 ),
                 padding=10,
             ),

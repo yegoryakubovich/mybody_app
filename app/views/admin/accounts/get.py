@@ -43,7 +43,6 @@ class AccountView(View):
                     controls=[
                         await self.get_title(
                          title=await self.client.session.gtv(key=self.account['username']),
-                         create_button=False,
                         ),
                         Text(
                             value=await self.client.session.gtv(key=self.account['firstname']),

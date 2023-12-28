@@ -17,21 +17,19 @@
 
 from typing import Any
 
-from flet_core import Row
-
 from app.controls.layout.view import View
 
 
 class Section:
-    title: str
+    title: list
     controls: list
 
-    def __init__(self, title: str, controls: list):
+    def __init__(self, title: list, controls: list):
         self.title = title
         self.controls = controls
 
     async def get_controls(self) -> list:
-        title_control = Row()
+        title_control = self.title[0]
         controls = [
             title_control
         ] + self.controls
@@ -48,14 +46,15 @@ class AdminView(View):
             self,
             title: str,
             main_section_controls: list,
-            sections: list[Section],
+            sections: list[Section] = None,
             on_create_click: Any = None,
     ) -> list:
 
         title_control = await self.get_title(title=title, on_create_click=on_create_click)
 
-        controls = title_control + main_section_controls
-        for section in sections:
-            controls += await section.get_controls()
+        controls = [title_control] + main_section_controls
+        if sections is not None:
+            for section in sections:
+                controls += await section.get_controls()
 
         return controls

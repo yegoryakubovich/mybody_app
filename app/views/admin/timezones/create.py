@@ -48,7 +48,7 @@ class CreateTimezoneView(View):
                         self.tf_deviation,
                         FilledButton(
                             content=Text(
-                                value=await self.client.session.gtv(key='create'),
+                                value=await self.client.session.gtv(key='create.py'),
                                 size=16,
                             ),
                             on_click=self.create_timezone,

@@ -15,9 +15,7 @@
 #
 
 
-from .create_translation import CreateTranslationView
 from .get import ArticleView
-from .get_translation import TranslationView
 from .list import ArticleListView
 from .create import CreateArticleView
 
@@ -26,6 +24,5 @@ __all__ = [
     'ArticleListView',
     'CreateArticleView',
     'ArticleView',
-    'CreateTranslationView',
-    'TranslationView',
+    'translations',
 ]

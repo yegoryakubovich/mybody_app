@@ -25,7 +25,7 @@ from app.controls.layout import View
 from config import URL_ARTICLES_UPDATE, URL_ARTICLES_GET
 
 
-class TranslationView(View):
+class AdminArticleTranslationGetView(View):
     route = '/admin'
 
     def __init__(self, language, article_id):
@@ -41,7 +41,6 @@ class TranslationView(View):
                     controls=[
                         await self.get_title(
                          title=self.language['language'],
-                         create_button=False,
                         ),
                         Row(
                             controls=[

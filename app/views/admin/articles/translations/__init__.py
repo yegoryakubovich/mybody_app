@@ -14,21 +14,11 @@
 # limitations under the License.
 #
 
+from app.views.admin.articles.translations.create import AdminArticleCreateTranslationView
+from app.views.admin.articles.translations.get import AdminArticleTranslationGetView
 
-from flet_core import Card as FletCard, Container, Column
+__all__ = [
+    'AdminArticleCreateTranslationView',
+    'AdminArticleTranslationGetView',
+]
 
-
-class Card(FletCard):
-    def __init__(self, controls, on_click, **kwargs):
-        super().__init__(**kwargs)
-        self.margin = 0
-        self.width = 3000
-        self.content = Container(
-            content=Column(
-                controls=controls,
-            ),
-            ink=True,
-            padding=10,
-            border_radius=10,
-            on_click=on_click
-        )

@@ -57,7 +57,7 @@ class CreateServiceView(View):
                         self.tf_name,
                         FilledButton(
                             content=Text(
-                                value=await self.client.session.gtv(key='create'),
+                                value=await self.client.session.gtv(key='create.py'),
                             ),
                             on_click=self.create,
                         ),

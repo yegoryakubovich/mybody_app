@@ -17,24 +17,24 @@
 
 from typing import Any
 
-from flet_core import Container, Column, Row, Image, MainAxisAlignment
+from flet_core import Container, Column, Row, Image, MainAxisAlignment, ScrollMode
 from flet_manager.utils import get_svg
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.layout import View
 from app.utils import Fonts
-from app.views.admin.accounts.list import AccountListView
-from app.views.admin.articles.list import ArticleListView
-from app.views.admin.countries import CountryListView
-from app.views.admin.currencies.list import CurrencyListView
-from app.views.admin.exercises.list import ExerciseListView
-from app.views.admin.languages.list import LanguageListView
-from app.views.admin.products.list import ProductListView
-from app.views.admin.services import ServiceListView
-from app.views.admin.texts.list import TextListView
-from app.views.admin.timezones import TimezoneListView
-from app.views.admin.trainings import CreateTrainingView, TrainingListView
+from .accounts.list import AccountListView
+from .articles.list import ArticleListView
+from .countries import CountryListView
+from .currencies.list import CurrencyListView
+from .exercises.list import ExerciseListView
+from .languages.list import LanguageListView
+from .products.list import ProductListView
+from .services import ServiceListView
+from .texts.list import TextListView
+from .timezones.list import TimezoneListView
+from .trainings.list import TrainingListView
 
 
 class Setting:
@@ -61,16 +61,12 @@ class AdminView(View):
     route = '/admin'
 
     async def build(self):
+        self.scroll = ScrollMode.AUTO
         self.bgcolor = '#FFFFFF'
         sections = [
             Section(
                 name='admin_panel',
                 settings=[
-                    Setting(
-                        name='accounts_forms',
-                        icon='notifications',
-                        on_click=self.coming_soon,
-                    ),
                     Setting(
                         name='articles',
                         icon='notifications',
