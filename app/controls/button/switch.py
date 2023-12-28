@@ -15,17 +15,9 @@
 #
 
 
-from .create_translation import CreateTranslationView
-from .get import ArticleView
-from .get_translation import TranslationView
-from .list import ArticleListView
-from .create import CreateArticleView
+from flet_core import Switch
 
 
-__all__ = [
-    'ArticleListView',
-    'CreateArticleView',
-    'ArticleView',
-    'CreateTranslationView',
-    'TranslationView',
-]
+class StitchButton(Switch):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)

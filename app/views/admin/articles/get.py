@@ -19,6 +19,7 @@ from urllib.parse import urlencode
 from flet_core import Container, Row, MainAxisAlignment, Card, Column, Switch
 
 from app.controls.button import FilledButton
+from app.controls.button.switch import StitchButton
 from app.controls.information import Text
 from app.controls.layout import View
 from app.utils import Fonts
@@ -53,7 +54,7 @@ class ArticleView(View):
                         await self.get_title(
                             title=await self.client.session.gtv(key=self.article['name_text']),
                         ),
-                        Switch(
+                        StitchButton(
                             label=await self.client.session.gtv(key='hide'),
                             value=self.article['is_hide'],
                             on_change=self.change_visibility

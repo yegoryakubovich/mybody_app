@@ -17,11 +17,12 @@
 
 import functools
 
-from flet_core import Container, Row, Card, Text, Column, ScrollMode
+from flet_core import Container, Row, Card, Text, Column, ScrollMode, IconButton, icons
 
 from app.controls.button import FilledButton
 from app.controls.input import TextField
 from app.controls.layout import View
+from app.controls.navigation.pagination import PaginationWidget
 from app.utils import Fonts
 from app.views.admin.accounts.get import AccountView
 
@@ -55,7 +56,6 @@ class AccountListView(View):
                     controls=[
                         await self.get_title(
                             title=await self.client.session.gtv(key='accounts'),
-                            create_button=False,
                         ),
                         self.tf_search,
                     ] + [
@@ -95,16 +95,14 @@ class AccountListView(View):
                             margin=0,
                         )
                         for account in self.accounts
-                    ] + (
-                        [
-                            FilledButton(
-                                content=Text(
-                                    value=await self.client.session.gtv(key='next'),
-                                ),
-                                on_click=self.next_page
-                            ),
-                        ] if self.page_account < self.total_pages else []
-                    )
+                    ] + [
+                        PaginationWidget(
+                            current_page=self.page_account,
+                            total_pages=self.total_pages,
+                            on_back=self.previous_page,
+                            on_next=self.next_page,
+                        ),
+                    ]
                 ),
                 padding=10,
             ),
@@ -113,12 +111,19 @@ class AccountListView(View):
     async def account_view(self, account_id, _):
         await self.client.change_view(view=AccountView(account_id=account_id))
 
-    async def next_page(self, _):
-        self.page_account += 1
-        await self.build()
-        await self.update_async()
-
     async def search(self, _):
         response = await self.client.session.api.account.search(
             username=self.tf_search.value,
         )
+
+    async def next_page(self, _):
+        if self.page_account < self.total_pages:
+            self.page_account += 1
+            await self.build()
+            await self.update_async()
+
+    async def previous_page(self, _):
+        if self.page_account > 1:
+            self.page_account -= 1
+            await self.build()
+            await self.update_async()
