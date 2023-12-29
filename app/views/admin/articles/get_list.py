@@ -48,7 +48,7 @@ class ArticleListView(AdminView):
                             Card(
                                 controls=[
                                     Text(
-                                        value=article['name_text'],
+                                        value=await self.client.session.gtv(key=article['name_text']),
                                         size=18,
                                         font_family=Fonts.SEMIBOLD,
                                     ),

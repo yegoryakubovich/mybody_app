@@ -16,7 +16,7 @@
 
 
 from .get import ArticleView
-from .list import ArticleListView
+from .get_list import ArticleListView
 from .create import CreateArticleView
 
 

@@ -25,7 +25,7 @@ from app.controls.information import Text
 from app.controls.layout import View
 from app.utils import Fonts
 from .accounts.list import AccountListView
-from .articles.list import ArticleListView
+from .articles.get_list import ArticleListView
 from .countries import CountryListView
 from .currencies.list import CurrencyListView
 from .exercises.list import ExerciseListView

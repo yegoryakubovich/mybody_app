@@ -21,11 +21,11 @@ from flet_core import Container, Row, Column
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
-from app.controls.layout import View
+from app.controls.layout import AdminView
 from config import URL_ARTICLES_UPDATE, URL_ARTICLES_GET
 
 
-class AdminArticleTranslationGetView(View):
+class ArticleTranslationView(AdminView):
     route = '/admin'
 
     def __init__(self, language, article_id):
@@ -38,57 +38,55 @@ class AdminArticleTranslationGetView(View):
             await self.get_header(),
             Container(
                 content=Column(
-                    controls=[
-                        await self.get_title(
-                         title=self.language['language'],
-                        ),
-                        Row(
-                            controls=[
-                                FilledButton(
-                                    content=Text(
-                                        value=await self.client.session.gtv(key='get_article'),
+                    controls=await self.get_controls(
+                        title=await self.client.session.gtv(key=self.language['language']),
+                        main_section_controls=[
+                            Row(
+                                controls=[
+                                    FilledButton(
+                                        content=Text(
+                                            value=await self.client.session.gtv(key='admin_article_get_view'),
+                                        ),
+                                        url=URL_ARTICLES_GET + urlencode(
+                                            {
+                                                'id_': self.article_id,
+                                                'token': '00000001:608c6cf5eb052a47e41e0ae21ff5c106',
+                                                'is_admin': False,
+                                                'language': self.language['language'],
+                                            },
+                                        ),
                                     ),
-                                    url=URL_ARTICLES_GET + urlencode(
-                                        {
-                                            'id_': self.article_id,
-                                            'token': '00000001:608c6cf5eb052a47e41e0ae21ff5c106',
-                                            'is_admin': False,
-                                            'language': self.language['language'],
-                                        },
+                                    FilledButton(
+                                        content=Text(
+                                            value=await self.client.session.gtv(key='update'),
+                                        ),
+                                        url=URL_ARTICLES_UPDATE + urlencode(
+                                            {
+                                                'id_': self.article_id,
+                                                'token': '00000001:608c6cf5eb052a47e41e0ae21ff5c106',
+                                                'is_admin': True,
+                                                'language': self.language['language'],
+                                            },
+                                        ),
                                     ),
-                                ),
-                                FilledButton(
-                                    content=Text(
-                                        value=await self.client.session.gtv(key='update_article'),
+                                    FilledButton(
+                                        content=Text(
+                                            value=await self.client.session.gtv(key='delete'),
+                                        ),
+                                        on_click=self.delete_translation,
                                     ),
-                                    url=URL_ARTICLES_UPDATE + urlencode(
-                                        {
-                                            'id_': self.article_id,
-                                            'token': '00000001:608c6cf5eb052a47e41e0ae21ff5c106',
-                                            'is_admin': True,
-                                            'language': self.language['language'],
-                                        },
-                                    ),
-                                ),
-                                FilledButton(
-                                    content=Text(
-                                        value=await self.client.session.gtv(key='delete_translation'),
-                                    ),
-                                    on_click=self.delete_translation,
-                                ),
-                            ]
-                        )
-                    ],
+                                ]
+                            )
+                        ]
+                    ),
                 ),
                 padding=10
             ),
         ]
 
     async def delete_translation(self, _):
-        response = await self.client.session.api.article.delete_translation(
+        await self.client.session.api.article.delete_translation(
             id_=self.article_id,
             language=self.language['language'],
         )
-        print(response)
         await self.client.change_view(go_back=True)
-        await self.client.page.views[-1].restart()

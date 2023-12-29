@@ -56,7 +56,8 @@ class CreateArticleView(AdminView):
     async def create_article(self, _):
         from app.views.admin.articles import ArticleView
         if len(self.tf_name.value) < 1 or len(self.tf_name.value) > 1024:
-            self.tf_name.error_text = await self.client.session.gtv(key='name_min_max_letter')
+            self.tf_name.error_text = await self.client.session.gtv(key='error_count_letter')
+            await self.update_async()
         else:
             response = await self.client.session.api.article.create(
                 name=self.tf_name.value,

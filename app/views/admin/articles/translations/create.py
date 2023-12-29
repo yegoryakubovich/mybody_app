@@ -21,72 +21,67 @@ from flet_core.dropdown import Option
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField, Dropdown
-from app.controls.layout import View
+from app.controls.layout import AdminView
 
 
-class AdminArticleCreateTranslationView(View):
+class ArticleCreateTranslationView(AdminView):
     route = '/admin'
     dd_language: Dropdown
-    tf_text_key: TextField
-    tf_value: TextField
+    tf_name: TextField
     article = list[dict]
 
     def __init__(self, article_id):
         super().__init__()
         self.article_id = article_id
-        self.languages = None
 
     async def build(self):
         await self.set_type(loading=True)
-        self.languages = await self.client.session.api.language.get_list()
+        languages = await self.client.session.api.language.get_list()
         await self.set_type(loading=False)
 
         languages_options = [
             Option(
                 text=language.get('name'),
                 key=language.get('id_str'),
-            ) for language in self.languages.languages
+            ) for language in languages.languages
         ]
 
-        self.tf_value = TextField(
-            label=await self.client.session.gtv(key='value'),
+        self.tf_name = TextField(
+            label=await self.client.session.gtv(key='admin_article_create_view_name_article'),
         )
+
         self.dd_language = Dropdown(
-            label=await self.client.session.gtv(key='language_name'),
+            label=await self.client.session.gtv(key='language'),
+            value=languages_options[0].key,
             options=languages_options,
         )
         self.controls = [
             await self.get_header(),
             Container(
-                Column(
-                    controls=[
-                        await self.get_title(
-                            title=await self.client.session.gtv(key='crate_translation'),
-                            create_button=False,
-                        ),
-                        self.tf_value,
-                        self.dd_language,
-                        FilledButton(
-                            content=Text(
-                                value=await self.client.session.gtv(key='Create'),
-                                size=16,
+                content=Column(
+                    controls=await self.get_controls(
+                        title=await self.client.session.gtv(key='admin_article_translation_create_title'),
+                        main_section_controls=[
+                            self.tf_name,
+                            self.dd_language,
+                            FilledButton(
+                                content=Text(
+                                    value=await self.client.session.gtv(key='create'),
+                                    size=16,
+                                ),
+                                on_click=self.create_translation,
                             ),
-                            on_click=self.create_translation,
-                        ),
-                    ],
+                        ],
+                    ),
                 ),
                 padding=10,
-            ),
+            )
         ]
 
     async def create_translation(self, _):
-        if len(self.tf_value.value) < 1 or len(self.tf_value.value) > 1024:
-            self.tf_value.error_text = await self.client.session.gtv(key='value_min_max_letter')
-        else:
-            await self.client.session.api.article.create_translation(
-                id_=self.article_id,
-                language=self.dd_language.value,
-                name=self.tf_value.value,
-            )
-            await self.client.change_view(go_back=True)
-            await self.client.page.views[-1].restart()
+        await self.client.session.api.article.create_translation(
+            id_=self.article_id,
+            language=self.dd_language.value,
+            name=self.tf_name.value,
+        )
+        await self.client.change_view(go_back=True)

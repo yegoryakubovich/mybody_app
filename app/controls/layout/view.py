@@ -81,14 +81,10 @@ class View(BaseView):
                 Container(
                     content=Row(
                         controls=[
-                            Container(
-                                content=Image(
-                                    src=get_svg(path='assets/icons/addition.svg'),
-                                    height=13,
-                                    color='#FFFFFF',
-                                ),
-                                ink=True,
-                                on_click=self.client.change_view(go_back=True),
+                            Image(
+                                src=get_svg(path='assets/icons/addition.svg'),
+                                height=10,
+                                color='#FFFFFF',
                             ),
                             Text(
                                 value='Create',
@@ -97,12 +93,13 @@ class View(BaseView):
                                 color='#FFFFFF',
                             ),
                         ],
+                        spacing=4,
                     ),
-                    padding=5,
+                    padding=7,
                     border_radius=24,
                     bgcolor='#008F12',
                     on_click=on_create_click,
-                )
+                ),
             )
 
         return Row(
