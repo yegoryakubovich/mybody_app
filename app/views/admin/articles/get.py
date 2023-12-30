@@ -24,7 +24,7 @@ from app.controls.button import FilledButton
 from app.controls.button.switch import StitchButton
 from app.controls.information import Text
 from app.controls.information.card import Card
-from app.controls.layout import AdminView, Section
+from app.controls.layout.admin import AdminView, Section
 from app.utils import Fonts
 from app.views.admin.articles.create import CreateArticleView
 from app.views.admin.articles.translations.create import ArticleCreateTranslationView

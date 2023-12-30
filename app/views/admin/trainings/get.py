@@ -24,8 +24,7 @@ from app.controls.information import Text
 from app.controls.input import TextField
 from app.controls.layout import View
 from app.utils import Fonts
-from app.views.admin.texts.create_translation import CreateTranslationView
-from app.views.admin.texts.get_translation import TranslationView
+
 
 
 class TrainingView(View):
@@ -134,7 +133,7 @@ class TrainingView(View):
         ]
 
     async def delete_text(self, _):
-        from app.views.admin.texts.list import TextListView
+        from app.views.admin.texts.get_list import TextListView
         await self.client.session.api.text.delete(
             key=self.text['key'],
         )
@@ -152,7 +151,7 @@ class TrainingView(View):
         await self.client.change_view(view=CreateTranslationView(text_id=self.text_id))
 
     async def delete_translation(self, _):
-        from app.views.admin.texts.list import TextListView
+        from app.views.admin.texts.get_list import TextListView
         await self.client.session.api.text.delete_translation(
             text_key=self.text['key'],
         )

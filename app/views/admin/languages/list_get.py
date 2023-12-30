@@ -17,15 +17,16 @@
 
 import functools
 
-from flet_core import Container, Row, Card, Text, Column, ScrollMode
+from flet_core import Container, Text, Column, ScrollMode
 
-from app.controls.layout import View
+from app.controls.information.card import Card
+from app.controls.layout import AdminView
 from app.utils import Fonts
 from app.views.admin.languages.get import LanguageView
 from app.views.admin.languages.create import CreateLanguageView
 
 
-class LanguageListView(View):
+class LanguageListView(AdminView):
     route = '/admin'
     languages: list[dict]
 
@@ -40,32 +41,24 @@ class LanguageListView(View):
             await self.get_header(),
             Container(
                 content=Column(
-                    controls=[
-                        await self.get_title(
-                            title=await self.client.session.gtv(key='languages'),
-                            on_create_click=self.create_language,
-                        ),
-                    ] + [
-                        Card(
-                            content=Container(
-                                content=Column(
-                                    controls=[
-                                        Text(
-                                            value=language['name'],
-                                            size=18,
-                                            font_family=Fonts.SEMIBOLD,
-                                        ),
-                                        Row(),
-                                    ],
-                                ),
-                                ink=True,
-                                padding=10,
+                    controls=await self.get_controls(
+                        title=await self.client.session.gtv(key='admin_country_list_view_title'),
+                        on_create_click=self.create_language,
+                        main_section_controls=[
+                            Card(
+                                controls=[
+                                    Text(
+                                        value=language['name'],
+                                        size=18,
+                                        font_family=Fonts.SEMIBOLD,
+                                    ),
+                                ],
                                 on_click=functools.partial(self.language_view, language['id_str']),
-                            ),
-                            margin=0,
-                        )
-                        for language in self.languages
-                    ],
+                            )
+                            for language in self.languages
+
+                        ],
+                    ),
                 ),
                 padding=10,
             ),

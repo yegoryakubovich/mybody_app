@@ -20,43 +20,42 @@ from flet_core import Container, Column
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField
-from app.controls.layout import View
+from app.controls.layout import AdminView
 from app.utils import Fonts
-from app.views.admin.texts import TextView
+from .get import TextView
 
 
-class CreateTextView(View):
+class CreateTextView(AdminView):
     route = '/admin'
     tf_value_default: TextField
     tf_key: TextField
 
     async def build(self):
         self.tf_value_default = TextField(
-            label=await self.client.session.gtv(key='Name Default'),
+            label=await self.client.session.gtv(key='value_default'),
         )
         self.tf_key = TextField(
-            label=await self.client.session.gtv(key='Key'),
+            label=await self.client.session.gtv(key='key'),
         )
         self.controls = [
             await self.get_header(),
             Container(
-                Column(
-                    controls=[
-                        await self.get_title(
-                            title=await self.client.session.gtv(key='create_text'),
-                            create_button=False,
-                        ),
-                        self.tf_value_default,
-                        self.tf_key,
-                        FilledButton(
-                            content=Text(
-                                value=await self.client.session.gtv(key='Create'),
-                                size=15,
-                                font_family=Fonts.REGULAR,
+                content=Column(
+                    controls=await self.get_controls(
+                        title=await self.client.session.gtv(key='admin_text_create_view_title'),
+                        main_section_controls=[
+                            self.tf_value_default,
+                            self.tf_key,
+                            FilledButton(
+                                content=Text(
+                                    value=await self.client.session.gtv(key='create'),
+                                    size=15,
+                                    font_family=Fonts.REGULAR,
+                                ),
+                                on_click=self.create_text,
                             ),
-                            on_click=self.create_text,
-                        ),
-                    ],
+                        ],
+                    ),
                 ),
                 padding=10,
             ),
@@ -64,16 +63,18 @@ class CreateTextView(View):
 
     async def create_text(self, _):
         if len(self.tf_value_default.value) < 1 or len(self.tf_value_default.value) > 1024:
-            self.tf_value_default.error_text = await self.client.session.gtv(key='value_default_min_max_letter')
+            self.tf_value_default.error_text = await self.client.session.gtv(key='error_count_letter')
+            await self.update_async()
         elif len(self.tf_key.value) < 2 or len(self.tf_key.value) > 128:
-            self.tf_key.error_text = await self.client.session.gtv(key='key_min_max_letter')
+            self.tf_key.error_text = await self.client.session.gtv(key='error_count_letter')
+            await self.update_async()
         else:
             response = await self.client.session.api.text.create(
                 value_default=self.tf_value_default.value,
                 key=self.tf_key.value,
             )
-            text_id = response.id
-            await self.client.change_view(view=TextView(text_id=text_id))
+            key = response.key
+            await self.client.change_view(view=TextView(key=key))
         await self.update_async()
         for field in [
             self.tf_value_default,

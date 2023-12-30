@@ -29,10 +29,10 @@ from .articles.get_list import ArticleListView
 from .countries import CountryListView
 from .currencies.list import CurrencyListView
 from .exercises.list import ExerciseListView
-from .languages.list import LanguageListView
+from .languages.list_get import LanguageListView
 from .products.list import ProductListView
 from .services import ServiceListView
-from .texts.list import TextListView
+from .texts.get_list import TextListView
 from .timezones.list import TimezoneListView
 from .trainings.list import TrainingListView
 

@@ -15,14 +15,11 @@
 #
 
 
-from .get import TextView
-from .get_list import TextListView
-from .create import CreateTextView
+from app.views.admin.articles.translations.create import ArticleCreateTranslationView
+from app.views.admin.articles.translations.get import ArticleTranslationView
 
 
 __all__ = [
-    'TextListView',
-    'CreateTextView',
-    'TextView',
-    'translations'
+    'CreateTranslationTextView',
+    'TranslationTextView',
 ]

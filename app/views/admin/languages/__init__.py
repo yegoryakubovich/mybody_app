@@ -17,7 +17,7 @@
 
 from app.views.admin.languages.create import CreateLanguageView
 from app.views.admin.languages.get import LanguageView
-from app.views.admin.languages.list import LanguageListView
+from app.views.admin.languages.list_get import LanguageListView
 
 
 __all__ = [

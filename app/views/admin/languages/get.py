@@ -45,7 +45,6 @@ class LanguageView(View):
                     controls=[
                         await self.get_title(
                          title=await self.client.session.gtv(key=self.language['name_text']),
-                         create_button=False,
                         ),
                         FilledButton(
                             content=Text(
