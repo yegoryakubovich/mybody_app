@@ -17,24 +17,23 @@
 
 import functools
 
-from flet_core import Container, Column, ScrollMode
+from flet_core import Container, Text, Column, ScrollMode
 
-from app.controls.information import Text
 from app.controls.information.card import Card
 from app.controls.layout import AdminView
 from app.utils import Fonts
-from .create import CreateTextView
-from .get import TextView
+from app.views.admin.countries.create import CreateCountryView
+from app.views.admin.countries.get import CountryView
 
 
-class TextListView(AdminView):
+class CountryListView(AdminView):
     route = '/admin'
-    texts: list[dict]
+    countries: list[dict]
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.text.get_list()
-        self.texts = response.texts
+        response = await self.client.session.api.country.get_list()
+        self.countries = response.countries
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO
@@ -43,25 +42,20 @@ class TextListView(AdminView):
             Container(
                 content=Column(
                     controls=await self.get_controls(
-                        title=await self.client.session.gtv(key='admin_text_get_list_view_title'),
-                        on_create_click=self.create_text,
+                        title=await self.client.session.gtv(key='admin_country_list_get_view_title'),
+                        on_create_click=self.create_country,
                         main_section_controls=[
                             Card(
                                 controls=[
                                     Text(
-                                        value=await self.client.session.gtv(key=text['key']),
+                                        value=await self.client.session.gtv(key=country['name_text']),
                                         size=18,
                                         font_family=Fonts.SEMIBOLD,
                                     ),
-                                    Text(
-                                        value=text['value_default'],
-                                        size=10,
-                                        font_family=Fonts.MEDIUM,
-                                    ),
                                 ],
-                                on_click=functools.partial(self.text_view, text['key']),
+                                on_click=functools.partial(self.country_view, country['id_str']),
                             )
-                            for text in self.texts
+                            for country in self.countries
                         ],
                     ),
                 ),
@@ -69,8 +63,8 @@ class TextListView(AdminView):
             ),
         ]
 
-    async def create_text(self, _):
-        await self.client.change_view(view=CreateTextView())
+    async def create_country(self, _):
+        await self.client.change_view(view=CreateCountryView())
 
-    async def text_view(self, key, _):
-        await self.client.change_view(view=TextView(key=key))
+    async def country_view(self, country_id_str, _):
+        await self.client.change_view(view=CountryView(country_id_str=country_id_str))

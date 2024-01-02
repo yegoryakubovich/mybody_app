@@ -21,6 +21,7 @@ from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField
 from app.controls.layout import AdminView
+from app.utils import Error
 
 
 class CreateArticleView(AdminView):
@@ -29,7 +30,7 @@ class CreateArticleView(AdminView):
 
     async def build(self):
         self.tf_name = TextField(
-            label=await self.client.session.gtv(key='admin_article_create_view_name_article'),
+            label=await self.client.session.gtv(key='name'),
         )
         self.controls = [
             await self.get_header(),
@@ -54,13 +55,13 @@ class CreateArticleView(AdminView):
         ]
 
     async def create_article(self, _):
-        from app.views.admin.articles import ArticleView
-        if len(self.tf_name.value) < 1 or len(self.tf_name.value) > 1024:
-            self.tf_name.error_text = await self.client.session.gtv(key='error_count_letter')
-            await self.update_async()
-        else:
-            response = await self.client.session.api.article.create(
-                name=self.tf_name.value,
-            )
-            article_id = response.id
-            await self.client.change_view(view=ArticleView(article_id=article_id))
+        from app.views.admin.articles.get import ArticleView
+        fields = [(self.tf_name, 1, 1024)]
+        for field, min_len, max_len, error_key in fields:
+            if not await Error.check_field(self, field, min_len, max_len):
+                return
+        response = await self.client.session.api.article.create(
+            name=self.tf_name.value,
+        )
+        article_id = response.id
+        await self.client.change_view(view=ArticleView(article_id=article_id))

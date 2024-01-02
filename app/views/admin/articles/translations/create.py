@@ -22,6 +22,7 @@ from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField, Dropdown
 from app.controls.layout import AdminView
+from app.utils import Error
 
 
 class ArticleCreateTranslationView(AdminView):
@@ -47,7 +48,7 @@ class ArticleCreateTranslationView(AdminView):
         ]
 
         self.tf_name = TextField(
-            label=await self.client.session.gtv(key='admin_article_create_view_name_article'),
+            label=await self.client.session.gtv(key='name'),
         )
 
         self.dd_language = Dropdown(
@@ -60,7 +61,7 @@ class ArticleCreateTranslationView(AdminView):
             Container(
                 content=Column(
                     controls=await self.get_controls(
-                        title=await self.client.session.gtv(key='admin_article_translation_create_title'),
+                        title=await self.client.session.gtv(key='admin_article_translation_create_view_title'),
                         main_section_controls=[
                             self.tf_name,
                             self.dd_language,
@@ -79,6 +80,10 @@ class ArticleCreateTranslationView(AdminView):
         ]
 
     async def create_translation(self, _):
+        fields = [(self.tf_name, 1, 1024)]
+        for field, min_len, max_len, error_key in fields:
+            if not await Error.check_field(self, field, min_len, max_len):
+                return
         await self.client.session.api.article.create_translation(
             id_=self.article_id,
             language=self.dd_language.value,

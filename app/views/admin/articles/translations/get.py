@@ -45,7 +45,7 @@ class ArticleTranslationView(AdminView):
                                 controls=[
                                     FilledButton(
                                         content=Text(
-                                            value=await self.client.session.gtv(key='admin_article_get_view'),
+                                            value=await self.client.session.gtv(key='admin_article_get_view_look'),
                                         ),
                                         url=URL_ARTICLES_GET + urlencode(
                                             {

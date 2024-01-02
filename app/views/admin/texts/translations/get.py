@@ -49,7 +49,7 @@ class TranslationTextView(AdminView):
                                 controls=[
                                     FilledButton(
                                         content=Text(
-                                            value=await self.client.session.gtv(key='update'),
+                                            value=await self.client.session.gtv(key='save'),
                                         ),
                                         on_click=self.update_translation,
                                     ),
@@ -80,6 +80,5 @@ class TranslationTextView(AdminView):
             text_key=self.text_key,
             language=self.language['language'],
             value=self.tf_value.value,
-
-        ),
+        )
         await self.client.change_view(go_back=True)

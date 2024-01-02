@@ -15,13 +15,12 @@
 #
 
 
-from app.views.admin.languages.create import CreateLanguageView
-from app.views.admin.languages.get import LanguageView
-from app.views.admin.languages.get_list import LanguageListView
+class Error:
 
-
-__all__ = [
-    'LanguageListView',
-    'CreateLanguageView',
-    'LanguageView',
-]
+    @staticmethod
+    async def check_field(self, field, min_len, max_len):
+        if len(field.value) < min_len or len(field.value) > max_len:
+            field.error_text = await self.client.session.gtv(key='error_count_letter')
+            await self.update_async()
+            return False
+        return True

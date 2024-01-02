@@ -23,11 +23,11 @@ from flet_core import Container, Column, PopupMenuButton, PopupMenuItem, ScrollM
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField
-from app.controls.layout import View
+from app.controls.layout import AdminView
 from app.utils import Fonts
 
 
-class CreateServiceView(View):
+class CreateServiceView(AdminView):
     route = '/admin'
     questions: list[dict] = []
     textfields: list[tuple] = []
@@ -38,7 +38,7 @@ class CreateServiceView(View):
 
     async def build(self):
         self.tf_id_str = TextField(
-            label=await self.client.session.gtv(key='id_str'),
+            label=await self.client.session.gtv(key='key'),
         )
         self.tf_name = TextField(
             label=await self.client.session.gtv(key='name'),
@@ -48,66 +48,65 @@ class CreateServiceView(View):
             await self.get_header(),
             Container(
                 content=Column(
-                    controls=[
-                        await self.get_title(
-                            title=await self.client.session.gtv(key='create_service'),
-                            create_button=False,
-                        ),
-                        self.tf_id_str,
-                        self.tf_name,
-                        FilledButton(
-                            content=Text(
-                                value=await self.client.session.gtv(key='create.py'),
+                    controls=await self.get_controls(
+                        title=await self.client.session.gtv(key='admin_service_create_view_title'),
+                        main_section_controls=[
+                            self.tf_id_str,
+                            self.tf_name,
+                            FilledButton(
+                                content=Text(
+                                    value=await self.client.session.gtv(key='create'),
+                                ),
+                                on_click=self.create,
                             ),
-                            on_click=self.create,
-                        ),
-                        Row(
-                            controls=[
-                                Text(
-                                    value=await self.client.session.gtv(key='questions'),
-                                    size=30,
-                                    font_family=Fonts.BOLD,
-                                ),
-                                FilledButton(
-                                    content=Text(
-                                        value=await self.client.session.gtv(key='save_questions'),
+                            Row(
+                                controls=[
+                                    Text(
+                                        value=await self.client.session.gtv(key='questions'),
+                                        size=30,
+                                        font_family=Fonts.BOLD,
                                     ),
-                                    on_click=self.save_questions,
-                                ),
-                            ],
-                            alignment=MainAxisAlignment.SPACE_BETWEEN,
-                        ),
-                    ] + [tf for _, tf in self.textfields] + (
-                        [Row(
-                            controls=[
-                                dropdown,
-                                IconButton(
-                                    icon=icons.ADD,
-                                    on_click=self.add_dropdown_field,
-                                ),
-                                ] + (
-                                    [IconButton(
-                                        icon=icons.DELETE,
-                                        on_click=functools.partial(self.remove_dropdown_field, dropdown),
-                                        )] if len(self.dropdown_values[-1]) > 1 else []
+                                    FilledButton(
+                                        content=Text(
+                                            value=await self.client.session.gtv(key='save'),
+                                        ),
+                                        on_click=self.save_questions,
                                     ),
-                        ) for dropdown in self.dropdown_values[-1]] if self.question_type == 'dropdown' else []
-                    ) + [
-                        Row(
-                            controls=[
-                                PopupMenuButton(
-                                    items=[
-                                        PopupMenuItem(text='str', on_click=functools.partial(
-                                            self.set_question_type, 'str')),
-                                        PopupMenuItem(text='int', on_click=functools.partial(
-                                            self.set_question_type, 'int')),
-                                        PopupMenuItem(text='dropdown', on_click=functools.partial(
-                                            self.set_question_type, 'dropdown')),
-                                    ],
-                                ),
-                            ],
-                        ),
-                    ],
+                                ],
+                                alignment=MainAxisAlignment.SPACE_BETWEEN,
+                            ),
+                        ] + [tf for _, tf in self.textfields] + (
+                            [Row(
+                                controls=[
+                                    dropdown,
+                                    IconButton(
+                                        icon=icons.ADD,
+                                        on_click=self.add_dropdown_field,
+                                    ),
+                                    ] + (
+                                        [IconButton(
+                                            icon=icons.DELETE,
+                                            on_click=functools.partial(self.remove_dropdown_field, dropdown),
+                                            )] if len(self.dropdown_values[-1]) > 1 else []
+                                        ),
+                            ) for dropdown in self.dropdown_values[-1]] if self.question_type == 'dropdown' else []
+                        ) + [
+                            Row(
+                                controls=[
+                                    PopupMenuButton(
+                                        items=[
+                                            PopupMenuItem(text='str', on_click=functools.partial(
+                                                self.set_question_type, 'str')),
+                                            PopupMenuItem(text='int', on_click=functools.partial(
+                                                self.set_question_type, 'int')),
+                                            PopupMenuItem(text='dropdown', on_click=functools.partial(
+                                                self.set_question_type, 'dropdown')),
+                                        ],
+                                    ),
+                                ],
+                            ),
+                        ],
+                    ),
                 ),
                 padding=10,
             ),
@@ -150,7 +149,6 @@ class CreateServiceView(View):
             if question_type == 'dropdown':
                 question["values"] = [dv.value for dv in self.dropdown_values[i]]
             self.questions.append(question)
-        print(self.questions)
         self.textfields = []
         await self.build()
         await self.update_async()

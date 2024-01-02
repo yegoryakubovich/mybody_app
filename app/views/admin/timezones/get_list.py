@@ -17,15 +17,16 @@
 
 import functools
 
-from flet_core import Container, Row, Card, Text, Column, ScrollMode
+from flet_core import Container, Text, Column, ScrollMode
 
-from app.controls.layout import View
+from app.controls.information.card import Card
+from app.controls.layout import AdminView
 from app.utils import Fonts
 from app.views.admin.timezones.create import CreateTimezoneView
 from app.views.admin.timezones.get import TimezoneView
 
 
-class TimezoneListView(View):
+class TimezoneListView(AdminView):
     route = '/admin'
     timezones: list[dict]
 
@@ -40,38 +41,23 @@ class TimezoneListView(View):
             await self.get_header(),
             Container(
                 content=Column(
-                    controls=[
-                        await self.get_title(
-                            title=await self.client.session.gtv(key='timezones'),
-                            on_create_click=self.create_timezone,
-                        ),
-                    ] + [
-                        Card(
-                            content=Container(
-                                content=Column(
-                                    controls=[
-                                        Text(
-                                            value=timezone['id_str'],
-                                            size=18,
-                                            font_family=Fonts.SEMIBOLD,
-                                        ),
-                                        Text(
-                                            value=await self.client.session.gtv(
-                                                key=f'deviation:') + str(timezone['deviation']),
-                                            size=10,
-                                            font_family=Fonts.SEMIBOLD,
-                                        ),
-                                        Row(),
-                                    ],
-                                ),
-                                ink=True,
-                                padding=10,
+                    controls=await self.get_controls(
+                        title=await self.client.session.gtv(key='admin_timezone_get_list_view_title'),
+                        on_create_click=self.create_timezone,
+                        main_section_controls=[
+                            Card(
+                                controls=[
+                                    Text(
+                                        value=timezone['id_str'],
+                                        size=18,
+                                        font_family=Fonts.SEMIBOLD,
+                                    ),
+                                ],
                                 on_click=functools.partial(self.timezone_view, timezone['id_str']),
-                            ),
-                            margin=0,
-                        )
-                        for timezone in self.timezones
-                    ],
+                            )
+                            for timezone in self.timezones
+                        ],
+                    ),
                 ),
                 padding=10,
             ),

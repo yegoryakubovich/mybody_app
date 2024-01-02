@@ -15,6 +15,7 @@
 #
 
 
+from .error import Error
 from .fonts import Fonts, fonts
 from .themes import themes
 from .session import Session
@@ -27,4 +28,5 @@ __all__ = [
     'themes',
     'Session',
     'Registration',
+    'Error'
 ]

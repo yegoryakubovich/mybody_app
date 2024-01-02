@@ -17,7 +17,7 @@
 
 from app.views.admin.currencies.create import CreateCurrencyView
 from app.views.admin.currencies.get import CurrencyView
-from app.views.admin.currencies.list import CurrencyListView
+from app.views.admin.currencies.get_list import CurrencyListView
 
 
 __all__ = [

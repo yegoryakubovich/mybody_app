@@ -20,17 +20,18 @@ from flet_core import Container, Column
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField
-from app.controls.layout import View
+from app.controls.layout import AdminView
+from app.utils import Error
 
 
-class CreateTimezoneView(View):
+class CreateTimezoneView(AdminView):
     route = '/admin'
     tf_deviation: TextField
     tf_id_str: TextField
 
     async def build(self):
         self.tf_id_str = TextField(
-            label=await self.client.session.gtv(key='id_str'),
+            label=await self.client.session.gtv(key='key'),
         )
         self.tf_deviation = TextField(
             label=await self.client.session.gtv(key='deviation'),
@@ -39,30 +40,31 @@ class CreateTimezoneView(View):
             await self.get_header(),
             Container(
                 content=Column(
-                    controls=[
-                        await self.get_title(
-                            title=await self.client.session.gtv(key='create_timezone'),
-                            create_button=False,
-                        ),
-                        self.tf_id_str,
-                        self.tf_deviation,
-                        FilledButton(
-                            content=Text(
-                                value=await self.client.session.gtv(key='create.py'),
-                                size=16,
+                    controls=await self.get_controls(
+                        title=await self.client.session.gtv(key='admin_timezone_create_view_title'),
+                        main_section_controls=[
+                            self.tf_id_str,
+                            self.tf_deviation,
+                            FilledButton(
+                                content=Text(
+                                    value=await self.client.session.gtv(key='create'),
+                                    size=16,
+                                ),
+                                on_click=self.create_timezone,
                             ),
-                            on_click=self.create_timezone,
-                        ),
-                    ],
+                        ],
+                    ),
                 ),
                 padding=10,
             ),
         ]
 
     async def create_timezone(self, _):
-        if len(self.tf_id_str.value) < 1 or len(self.tf_id_str.value) > 16:
-            self.tf_id_str.error_text = await self.client.session.gtv(key='id_str_min_max_letter')
-        elif not self.tf_deviation.value.isdigit():
+        fields = [(self.tf_id_str, 1, 16)]
+        for field, min_len, max_len in fields:
+            if not await Error.check_field(self, field, min_len, max_len):
+                return
+        if not self.tf_deviation.value.isdigit():
             self.tf_deviation.error_text = await self.client.session.gtv(key='deviation_type')
         else:
             await self.client.session.api.timezone.create(
@@ -70,4 +72,3 @@ class CreateTimezoneView(View):
                 deviation=self.tf_deviation.value,
             )
             await self.client.change_view(go_back=True)
-            await self.client.page.views[-1].restart()

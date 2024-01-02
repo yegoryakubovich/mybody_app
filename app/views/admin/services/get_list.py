@@ -17,15 +17,16 @@
 
 import functools
 
-from flet_core import Container, Row, Card, Text, Column, ScrollMode
+from flet_core import Container, Text, Column, ScrollMode
 
-from app.controls.layout import View
+from app.controls.information.card import Card
+from app.controls.layout import AdminView
 from app.utils import Fonts
 from app.views.admin.services.get import ServiceView
 from app.views.admin.services.create import CreateServiceView
 
 
-class ServiceListView(View):
+class ServiceListView(AdminView):
     route = '/admin'
     services: list[dict]
 
@@ -40,32 +41,23 @@ class ServiceListView(View):
             await self.get_header(),
             Container(
                 content=Column(
-                    controls=[
-                        await self.get_title(
-                            title=await self.client.session.gtv(key='services'),
-                            on_create_click=self.create_service,
-                        ),
-                    ] + [
-                        Card(
-                            content=Container(
-                                content=Column(
-                                    controls=[
-                                        Text(
-                                            value=service['name_text'].upper(),
-                                            size=18,
-                                            font_family=Fonts.SEMIBOLD,
-                                        ),
-                                        Row(),
-                                    ],
-                                ),
-                                ink=True,
-                                padding=10,
+                    controls=await self.get_controls(
+                        title=await self.client.session.gtv(key='admin_service_list_get_view_title'),
+                        on_create_click=self.create_service,
+                        main_section_controls=[
+                            Card(
+                                controls=[
+                                    Text(
+                                        value=await self.client.session.gtv(key=service['name_text']),
+                                        size=18,
+                                        font_family=Fonts.SEMIBOLD,
+                                    ),
+                                ],
                                 on_click=functools.partial(self.service_view, service['id_str']),
-                            ),
-                            margin=0,
-                        )
-                        for service in self.services
-                    ],
+                            )
+                            for service in self.services
+                        ],
+                    ),
                 ),
                 padding=10,
             ),

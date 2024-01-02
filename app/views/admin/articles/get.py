@@ -66,7 +66,7 @@ class ArticleView(AdminView):
                                 controls=[
                                     FilledButton(
                                         content=Text(
-                                            value=await self.client.session.gtv(key='admin_article_get_view'),
+                                            value=await self.client.session.gtv(key='admin_article_get_view_look'),
                                         ),
                                         url=URL_ARTICLES_GET + urlencode(
                                             {
@@ -94,13 +94,12 @@ class ArticleView(AdminView):
                                         ),
                                         on_click=self.delete_article,
                                     ),
-
                                 ],
                             ),
                         ],
                         sections=[
                             Section(
-                                title=await self.client.session.gtv(key='admin_article_get_view_translations'),
+                                title=await self.client.session.gtv(key='translations'),
                                 on_create_click=self.create_translation,
                                 controls=[
                                     Card(
@@ -127,10 +126,9 @@ class ArticleView(AdminView):
 
     async def delete_article(self, _):
         await self.client.session.api.article.delete(
-            id_=self.article_id
+            id_=self.article_id,
         )
         await self.client.change_view(go_back=True)
-        await self.client.page.views[-1].restart()
 
     async def change_visibility(self, _):
         await self.client.session.api.article.update(
@@ -140,14 +138,19 @@ class ArticleView(AdminView):
         await self.update_async()
 
     async def create_translation(self, _):
-        await self.client.change_view(view=ArticleCreateTranslationView(article_id=self.article_id))
+        await self.client.change_view(
+            view=ArticleCreateTranslationView(
+                article_id=self.article_id,
+            ),
+        )
 
     async def create_article(self, _):
         await self.client.change_view(view=CreateArticleView())
 
     async def translate_view(self, translation, _):
-        await self.client.change_view(view=ArticleTranslationView(
-            article_id=self.article_id,
-            language=translation
+        await self.client.change_view(
+            view=ArticleTranslationView(
+                article_id=self.article_id,
+                language=translation,
             ),
         )

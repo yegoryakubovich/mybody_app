@@ -15,17 +15,18 @@
 #
 
 
-from flet_core import Container, Column, ScrollMode
+from flet_core import Container, Column
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField
-from app.controls.layout import View
+from app.controls.layout import AdminView
+from app.utils import Error
 
 
-class ServiceView(View):
+class ServiceView(AdminView):
     route = '/admin'
-    service:  dict
+    service: dict
     tf_name: TextField
     tf_questions: TextField
 
@@ -49,23 +50,27 @@ class ServiceView(View):
             label=await self.client.session.gtv(key='value_default'),
             value=self.service['questions'],
         )
-        self.scroll = ScrollMode.AUTO
         self.controls = [
             await self.get_header(),
             Container(
                 content=Column(
-                    controls=[
-                        await self.get_title(
-                         title=await self.client.session.gtv(key=self.service['name_text']),
-                         create_button=False,
-                        ),
-                        FilledButton(
-                            content=Text(
-                                value=await self.client.session.gtv(key='delete_service'),
+                    controls=await self.get_controls(
+                        title=await self.client.session.gtv(key=self.service['name_text']),
+                        main_section_controls=[
+                            FilledButton(
+                                content=Text(
+                                    value=await self.client.session.gtv(key='save'),
+                                ),
+                                on_click=self.delete_service,
                             ),
-                            on_click=self.delete_service,
-                        ),
-                    ],
+                            FilledButton(
+                                content=Text(
+                                    value=await self.client.session.gtv(key='delete'),
+                                ),
+                                on_click=self.delete_service,
+                            ),
+                        ],
+                    ),
                 ),
                 padding=10,
             ),
@@ -73,7 +78,18 @@ class ServiceView(View):
 
     async def delete_service(self, _):
         await self.client.session.api.service.delete(
-            id_str=self.service_id_str
+            id_str=self.service_id_str,
         )
         await self.client.change_view(go_back=True)
-        await self.client.page.views[-1].restart()
+
+    async def update_service(self, _):
+        fields = [(self.tf_questions, 2, 8192), (self.tf_name, 1, 1024)]
+        for field, min_len, max_len, error_key in fields:
+            if not await Error.check_field(self, field, min_len, max_len):
+                return
+        await self.client.session.api.country.update(
+            id_str=self.service_id_str,
+            name=self.tf_name.value,
+            questions=self.tf_questions.value,
+        )
+        await self.client.change_view(go_back=True)

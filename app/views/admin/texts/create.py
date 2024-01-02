@@ -21,7 +21,7 @@ from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField
 from app.controls.layout import AdminView
-from app.utils import Fonts
+from app.utils import Fonts, Error
 from .get import TextView
 
 
@@ -62,22 +62,13 @@ class CreateTextView(AdminView):
         ]
 
     async def create_text(self, _):
-        if len(self.tf_value_default.value) < 1 or len(self.tf_value_default.value) > 1024:
-            self.tf_value_default.error_text = await self.client.session.gtv(key='error_count_letter')
-            await self.update_async()
-        elif len(self.tf_key.value) < 2 or len(self.tf_key.value) > 128:
-            self.tf_key.error_text = await self.client.session.gtv(key='error_count_letter')
-            await self.update_async()
-        else:
-            response = await self.client.session.api.text.create(
-                value_default=self.tf_value_default.value,
-                key=self.tf_key.value,
-            )
-            key = response.key
-            await self.client.change_view(view=TextView(key=key))
-        await self.update_async()
-        for field in [
-            self.tf_value_default,
-            self.tf_key,
-        ]:
-            field.error_text = None
+        fields = [(self.tf_key, 2, 128), (self.tf_value_default, 1, 1024)]
+        for field, min_len, max_len, error_key in fields:
+            if not await Error.check_field(self, field, min_len, max_len):
+                return
+        response = await self.client.session.api.text.create(
+            value_default=self.tf_value_default.value,
+            key=self.tf_key.value,
+        )
+        key = response.key
+        await self.client.change_view(view=TextView(key=key))

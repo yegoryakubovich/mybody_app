@@ -21,10 +21,10 @@ from flet_core.dropdown import Option
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import Dropdown
-from app.controls.layout import View
+from app.controls.layout import AdminView
 
 
-class ProductView(View):
+class ProductView(AdminView):
     route = '/admin'
     product = dict
     dd_nutrient_type = Dropdown
@@ -41,10 +41,15 @@ class ProductView(View):
         self.product = response.product
         await self.set_type(loading=False)
 
-        nutrients_type = ['proteins', 'fats', 'carbohydrates']
+        nutrients_type = [
+            await self.client.session.gtv(key='proteins'),
+            await self.client.session.gtv(key='fats'),
+            await self.client.session.gtv(key='carbohydrates'),
+        ]
         nutrient_type_options = [
             Option(
                 text=nutrient_type,
+                key=self.product.get('type'),
             ) for nutrient_type in nutrients_type
         ]
 
@@ -57,31 +62,30 @@ class ProductView(View):
             await self.get_header(),
             Container(
                 content=Column(
-                    controls=[
-                        await self.get_title(
-                         title=await self.client.session.gtv(key=self.product['name_text']),
-                         create_button=False,
-                        ),
-                        self.dd_nutrient_type,
-                        Row(
-                            controls=[
-                                FilledButton(
-                                    content=Text(
-                                        value=await self.client.session.gtv(key='update_product'),
+                    controls=await self.get_controls(
+                        title=await self.client.session.gtv(key='admin_product_get_view_title'),
+                        main_section_controls=[
+                            self.dd_nutrient_type,
+                            Row(
+                                controls=[
+                                    FilledButton(
+                                        content=Text(
+                                            value=await self.client.session.gtv(key='save'),
+                                        ),
+                                        on_click=self.update_product,
                                     ),
-                                    on_click=self.update_product,
-                                ),
-                                FilledButton(
-                                    content=Text(
-                                        value=await self.client.session.gtv(key='delete_product'),
+                                    FilledButton(
+                                        content=Text(
+                                            value=await self.client.session.gtv(key='delete'),
+                                        ),
+                                        on_click=self.delete_product,
                                     ),
-                                    on_click=self.delete_product,
-                                ),
-                            ]
-                        )
-                    ],
+                                ],
+                            ),
+                        ]
+                    ),
                 ),
-                padding=10
+                padding=10,
             ),
         ]
 
@@ -90,13 +94,10 @@ class ProductView(View):
             id_=self.product_id
         )
         await self.client.change_view(go_back=True)
-        await self.client.page.views[-1].restart()
 
     async def update_product(self, _):
         await self.client.session.api.product.update(
             id_=self.product_id,
             type_=self.dd_nutrient_type.value,
-
-        ),
-        await self.client.change_view(go_back=True)
-        await self.client.page.views[-1].restart()
+        )
+        await self.update_async()

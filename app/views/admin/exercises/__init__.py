@@ -17,7 +17,7 @@
 
 from app.views.admin.exercises.create import CreateExerciseView
 from app.views.admin.exercises.get import ExerciseView
-from app.views.admin.exercises.list import ExerciseListView
+from app.views.admin.exercises.get_list import ExerciseListView
 
 
 __all__ = [

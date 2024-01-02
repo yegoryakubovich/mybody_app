@@ -19,10 +19,10 @@ from flet_core import Container, Column
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
-from app.controls.layout import View
+from app.controls.layout import AdminView
 
 
-class LanguageView(View):
+class LanguageView(AdminView):
     route = '/admin'
     language = dict
 
@@ -42,17 +42,17 @@ class LanguageView(View):
             await self.get_header(),
             Container(
                 content=Column(
-                    controls=[
-                        await self.get_title(
-                         title=await self.client.session.gtv(key=self.language['name_text']),
-                        ),
-                        FilledButton(
-                            content=Text(
-                                value=await self.client.session.gtv(key='delete_language'),
+                    controls=await self.get_controls(
+                        title=await self.client.session.gtv(key=self.language['name_text']),
+                        main_section_controls=[
+                            FilledButton(
+                                content=Text(
+                                    value=await self.client.session.gtv(key='delete'),
+                                ),
+                                on_click=self.delete_language,
                             ),
-                            on_click=self.delete_language,
-                        ),
-                    ],
+                        ],
+                    ),
                 ),
                 padding=10,
             ),
@@ -60,7 +60,6 @@ class LanguageView(View):
 
     async def delete_language(self, _):
         await self.client.session.api.language.delete(
-            id_str=self.language_id_str
+            id_str=self.language_id_str,
         )
         await self.client.change_view(go_back=True)
-        await self.client.page.views[-1].restart()

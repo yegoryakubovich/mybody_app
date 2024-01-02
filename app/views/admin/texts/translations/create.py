@@ -22,6 +22,7 @@ from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField, Dropdown
 from app.controls.layout import AdminView
+from app.utils import Error
 
 
 class CreateTranslationTextView(AdminView):
@@ -83,16 +84,13 @@ class CreateTranslationTextView(AdminView):
         ]
 
     async def create_translation(self, _):
-        if len(self.tf_value.value) < 1 or len(self.tf_value.value) > 1024:
-            self.tf_value.error_text = await self.client.session.gtv(key='error_count_letter')
-            await self.update_async()
-        elif len(self.dd_language_id_str.value) < 2 or len(self.dd_language_id_str.value) > 128:
-            self.dd_language_id_str.error_text = await self.client.session.gtv(key='error_count_letter')
-            await self.update_async()
-        else:
-            await self.client.session.api.text.create_translation(
-                text_key=self.text['key'],
-                language=self.dd_language_id_str.value,
-                value=self.tf_value.value,
-            )
-            await self.client.change_view(go_back=True)
+        fields = [(self.dd_language_id_str, 2, 128), (self.tf_value, 1, 1024)]
+        for field, min_len, max_len, error_key in fields:
+            if not await Error.check_field(self, field, min_len, max_len):
+                return
+        await self.client.session.api.text.create_translation(
+            text_key=self.text['key'],
+            language=self.dd_language_id_str.value,
+            value=self.tf_value.value,
+        )
+        await self.client.change_view(go_back=True)

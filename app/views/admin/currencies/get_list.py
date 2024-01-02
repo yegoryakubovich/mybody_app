@@ -17,15 +17,16 @@
 
 import functools
 
-from flet_core import Container, Row, Card, Text, Column, ScrollMode
+from flet_core import Container, Text, Column, ScrollMode
 
-from app.controls.layout import View
+from app.controls.information.card import Card
+from app.controls.layout import AdminView
 from app.utils import Fonts
 from app.views.admin.currencies.create import CreateCurrencyView
 from app.views.admin.currencies.get import CurrencyView
 
 
-class CurrencyListView(View):
+class CurrencyListView(AdminView):
     route = '/admin'
     currencies: list[dict]
 
@@ -40,32 +41,23 @@ class CurrencyListView(View):
             await self.get_header(),
             Container(
                 content=Column(
-                    controls=[
-                        await self.get_title(
-                            title=await self.client.session.gtv(key='currencies'),
-                            on_create_click=self.create_currency,
-                        ),
-                    ] + [
-                        Card(
-                            content=Container(
-                                content=Column(
-                                    controls=[
-                                        Text(
-                                            value=await self.client.session.gtv(key=currency['id_str']),
-                                            size=18,
-                                            font_family=Fonts.SEMIBOLD,
-                                        ),
-                                        Row(),
-                                    ],
-                                ),
-                                ink=True,
-                                padding=10,
+                    controls=await self.get_controls(
+                        title=await self.client.session.gtv(key='admin_currencies_list_get_view_title'),
+                        on_create_click=self.create_currency,
+                        main_section_controls=[
+                            Card(
+                                controls=[
+                                    Text(
+                                        value=await self.client.session.gtv(key=currency['id_str']),
+                                        size=18,
+                                        font_family=Fonts.SEMIBOLD,
+                                    ),
+                                ],
                                 on_click=functools.partial(self.currency_view, currency['id_str']),
-                            ),
-                            margin=0,
-                        )
-                        for currency in self.currencies
-                    ],
+                            )
+                            for currency in self.currencies
+                        ],
+                    ),
                 ),
                 padding=10,
             ),

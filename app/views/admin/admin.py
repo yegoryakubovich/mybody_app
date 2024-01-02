@@ -27,13 +27,13 @@ from app.utils import Fonts
 from .accounts.list import AccountListView
 from .articles.get_list import ArticleListView
 from .countries import CountryListView
-from .currencies.list import CurrencyListView
-from .exercises.list import ExerciseListView
-from .languages.list_get import LanguageListView
-from .products.list import ProductListView
+from .currencies.get_list import CurrencyListView
+from .exercises.get_list import ExerciseListView
+from .languages.get_list import LanguageListView
+from .products.get_list import ProductListView
 from .services import ServiceListView
 from .texts.get_list import TextListView
-from .timezones.list import TimezoneListView
+from .timezones.get_list import TimezoneListView
 from .trainings.list import TrainingListView
 
 

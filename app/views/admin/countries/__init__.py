@@ -17,7 +17,7 @@
 
 from app.views.admin.countries.create import CreateCountryView
 from app.views.admin.countries.get import CountryView
-from app.views.admin.countries.list import CountryListView
+from app.views.admin.countries.get_list import CountryListView
 
 
 __all__ = [

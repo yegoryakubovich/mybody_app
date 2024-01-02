@@ -17,7 +17,7 @@
 
 from app.views.admin.timezones.create import CreateTimezoneView
 from app.views.admin.timezones.get import TimezoneView
-from app.views.admin.timezones.list import TimezoneListView
+from app.views.admin.timezones.get_list import TimezoneListView
 
 
 __all__ = [

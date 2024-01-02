@@ -19,10 +19,10 @@ from flet_core import Container, Column
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
-from app.controls.layout import View
+from app.controls.layout import AdminView
 
 
-class CurrencyView(View):
+class CurrencyView(AdminView):
     route = '/admin'
     currency = dict
 
@@ -33,7 +33,7 @@ class CurrencyView(View):
     async def build(self):
         await self.set_type(loading=True)
         response = await self.client.session.api.currency.get(
-            id_str=self.currency_id_str
+            id_str=self.currency_id_str,
         )
         self.currency = response.currency
         await self.set_type(loading=False)
@@ -42,18 +42,17 @@ class CurrencyView(View):
             await self.get_header(),
             Container(
                 content=Column(
-                    controls=[
-                        await self.get_title(
-                         title=await self.client.session.gtv(key=self.currency['name_text']),
-                         create_button=False,
-                        ),
-                        FilledButton(
-                            content=Text(
-                                value=await self.client.session.gtv(key='delete_currency'),
+                    controls=await self.get_controls(
+                        title=await self.client.session.gtv(key=self.currency['name_text']),
+                        main_section_controls=[
+                            FilledButton(
+                                content=Text(
+                                    value=await self.client.session.gtv(key='delete'),
+                                ),
+                                on_click=self.delete_currency,
                             ),
-                            on_click=self.delete_currency,
-                        ),
-                    ],
+                        ],
+                    ),
                 ),
                 padding=10,
             ),
@@ -61,7 +60,6 @@ class CurrencyView(View):
 
     async def delete_currency(self, _):
         await self.client.session.api.currency.delete(
-            id_str=self.currency_id_str
+            id_str=self.currency_id_str,
         )
         await self.client.change_view(go_back=True)
-        await self.client.page.views[-1].restart()

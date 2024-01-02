@@ -22,18 +22,18 @@ from flet_core import Container, Text, Column, ScrollMode
 from app.controls.information.card import Card
 from app.controls.layout import AdminView
 from app.utils import Fonts
-from app.views.admin.countries.create import CreateCountryView
-from app.views.admin.countries.get import CountryView
+from app.views.admin.languages.get import LanguageView
+from app.views.admin.languages.create import CreateLanguageView
 
 
-class CountryListView(AdminView):
+class LanguageListView(AdminView):
     route = '/admin'
-    countries: list[dict]
+    languages: list[dict]
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.country.get_list()
-        self.countries = response.countries
+        response = await self.client.session.api.language.get_list()
+        self.languages = response.languages
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO
@@ -42,20 +42,21 @@ class CountryListView(AdminView):
             Container(
                 content=Column(
                     controls=await self.get_controls(
-                        title=await self.client.session.gtv(key='admin_country_list_view_title'),
-                        on_create_click=self.create_country,
+                        title=await self.client.session.gtv(key='admin_language_list_view_title'),
+                        on_create_click=self.create_language,
                         main_section_controls=[
                             Card(
                                 controls=[
                                     Text(
-                                        value=await self.client.session.gtv(key=country['name_text']),
+                                        value=language['name'],
                                         size=18,
                                         font_family=Fonts.SEMIBOLD,
                                     ),
                                 ],
-                                on_click=functools.partial(self.country_view, country['id_str']),
+                                on_click=functools.partial(self.language_view, language['id_str']),
                             )
-                            for country in self.countries
+                            for language in self.languages
+
                         ],
                     ),
                 ),
@@ -63,8 +64,8 @@ class CountryListView(AdminView):
             ),
         ]
 
-    async def create_country(self, _):
-        await self.client.change_view(view=CreateCountryView())
+    async def create_language(self, _):
+        await self.client.change_view(view=CreateLanguageView())
 
-    async def country_view(self, country_id_str, _):
-        await self.client.change_view(view=CountryView(country_id_str=country_id_str))
+    async def language_view(self, language_id_str, _):
+        await self.client.change_view(view=LanguageView(language_id_str=language_id_str))

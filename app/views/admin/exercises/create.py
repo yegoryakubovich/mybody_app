@@ -21,10 +21,11 @@ from flet_core.dropdown import Option
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField, Dropdown
-from app.controls.layout import View
+from app.controls.layout import AdminView
+from app.utils import Error
 
 
-class CreateExerciseView(View):
+class CreateExerciseView(AdminView):
     route = '/admin'
     tf_name: TextField
     dd_exercise_type: Dropdown
@@ -33,7 +34,10 @@ class CreateExerciseView(View):
         self.tf_name = TextField(
             label=await self.client.session.gtv(key='name'),
         )
-        exercise_type = ['time', 'quantity']
+        exercise_type = [
+            await self.client.session.gtv(key='time'),
+            await self.client.session.gtv(key='quantity'),
+        ]
         exercise_type_options = [
             Option(
                 text=exercise_type,
@@ -50,33 +54,32 @@ class CreateExerciseView(View):
             await self.get_header(),
             Container(
                 content=Column(
-                    controls=[
-                        await self.get_title(
-                            title=await self.client.session.gtv(key='create_exercise'),
-                            create_button=False,
-                        ),
-                        self.tf_name,
-                        self.dd_exercise_type,
-                        FilledButton(
-                            content=Text(
-                                value=await self.client.session.gtv(key='create.py'),
-                                size=16,
+                    controls=await self.get_controls(
+                        title=await self.client.session.gtv(key='admin_exercise_create_view_title'),
+                        main_section_controls=[
+                            self.tf_name,
+                            self.dd_exercise_type,
+                            FilledButton(
+                                content=Text(
+                                    value=await self.client.session.gtv(key='create'),
+                                    size=16,
+                                ),
+                                on_click=self.create_exercise,
                             ),
-                            on_click=self.create_exercise,
-                        ),
-                    ],
+                        ],
+                    ),
                 ),
                 padding=10,
             ),
         ]
 
     async def create_exercise(self, _):
-        if len(self.tf_name.value) < 1 or len(self.tf_name.value) > 32:
-            self.tf_name.error_text = await self.client.session.gtv(key='name_min_max_letter')
-        else:
-            await self.client.session.api.exercise.create(
-                type_=self.dd_exercise_type.value,
-                name=self.tf_name.value,
-            )
-            await self.client.change_view(go_back=True)
-            await self.client.page.views[-1].restart()
+        fields = [(self.tf_name, 1, 1024)]
+        for field, min_len, max_len, error_key in fields:
+            if not await Error.check_field(self, field, min_len, max_len):
+                return
+        await self.client.session.api.exercise.create(
+            type_=self.dd_exercise_type.value,
+            name=self.tf_name.value,
+        )
+        await self.client.change_view(go_back=True)

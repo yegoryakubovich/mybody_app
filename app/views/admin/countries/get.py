@@ -20,10 +20,10 @@ from flet_core.dropdown import Option, Dropdown
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
-from app.controls.layout import View
+from app.controls.layout import AdminView
 
 
-class CountryView(View):
+class CountryView(AdminView):
     route = '/admin'
     country = dict
     dd_language = Dropdown
@@ -83,31 +83,30 @@ class CountryView(View):
             await self.get_header(),
             Container(
                 content=Column(
-                    controls=[
-                        await self.get_title(
-                            title=await self.client.session.gtv(key=self.country['name_text']),
-                            create_button=False,
-                        ),
-                        self.dd_language,
-                        self.dd_currency,
-                        self.dd_timezone,
-                        Row(
-                            controls=[
-                                FilledButton(
-                                    content=Text(
-                                        value=await self.client.session.gtv(key='update_country'),
+                    controls=await self.get_controls(
+                        title=await self.client.session.gtv(key=self.country['name_text']),
+                        main_section_controls=[
+                            self.dd_language,
+                            self.dd_currency,
+                            self.dd_timezone,
+                            Row(
+                                controls=[
+                                    FilledButton(
+                                        content=Text(
+                                            value=await self.client.session.gtv(key='save'),
+                                        ),
+                                        on_click=self.update_country,
                                     ),
-                                    on_click=self.update_country,
-                                ),
-                                FilledButton(
-                                    content=Text(
-                                        value=await self.client.session.gtv(key='delete_country'),
+                                    FilledButton(
+                                        content=Text(
+                                            value=await self.client.session.gtv(key='delete'),
+                                        ),
+                                        on_click=self.delete_country,
                                     ),
-                                    on_click=self.delete_country,
-                                ),
-                            ],
-                        ),
-                    ],
+                                ],
+                            ),
+                        ],
+                    ),
                 ),
                 padding=10,
             ),
@@ -115,10 +114,9 @@ class CountryView(View):
 
     async def delete_country(self, _):
         await self.client.session.api.country.delete(
-            id_str=self.country_id_str
+            id_str=self.country_id_str,
         )
         await self.client.change_view(go_back=True)
-        await self.client.page.views[-1].restart()
 
     async def update_country(self, _):
         await self.client.session.api.country.update(
@@ -128,4 +126,3 @@ class CountryView(View):
             timezone=self.dd_timezone.value,
         )
         await self.client.change_view(go_back=True)
-        await self.client.page.views[-1].restart()

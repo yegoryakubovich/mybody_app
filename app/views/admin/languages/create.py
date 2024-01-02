@@ -20,54 +20,52 @@ from flet_core import Container, Column
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField
-from app.controls.layout import View
+from app.controls.layout import AdminView
+from app.utils.error import Error
 
 
-class CreateLanguageView(View):
+class CreateLanguageView(AdminView):
     route = '/admin'
     tf_name: TextField
     tf_id_str: TextField
 
     async def build(self):
         self.tf_id_str = TextField(
-            label=await self.client.session.gtv(key='id_str'),
+            label=await self.client.session.gtv(key='key'),
         )
         self.tf_name = TextField(
-            label=await self.client.session.gtv(key='name_language'),
+            label=await self.client.session.gtv(key='name'),
         )
         self.controls = [
             await self.get_header(),
             Container(
                 content=Column(
-                    controls=[
-                        await self.get_title(
-                            title=await self.client.session.gtv(key='create_language'),
-                            create_button=False,
-                        ),
-                        self.tf_id_str,
-                        self.tf_name,
-                        FilledButton(
-                            content=Text(
-                                value=await self.client.session.gtv(key='Create'),
-                                size=16,
+                    controls=await self.get_controls(
+                        title=await self.client.session.gtv(key='admin_language_create_view_title'),
+                        main_section_controls=[
+                            self.tf_id_str,
+                            self.tf_name,
+                            FilledButton(
+                                content=Text(
+                                    value=await self.client.session.gtv(key='create'),
+                                    size=16,
+                                ),
+                                on_click=self.create_language,
                             ),
-                            on_click=self.create_language,
-                        ),
-                    ],
+                        ],
+                    ),
                 ),
                 padding=10,
             ),
         ]
 
     async def create_language(self, _):
-        if len(self.tf_id_str.value) < 1 or len(self.tf_id_str.value) > 16:
-            self.tf_id_str.error_text = await self.client.session.gtv(key='id_str_min_max_letter')
-        elif len(self.tf_name.value) < 1 or len(self.tf_name.value) > 32:
-            self.tf_name.error_text = await self.client.session.gtv(key='name_min_max_letter')
-        else:
-            await self.client.session.api.language.create(
-                id_str=self.tf_id_str.value,
-                name=self.tf_name.value,
-            )
-            await self.client.change_view(go_back=True)
-            await self.client.page.views[-1].restart()
+        fields = [(self.tf_id_str, 1, 16), (self.tf_name, 1, 32)]
+        for field, min_len, max_len in fields:
+            if not await Error.check_field(self, field, min_len, max_len):
+                return
+        await self.client.session.api.language.create(
+            id_str=self.tf_id_str.value,
+            name=self.tf_name.value,
+        )
+        await self.client.change_view(go_back=True)
