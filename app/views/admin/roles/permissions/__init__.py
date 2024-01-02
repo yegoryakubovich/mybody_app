@@ -15,11 +15,11 @@
 #
 
 
-from app.views.admin.accounts.get import AccountView
-from app.views.admin.accounts.get_list import AccountListView
+from app.views.admin.roles.permissions.create import RoleCreatePermissionView
+from app.views.admin.roles.permissions.get import RolePermissionView
 
 
 __all__ = [
-    'AccountListView',
-    'AccountView',
+    'RoleCreatePermissionView',
+    'RolePermissionView',
 ]

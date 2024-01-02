@@ -15,11 +15,13 @@
 #
 
 
-from app.views.admin.accounts.get import AccountView
-from app.views.admin.accounts.get_list import AccountListView
+from app.views.admin.roles.create import CreateRoleView
+from app.views.admin.roles.get import RoleView
+from app.views.admin.roles.get_list import RoleListView
 
 
 __all__ = [
-    'AccountListView',
-    'AccountView',
+    'RoleListView',
+    'CreateRoleView',
+    'RoleView',
 ]

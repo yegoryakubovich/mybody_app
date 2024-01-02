@@ -20,17 +20,18 @@ from typing import Any
 from flet_core import Container, Column, Row, Image, MainAxisAlignment, ScrollMode
 from flet_manager.utils import get_svg
 
-from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.layout import View
 from app.utils import Fonts
-from .accounts.list import AccountListView
+from .accounts.get_list import AccountListView
 from .articles.get_list import ArticleListView
 from .countries import CountryListView
 from .currencies.get_list import CurrencyListView
 from .exercises.get_list import ExerciseListView
 from .languages.get_list import LanguageListView
+from .permissions import PermissionListView
 from .products.get_list import ProductListView
+from .roles import RoleListView
 from .services import ServiceListView
 from .texts.get_list import TextListView
 from .timezones.get_list import TimezoneListView
@@ -65,57 +66,67 @@ class AdminView(View):
         self.bgcolor = '#FFFFFF'
         sections = [
             Section(
-                name='admin_panel',
+                name=await self.client.session.gtv(key='admin_view_title'),
                 settings=[
                     Setting(
-                        name='articles',
-                        icon='notifications',
-                        on_click=self.get_articles,
-                    ),
-                    Setting(
-                        name='texts',
-                        icon='notifications',
-                        on_click=self.get_texts,
-                    ),
-                    Setting(
-                        name='accounts',
+                        name='admin_account_get_list_view_title',
                         icon='notifications',
                         on_click=self.get_accounts,
                     ),
                     Setting(
-                        name='products',
+                        name='admin_article_get_list_view_title',
+                        icon='notifications',
+                        on_click=self.get_articles,
+                    ),
+                    Setting(
+                        name='admin_text_get_list_view_title',
+                        icon='notifications',
+                        on_click=self.get_texts,
+                    ),
+                    Setting(
+                        name='admin_product_get_list_view_title',
                         icon='notifications',
                         on_click=self.get_products,
                     ),
                     Setting(
-                        name='languages',
+                        name='admin_language_get_list_view_title',
                         icon='notifications',
                         on_click=self.get_languages,
                     ),
                     Setting(
-                        name='currencies',
+                        name='admin_currency_get_list_view_title',
                         icon='notifications',
                         on_click=self.get_currencies,
                     ),
                     Setting(
-                        name='timezones',
+                        name='admin_timezone_get_list_view_title',
                         icon='notifications',
                         on_click=self.get_timezones,
                     ),
                     Setting(
-                        name='countries',
+                        name='admin_country_get_list_view_title',
                         icon='notifications',
                         on_click=self.get_countries,
                     ),
                     Setting(
-                        name='services',
-                        icon='notifications',
-                        on_click=self.get_services,
-                    ),
-                    Setting(
-                        name='exercises',
+                        name='admin_exercise_get_list_view_title',
                         icon='notifications',
                         on_click=self.get_exercises,
+                    ),
+                    Setting(
+                        name='admin_permission_get_list_view_title',
+                        icon='notifications',
+                        on_click=self.get_permissions,
+                    ),
+                    Setting(
+                        name='admin_role_get_list_view_title',
+                        icon='notifications',
+                        on_click=self.get_roles,
+                    ),
+                    Setting(
+                        name='admin_service_get_list_view_title',
+                        icon='notifications',
+                        on_click=self.get_services,
                     ),
                     Setting(
                         name='trainings',
@@ -137,13 +148,6 @@ class AdminView(View):
                                         value=await self.client.session.gtv(section.name),
                                         font_family=Fonts.SEMIBOLD,
                                         size=30,
-                                    ),
-                                    FilledButton(
-                                        content=Text(
-                                            value=await self.client.session.gtv(key='Menu'),
-                                            font_family=Fonts.REGULAR,
-                                        ),
-                                        on_click=self.go_back,
                                     ),
                                 ],
                                 alignment=MainAxisAlignment.SPACE_BETWEEN,
@@ -219,3 +223,9 @@ class AdminView(View):
 
     async def get_trainings(self, _):
         await self.client.change_view(view=TrainingListView())
+
+    async def get_permissions(self, _):
+        await self.client.change_view(view=PermissionListView())
+
+    async def get_roles(self, _):
+        await self.client.change_view(view=RoleListView())

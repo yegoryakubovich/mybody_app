@@ -93,8 +93,11 @@ class Session:
     @staticmethod
     async def get_text_value(key):
         # FIXME
-        key = key.replace('_', ' ')
-        return key.title()
+        if key is not None:
+            key = key.replace('_', ' ')
+            return key
+        else:
+            return None
 
     async def gtv(self, key):
         return await self.get_text_value(key=key)

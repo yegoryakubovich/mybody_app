@@ -55,7 +55,7 @@ class AccountListView(View):
                 content=Column(
                     controls=[
                         await self.get_title(
-                            title=await self.client.session.gtv(key='accounts'),
+                            title=await self.client.session.gtv(key='admin_account_get_list_view_title'),
                         ),
                         self.tf_search,
                     ] + [

@@ -43,14 +43,14 @@ class CreateTranslationTextView(AdminView):
             key=self.key
         )
         self.text = response.text
-        self.languages = await self.client.session.api.language.get_list()
+        languages = await self.client.session.api.language.get_list()
         await self.set_type(loading=False)
 
         languages_options = [
             Option(
                 text=language.get('name'),
                 key=language.get('id_str'),
-            ) for language in self.languages.languages
+            ) for language in languages.languages
         ]
 
         self.tf_value = TextField(
@@ -58,6 +58,7 @@ class CreateTranslationTextView(AdminView):
         )
         self.dd_language_id_str = Dropdown(
             label=await self.client.session.gtv(key='language'),
+            value=languages_options[0].key,
             options=languages_options,
         )
         self.controls = [
@@ -84,8 +85,8 @@ class CreateTranslationTextView(AdminView):
         ]
 
     async def create_translation(self, _):
-        fields = [(self.dd_language_id_str, 2, 128), (self.tf_value, 1, 1024)]
-        for field, min_len, max_len, error_key in fields:
+        fields = [(self.tf_value, 1, 1024)]
+        for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len, max_len):
                 return
         await self.client.session.api.text.create_translation(

@@ -16,55 +16,41 @@
 
 
 from flet_core import Container, Column
-from flet_core.dropdown import Option
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
-from app.controls.input import TextField, Dropdown
+from app.controls.input import TextField
 from app.controls.layout import AdminView
-from app.utils import Error
+from app.utils.error import Error
 
 
-class CreateExerciseView(AdminView):
+class CreatePermissionView(AdminView):
     route = '/admin'
     tf_name: TextField
-    dd_exercise_type: Dropdown
+    tf_id_str: TextField
 
     async def build(self):
+        self.tf_id_str = TextField(
+            label=await self.client.session.gtv(key='key'),
+        )
         self.tf_name = TextField(
             label=await self.client.session.gtv(key='name'),
         )
-        exercise_type = [
-            await self.client.session.gtv(key='time'),
-            await self.client.session.gtv(key='quantity'),
-        ]
-        exercise_type_options = [
-            Option(
-                text=exercise_type,
-            ) for exercise_type in exercise_type
-        ]
-
-        self.dd_exercise_type = Dropdown(
-            label=await self.client.session.gtv(key='type'),
-            value=exercise_type[0],
-            options=exercise_type_options,
-        )
-
         self.controls = [
             await self.get_header(),
             Container(
                 content=Column(
                     controls=await self.get_controls(
-                        title=await self.client.session.gtv(key='admin_exercise_create_view_title'),
+                        title=await self.client.session.gtv(key='admin_permission_create_view_title'),
                         main_section_controls=[
+                            self.tf_id_str,
                             self.tf_name,
-                            self.dd_exercise_type,
                             FilledButton(
                                 content=Text(
                                     value=await self.client.session.gtv(key='create'),
                                     size=16,
                                 ),
-                                on_click=self.create_exercise,
+                                on_click=self.create_permission,
                             ),
                         ],
                     ),
@@ -73,13 +59,13 @@ class CreateExerciseView(AdminView):
             ),
         ]
 
-    async def create_exercise(self, _):
-        fields = [(self.tf_name, 1, 1024)]
+    async def create_permission(self, _):
+        fields = [(self.tf_name, 1, 32), (self.tf_id_str, 1, 16)]
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len, max_len):
                 return
-        await self.client.session.api.exercise.create(
-            type_=self.dd_exercise_type.value,
+        await self.client.session.api.permission.create(
+            id_str=self.tf_id_str.value,
             name=self.tf_name.value,
         )
         await self.client.change_view(go_back=True)

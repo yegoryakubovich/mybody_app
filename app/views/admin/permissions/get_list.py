@@ -22,18 +22,18 @@ from flet_core import Container, Text, Column, ScrollMode
 from app.controls.information.card import Card
 from app.controls.layout import AdminView
 from app.utils import Fonts
-from app.views.admin.currencies.create import CreateCurrencyView
-from app.views.admin.currencies.get import CurrencyView
+from app.views.admin.permissions.create import CreatePermissionView
+from app.views.admin.permissions.get import PermissionView
 
 
-class CurrencyListView(AdminView):
+class PermissionListView(AdminView):
     route = '/admin'
-    currencies: list[dict]
+    permissions: list[dict]
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.currency.get_list()
-        self.currencies = response.currencies
+        response = await self.client.session.api.permission.get_list()
+        self.permissions = response.permissions
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO
@@ -42,20 +42,21 @@ class CurrencyListView(AdminView):
             Container(
                 content=Column(
                     controls=await self.get_controls(
-                        title=await self.client.session.gtv(key='admin_currency_list_get_view_title'),
-                        on_create_click=self.create_currency,
+                        title=await self.client.session.gtv(key='admin_permission_get_list_view_title'),
+                        on_create_click=self.create_permission,
                         main_section_controls=[
                             Card(
                                 controls=[
                                     Text(
-                                        value=await self.client.session.gtv(key=currency['id_str']),
+                                        value=await self.client.session.gtv(key=permission['name_text']),
                                         size=18,
                                         font_family=Fonts.SEMIBOLD,
                                     ),
                                 ],
-                                on_click=functools.partial(self.currency_view, currency['id_str']),
+                                on_click=functools.partial(self.permission_view, permission['id_str']),
                             )
-                            for currency in self.currencies
+                            for permission in self.permissions
+
                         ],
                     ),
                 ),
@@ -63,8 +64,8 @@ class CurrencyListView(AdminView):
             ),
         ]
 
-    async def create_currency(self, _):
-        await self.client.change_view(view=CreateCurrencyView())
+    async def create_permission(self, _):
+        await self.client.change_view(view=CreatePermissionView())
 
-    async def currency_view(self, currency_id_str, _):
-        await self.client.change_view(view=CurrencyView(currency_id_str=currency_id_str))
+    async def permission_view(self, permission_id_str, _):
+        await self.client.change_view(view=PermissionView(permission_id_str=permission_id_str))

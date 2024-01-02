@@ -60,7 +60,7 @@ class CreateLanguageView(AdminView):
         ]
 
     async def create_language(self, _):
-        fields = [(self.tf_id_str, 1, 16), (self.tf_name, 1, 32)]
+        fields = [(self.tf_name, 1, 32), (self.tf_id_str, 1, 16)]
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len, max_len):
                 return

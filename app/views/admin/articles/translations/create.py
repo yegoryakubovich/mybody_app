@@ -50,7 +50,6 @@ class ArticleCreateTranslationView(AdminView):
         self.tf_name = TextField(
             label=await self.client.session.gtv(key='name'),
         )
-
         self.dd_language = Dropdown(
             label=await self.client.session.gtv(key='language'),
             value=languages_options[0].key,
@@ -81,7 +80,7 @@ class ArticleCreateTranslationView(AdminView):
 
     async def create_translation(self, _):
         fields = [(self.tf_name, 1, 1024)]
-        for field, min_len, max_len, error_key in fields:
+        for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len, max_len):
                 return
         await self.client.session.api.article.create_translation(

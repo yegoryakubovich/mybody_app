@@ -57,7 +57,7 @@ class CreateArticleView(AdminView):
     async def create_article(self, _):
         from app.views.admin.articles.get import ArticleView
         fields = [(self.tf_name, 1, 1024)]
-        for field, min_len, max_len, error_key in fields:
+        for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len, max_len):
                 return
         response = await self.client.session.api.article.create(

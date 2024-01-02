@@ -19,6 +19,7 @@ class Error:
 
     @staticmethod
     async def check_field(self, field, min_len, max_len):
+        field.error_text = None
         if len(field.value) < min_len or len(field.value) > max_len:
             field.error_text = await self.client.session.gtv(key='error_count_letter')
             await self.update_async()

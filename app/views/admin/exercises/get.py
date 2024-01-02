@@ -47,7 +47,7 @@ class ExerciseView(AdminView):
         exercise_type_options = [
             Option(
                 text=exercise_type,
-                key=self.exercise.get('type')
+                key=exercise_type,
             ) for exercise_type in exercise_type
         ]
 
@@ -56,7 +56,6 @@ class ExerciseView(AdminView):
             value=self.exercise['type'],
             options=exercise_type_options,
         )
-
         self.controls = [
             await self.get_header(),
             Container(

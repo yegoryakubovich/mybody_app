@@ -66,6 +66,7 @@ class CreateTimezoneView(AdminView):
                 return
         if not self.tf_deviation.value.isdigit():
             self.tf_deviation.error_text = await self.client.session.gtv(key='deviation_type')
+            await self.update_async()
         else:
             await self.client.session.api.timezone.create(
                 id_str=self.tf_id_str.value,

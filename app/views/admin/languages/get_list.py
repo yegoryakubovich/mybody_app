@@ -42,7 +42,7 @@ class LanguageListView(AdminView):
             Container(
                 content=Column(
                     controls=await self.get_controls(
-                        title=await self.client.session.gtv(key='admin_language_list_view_title'),
+                        title=await self.client.session.gtv(key='admin_language_get_list_view_title'),
                         on_create_click=self.create_language,
                         main_section_controls=[
                             Card(

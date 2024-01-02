@@ -72,7 +72,7 @@ class ProductListView(AdminView):
                                     ),
                                     ProductChipButton(
                                         Text(
-                                            value=await self.client.session.gtv(key='all_type'),
+                                            value=await self.client.session.gtv(key='all_products'),
                                         ).value,
                                         on_click=self.all_type,
                                     ),

@@ -15,28 +15,26 @@
 #
 
 
-from flet_core import Container, Column
+from flet_core import Container, Row, Column
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.layout import AdminView
 
 
-class CurrencyView(AdminView):
+class RolePermissionView(AdminView):
     route = '/admin'
-    currency = dict
 
-    def __init__(self, currency_id_str):
+    def __init__(self, permission_id):
         super().__init__()
-        self.currency_id_str = currency_id_str
+        self.permission_id = permission_id
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.currency.get(
-            id_str=self.currency_id_str,
+        response = await self.client.session.api.role.get_permission(
+            id_=self.permission_id
         )
-        self.currency = response.currency
-        print( self.currency)
+        permission = response.role_permission
         await self.set_type(loading=False)
 
         self.controls = [
@@ -44,23 +42,27 @@ class CurrencyView(AdminView):
             Container(
                 content=Column(
                     controls=await self.get_controls(
-                        title=await self.client.session.gtv(key=self.currency['id_str']),
+                        title=await self.client.session.gtv(key=permission['permission']),
                         main_section_controls=[
-                            FilledButton(
-                                content=Text(
-                                    value=await self.client.session.gtv(key='delete'),
-                                ),
-                                on_click=self.delete_currency,
-                            ),
-                        ],
+                            Row(
+                                controls=[
+                                    FilledButton(
+                                        content=Text(
+                                            value=await self.client.session.gtv(key='delete'),
+                                        ),
+                                        on_click=self.delete_permission,
+                                    ),
+                                ]
+                            )
+                        ]
                     ),
                 ),
-                padding=10,
+                padding=10
             ),
         ]
 
-    async def delete_currency(self, _):
-        await self.client.session.api.currency.delete(
-            id_str=self.currency_id_str,
+    async def delete_permission(self, _):
+        response = await self.client.session.api.role.delete_permission(
+            id_=self.permission_id,
         )
         await self.client.change_view(go_back=True)

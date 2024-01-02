@@ -63,7 +63,7 @@ class CreateTextView(AdminView):
 
     async def create_text(self, _):
         fields = [(self.tf_key, 2, 128), (self.tf_value_default, 1, 1024)]
-        for field, min_len, max_len, error_key in fields:
+        for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len, max_len):
                 return
         response = await self.client.session.api.text.create(

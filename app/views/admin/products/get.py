@@ -28,6 +28,8 @@ class ProductView(AdminView):
     route = '/admin'
     product = dict
     dd_nutrient_type = Dropdown
+    dd_articles = Dropdown
+    dd_units = Dropdown
 
     def __init__(self, product_id):
         super().__init__()
@@ -39,8 +41,15 @@ class ProductView(AdminView):
             id_=self.product_id
         )
         self.product = response.product
+        response = await self.client.session.api.article.get_list(
+        )
+        articles = response.articles
         await self.set_type(loading=False)
 
+        nutrients_unit = [
+            await self.client.session.gtv(key='gr'),
+            await self.client.session.gtv(key='ml'),
+        ]
         nutrients_type = [
             await self.client.session.gtv(key='proteins'),
             await self.client.session.gtv(key='fats'),
@@ -49,23 +58,44 @@ class ProductView(AdminView):
         nutrient_type_options = [
             Option(
                 text=nutrient_type,
-                key=self.product.get('type'),
             ) for nutrient_type in nutrients_type
         ]
-
+        article_options = [
+            Option(
+                text=article['name_text'],
+                key=article['id']
+            ) for article in articles
+        ]
+        nutrients_unit = [
+            Option(
+                text=nutrient_unit,
+            ) for nutrient_unit in nutrients_unit
+        ]
         self.dd_nutrient_type = Dropdown(
             label=await self.client.session.gtv(key='type'),
             value=self.product['type'],
             options=nutrient_type_options,
+        )
+        self.dd_units = Dropdown(
+            label=await self.client.session.gtv(key='unit'),
+            value=self.product['unit'],
+            options=nutrients_unit,
+        )
+        self.dd_articles = Dropdown(
+            label=await self.client.session.gtv(key='article'),
+            value=self.product['article'],
+            options=article_options,
         )
         self.controls = [
             await self.get_header(),
             Container(
                 content=Column(
                     controls=await self.get_controls(
-                        title=await self.client.session.gtv(key='admin_product_get_view_title'),
+                        title=await self.client.session.gtv(key=self.product['name_text']),
                         main_section_controls=[
                             self.dd_nutrient_type,
+                            self.dd_articles,
+                            self.dd_units,
                             Row(
                                 controls=[
                                     FilledButton(
@@ -96,8 +126,11 @@ class ProductView(AdminView):
         await self.client.change_view(go_back=True)
 
     async def update_product(self, _):
-        await self.client.session.api.product.update(
+        response = await self.client.session.api.product.update(
             id_=self.product_id,
             type_=self.dd_nutrient_type.value,
+            unit=self.dd_units.value,
+            article_id=self.dd_articles.value,
         )
+        print(response)
         await self.update_async()

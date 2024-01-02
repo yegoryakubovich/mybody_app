@@ -19,38 +19,37 @@ from flet_core import Container, Column
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
-from app.controls.input import TextField
 from app.controls.layout import AdminView
-from app.utils import Error
 
 
-class CreateCurrencyView(AdminView):
+class PermissionView(AdminView):
     route = '/admin'
-    tf_name: TextField
-    tf_id_str: TextField
+    permission = dict
+
+    def __init__(self, permission_id_str):
+        super().__init__()
+        self.permission_id_str = permission_id_str
 
     async def build(self):
-        self.tf_id_str = TextField(
-            label=await self.client.session.gtv(key='key'),
+        await self.set_type(loading=True)
+        response = await self.client.session.api.permission.get(
+            id_str=self.permission_id_str
         )
-        self.tf_name = TextField(
-            label=await self.client.session.gtv(key='name'),
-        )
+        self.permission = response.permission
+        await self.set_type(loading=False)
+
         self.controls = [
             await self.get_header(),
             Container(
                 content=Column(
                     controls=await self.get_controls(
-                        title=await self.client.session.gtv(key='admin_currency_create_view_title'),
+                        title=await self.client.session.gtv(key=self.permission['name_text']),
                         main_section_controls=[
-                            self.tf_id_str,
-                            self.tf_name,
                             FilledButton(
                                 content=Text(
-                                    value=await self.client.session.gtv(key='create'),
-                                    size=16,
+                                    value=await self.client.session.gtv(key='delete'),
                                 ),
-                                on_click=self.create_currency,
+                                on_click=self.delete_permission,
                             ),
                         ],
                     ),
@@ -59,13 +58,8 @@ class CreateCurrencyView(AdminView):
             ),
         ]
 
-    async def create_currency(self, _):
-        fields = [(self.tf_id_str, 2, 16), (self.tf_name, 1, 1024)]
-        for field, min_len, max_len in fields:
-            if not await Error.check_field(self, field, min_len, max_len):
-                return
-        await self.client.session.api.currency.create(
-            id_str=self.tf_id_str.value,
-            name=self.tf_name.value,
+    async def delete_permission(self, _):
+        await self.client.session.api.permission.delete(
+            id_str=self.permission_id_str,
         )
         await self.client.change_view(go_back=True)

@@ -22,32 +22,66 @@ from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField, Dropdown
 from app.controls.layout import AdminView
+from app.utils import Error
 
 
 class CreateProductView(AdminView):
     route = '/admin'
     tf_name: TextField
-    dd_nutrient_type = Dropdown
+    dd_nutrients_type = Dropdown
+    dd_articles = Dropdown
+    dd_units = Dropdown
 
     async def build(self):
+
+        await self.set_type(loading=True)
+        response = await self.client.session.api.article.get_list(
+        )
+        articles = response.articles
+        await self.set_type(loading=False)
+
+        nutrients_unit = [
+            await self.client.session.gtv(key='gr'),
+            await self.client.session.gtv(key='ml'),
+        ]
         nutrients_type = [
             await self.client.session.gtv(key='proteins'),
             await self.client.session.gtv(key='fats'),
             await self.client.session.gtv(key='carbohydrates'),
         ]
-        nutrient_type_options = [
+        article_options = [
+            Option(
+                text=article['name_text'],
+                key=article['id']
+            ) for article in articles
+        ]
+        nutrients_type_options = [
             Option(
                 text=nutrient_type,
             ) for nutrient_type in nutrients_type
         ]
-
+        nutrients_unit = [
+            Option(
+                text=nutrient_unit,
+            ) for nutrient_unit in nutrients_unit
+        ]
         self.tf_name = TextField(
             label=await self.client.session.gtv(key='name'),
         )
-        self.dd_nutrient_type = Dropdown(
+        self.dd_nutrients_type = Dropdown(
             label=await self.client.session.gtv(key='type'),
             value=nutrients_type[0],
-            options=nutrient_type_options,
+            options=nutrients_type_options,
+        )
+        self.dd_articles = Dropdown(
+            label=await self.client.session.gtv(key='article'),
+            value=await self.client.session.gtv(key=articles[0]['name_text']),
+            options=article_options,
+        )
+        self.dd_units = Dropdown(
+            label=await self.client.session.gtv(key='units'),
+            value=nutrients_unit[0],
+            options=nutrients_unit,
         )
         self.controls = [
             await self.get_header(),
@@ -57,7 +91,9 @@ class CreateProductView(AdminView):
                         title=await self.client.session.gtv(key='admin_product_create_view_title'),
                         main_section_controls=[
                             self.tf_name,
-                            self.dd_nutrient_type,
+                            self.dd_nutrients_type,
+                            self.dd_articles,
+                            self.dd_units,
                             FilledButton(
                                 content=Text(
                                     value=await self.client.session.gtv(key='create'),
@@ -74,13 +110,15 @@ class CreateProductView(AdminView):
 
     async def create_product(self, _):
         from app.views.admin.products.get import ProductView
-        if len(self.tf_name.value) < 2 or len(self.tf_name.value) > 1024:
-            self.tf_name.error_text = await self.client.session.gtv(key='error_count_letter')
-            await self.update_async()
-        else:
-            response = await self.client.session.api.product.create(
-                name=self.tf_name.value,
-                type_=self.dd_nutrient_type.value,
-            )
-            product_id = response.id
-            await self.client.change_view(view=ProductView(product_id=product_id))
+        fields = [(self.tf_name, 1, 32)]
+        for field, min_len, max_len in fields:
+            if not await Error.check_field(self, field, min_len, max_len):
+                return
+        response = await self.client.session.api.product.create(
+            name=self.tf_name.value,
+            type_=self.dd_nutrients_type.value,
+            article_id=self.dd_articles.value,
+            unit=self.dd_units.value
+        )
+        product_id = response.id
+        await self.client.change_view(view=ProductView(product_id=product_id))

@@ -22,18 +22,18 @@ from flet_core import Container, Text, Column, ScrollMode
 from app.controls.information.card import Card
 from app.controls.layout import AdminView
 from app.utils import Fonts
-from app.views.admin.currencies.create import CreateCurrencyView
-from app.views.admin.currencies.get import CurrencyView
+from app.views.admin.roles.create import CreateRoleView
+from app.views.admin.roles.get import RoleView
 
 
-class CurrencyListView(AdminView):
+class RoleListView(AdminView):
     route = '/admin'
-    currencies: list[dict]
+    roles: list[dict]
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.currency.get_list()
-        self.currencies = response.currencies
+        response = await self.client.session.api.role.get_list()
+        self.roles = response.roles
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO
@@ -42,20 +42,21 @@ class CurrencyListView(AdminView):
             Container(
                 content=Column(
                     controls=await self.get_controls(
-                        title=await self.client.session.gtv(key='admin_currency_list_get_view_title'),
-                        on_create_click=self.create_currency,
+                        title=await self.client.session.gtv(key='admin_role_get_list_view_title'),
+                        on_create_click=self.create_role,
                         main_section_controls=[
                             Card(
                                 controls=[
                                     Text(
-                                        value=await self.client.session.gtv(key=currency['id_str']),
+                                        value=await self.client.session.gtv(key=role['name_text']),
                                         size=18,
                                         font_family=Fonts.SEMIBOLD,
                                     ),
                                 ],
-                                on_click=functools.partial(self.currency_view, currency['id_str']),
+                                on_click=functools.partial(self.role_view, role['id']),
                             )
-                            for currency in self.currencies
+                            for role in self.roles
+
                         ],
                     ),
                 ),
@@ -63,8 +64,8 @@ class CurrencyListView(AdminView):
             ),
         ]
 
-    async def create_currency(self, _):
-        await self.client.change_view(view=CreateCurrencyView())
+    async def create_role(self, _):
+        await self.client.change_view(view=CreateRoleView())
 
-    async def currency_view(self, currency_id_str, _):
-        await self.client.change_view(view=CurrencyView(currency_id_str=currency_id_str))
+    async def role_view(self, role_id, _):
+        await self.client.change_view(view=RoleView(role_id=role_id))
