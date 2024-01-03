@@ -21,7 +21,7 @@ from app.controls.layout import View
 
 
 class AccountView(View):
-    route = '/admin'
+    route = '/admin/accounts/get'
     account = list
 
     def __init__(self, account_id):

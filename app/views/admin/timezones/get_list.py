@@ -20,13 +20,13 @@ import functools
 from flet_core import Container, Text, Column, ScrollMode
 
 from app.controls.information.card import Card
-from app.controls.layout import AdminView
+from app.controls.layout import AdminBaseView
 from app.utils import Fonts
 from app.views.admin.timezones.create import CreateTimezoneView
 from app.views.admin.timezones.get import TimezoneView
 
 
-class TimezoneListView(AdminView):
+class TimezoneListView(AdminBaseView):
     route = '/admin'
     timezones: list[dict]
 

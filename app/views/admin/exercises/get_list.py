@@ -20,13 +20,13 @@ import functools
 from flet_core import Container, Text, Column, ScrollMode
 
 from app.controls.information.card import Card
-from app.controls.layout import AdminView
+from app.controls.layout import AdminBaseView
 from app.utils import Fonts
 from app.views.admin.exercises.create import CreateExerciseView
 from app.views.admin.exercises.get import ExerciseView
 
 
-class ExerciseListView(AdminView):
+class ExerciseListView(AdminBaseView):
     route = '/admin'
     exercises: list[dict]
 

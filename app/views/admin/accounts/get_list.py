@@ -28,7 +28,7 @@ from app.views.admin.accounts.get import AccountView
 
 
 class AccountListView(View):
-    route = '/admin'
+    route = '/admin/accounts/list/get'
     accounts: list[dict]
     page_account: int = 1
     total_pages: int = 1

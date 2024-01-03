@@ -19,10 +19,10 @@ from flet_core import Container, Row, Column
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
-from app.controls.layout import AdminView
+from app.controls.layout import AdminBaseView
 
 
-class RolePermissionView(AdminView):
+class RolePermissionView(AdminBaseView):
     route = '/admin'
 
     def __init__(self, permission_id):

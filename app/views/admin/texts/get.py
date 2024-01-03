@@ -23,13 +23,13 @@ from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.information.card import Card
 from app.controls.input import TextField
-from app.controls.layout import Section, AdminView
+from app.controls.layout import Section, AdminBaseView
 from app.utils import Fonts
 from .translations.create import CreateTranslationTextView
 from .translations.get import TranslationTextView
 
 
-class TextView(AdminView):
+class TextView(AdminBaseView):
     route = '/admin'
     tf_key = TextField
     tf_value_default = TextField

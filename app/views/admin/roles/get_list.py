@@ -20,13 +20,13 @@ import functools
 from flet_core import Container, Text, Column, ScrollMode
 
 from app.controls.information.card import Card
-from app.controls.layout import AdminView
+from app.controls.layout import AdminBaseView
 from app.utils import Fonts
 from app.views.admin.roles.create import CreateRoleView
 from app.views.admin.roles.get import RoleView
 
 
-class RoleListView(AdminView):
+class RoleListView(AdminBaseView):
     route = '/admin'
     roles: list[dict]
 

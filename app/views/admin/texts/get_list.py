@@ -21,13 +21,13 @@ from flet_core import Container, Column, ScrollMode
 
 from app.controls.information import Text
 from app.controls.information.card import Card
-from app.controls.layout import AdminView
+from app.controls.layout import AdminBaseView
 from app.utils import Fonts
 from .create import CreateTextView
 from .get import TextView
 
 
-class TextListView(AdminView):
+class TextListView(AdminBaseView):
     route = '/admin'
     texts: list[dict]
 

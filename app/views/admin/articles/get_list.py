@@ -20,14 +20,14 @@ import functools
 from flet_core import Text, ScrollMode, Container, Column
 
 from app.controls.information.card import Card
-from app.controls.layout import AdminView
+from app.controls.layout import AdminBaseView
 from app.utils import Fonts
 from app.views.admin.articles.create import CreateArticleView
 from app.views.admin.articles.get import ArticleView
 
 
-class ArticleListView(AdminView):
-    route = '/admin'
+class ArticleListView(AdminBaseView):
+    route = '/admin/list/get'
     articles: list[dict]
 
     async def build(self):
@@ -37,31 +37,28 @@ class ArticleListView(AdminView):
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO
-        self.controls = [
-            await self.get_header(),
-            Container(
-                content=Column(
-                    controls=await self.get_controls(
-                        title=await self.client.session.gtv(key='admin_article_list_view_title'),
-                        on_create_click=self.create_article,
-                        main_section_controls=[
-                            Card(
-                                controls=[
-                                    Text(
-                                        value=await self.client.session.gtv(key=article['name_text']),
-                                        size=18,
-                                        font_family=Fonts.SEMIBOLD,
-                                    ),
-                                ],
-                                on_click=functools.partial(self.article_view, article['id']),
-                            )
-                            for article in self.articles
-                        ],
-                    ),
-                ),
-                padding=10,
-            ),
-        ]
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key='admin_article_list_view_title'),
+            on_create_click=self.create_article,
+            main_section_controls=[
+                Column(
+                    controls=[
+                        Card(
+                            controls=[
+                                Text(
+                                    value=await self.client.session.gtv(key=article['name_text']),
+                                    size=18,
+                                    font_family=Fonts.SEMIBOLD,
+                                ),
+                            ],
+                            on_click=functools.partial(self.article_view, article['id']),
+                        )
+                        for article in self.articles
+                    ],
+                    spacing=8,
+                )
+            ],
+        )
 
     async def create_article(self, _):
         await self.client.change_view(view=CreateArticleView())

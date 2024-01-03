@@ -20,10 +20,10 @@ from flet_core.dropdown import Option, Dropdown
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
-from app.controls.layout import AdminView
+from app.controls.layout import AdminBaseView
 
 
-class CountryView(AdminView):
+class CountryView(AdminBaseView):
     route = '/admin'
     country = dict
     dd_language = Dropdown

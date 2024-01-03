@@ -19,10 +19,10 @@ from flet_core import Container, Column
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
-from app.controls.layout import AdminView
+from app.controls.layout import AdminBaseView
 
 
-class CurrencyView(AdminView):
+class CurrencyView(AdminBaseView):
     route = '/admin'
     currency = dict
 

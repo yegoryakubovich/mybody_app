@@ -21,7 +21,7 @@ from flet_core import Container, Column, Row, Image, MainAxisAlignment, ScrollMo
 from flet_manager.utils import get_svg
 
 from app.controls.information import Text
-from app.controls.layout import View
+from app.controls.layout import View, AdminBaseView
 from app.utils import Fonts
 from .accounts.get_list import AccountListView
 from .articles.get_list import ArticleListView
@@ -36,6 +36,7 @@ from .services import ServiceListView
 from .texts.get_list import TextListView
 from .timezones.get_list import TimezoneListView
 from .trainings.list import TrainingListView
+from ...controls.button import ListItemButton
 
 
 class Setting:
@@ -50,140 +51,99 @@ class Setting:
 
 
 class Section:
-    name: str
     settings: list[Setting]
 
     def __init__(self, name: str, settings: list[Setting]):
-        self.name = name
         self.settings = settings
 
 
-class AdminView(View):
+class AdminView(AdminBaseView):
     route = '/admin'
 
     async def build(self):
         self.scroll = ScrollMode.AUTO
         self.bgcolor = '#FFFFFF'
-        sections = [
-            Section(
-                name=await self.client.session.gtv(key='admin_view_title'),
-                settings=[
-                    Setting(
-                        name='admin_account_get_list_view_title',
-                        icon='notifications',
-                        on_click=self.get_accounts,
-                    ),
-                    Setting(
-                        name='admin_article_get_list_view_title',
-                        icon='notifications',
-                        on_click=self.get_articles,
-                    ),
-                    Setting(
-                        name='admin_text_get_list_view_title',
-                        icon='notifications',
-                        on_click=self.get_texts,
-                    ),
-                    Setting(
-                        name='admin_product_get_list_view_title',
-                        icon='notifications',
-                        on_click=self.get_products,
-                    ),
-                    Setting(
-                        name='admin_language_get_list_view_title',
-                        icon='notifications',
-                        on_click=self.get_languages,
-                    ),
-                    Setting(
-                        name='admin_currency_get_list_view_title',
-                        icon='notifications',
-                        on_click=self.get_currencies,
-                    ),
-                    Setting(
-                        name='admin_timezone_get_list_view_title',
-                        icon='notifications',
-                        on_click=self.get_timezones,
-                    ),
-                    Setting(
-                        name='admin_country_get_list_view_title',
-                        icon='notifications',
-                        on_click=self.get_countries,
-                    ),
-                    Setting(
-                        name='admin_exercise_get_list_view_title',
-                        icon='notifications',
-                        on_click=self.get_exercises,
-                    ),
-                    Setting(
-                        name='admin_permission_get_list_view_title',
-                        icon='notifications',
-                        on_click=self.get_permissions,
-                    ),
-                    Setting(
-                        name='admin_role_get_list_view_title',
-                        icon='notifications',
-                        on_click=self.get_roles,
-                    ),
-                    Setting(
-                        name='admin_service_get_list_view_title',
-                        icon='notifications',
-                        on_click=self.get_services,
-                    ),
-                    Setting(
-                        name='trainings',
-                        icon='notifications',
-                        on_click=self.get_trainings,
-                    ),
-                ],
+        parts = [
+            Setting(
+                name='admin_account_get_list_view_title',
+                icon='notifications',
+                on_click=self.get_accounts,
+            ),
+            Setting(
+                name='admin_article_get_list_view_title',
+                icon='notifications',
+                on_click=self.get_articles,
+            ),
+            Setting(
+                name='admin_text_get_list_view_title',
+                icon='notifications',
+                on_click=self.get_texts,
+            ),
+            Setting(
+                name='admin_product_get_list_view_title',
+                icon='notifications',
+                on_click=self.get_products,
+            ),
+            Setting(
+                name='admin_language_get_list_view_title',
+                icon='notifications',
+                on_click=self.get_languages,
+            ),
+            Setting(
+                name='admin_currency_get_list_view_title',
+                icon='notifications',
+                on_click=self.get_currencies,
+            ),
+            Setting(
+                name='admin_timezone_get_list_view_title',
+                icon='notifications',
+                on_click=self.get_timezones,
+            ),
+            Setting(
+                name='admin_country_get_list_view_title',
+                icon='notifications',
+                on_click=self.get_countries,
+            ),
+            Setting(
+                name='admin_exercise_get_list_view_title',
+                icon='notifications',
+                on_click=self.get_exercises,
+            ),
+            Setting(
+                name='admin_permission_get_list_view_title',
+                icon='notifications',
+                on_click=self.get_permissions,
+            ),
+            Setting(
+                name='admin_role_get_list_view_title',
+                icon='notifications',
+                on_click=self.get_roles,
+            ),
+            Setting(
+                name='admin_service_get_list_view_title',
+                icon='notifications',
+                on_click=self.get_services,
+            ),
+            Setting(
+                name='trainings',
+                icon='notifications',
+                on_click=self.get_trainings,
             ),
         ]
-        sections_controls = []
-        for section in sections:
-            sections_controls.append(
-                Container(
-                    content=Column(
-                        controls=[
-                            Row(
-                                controls=[
-                                    Text(
-                                        value=await self.client.session.gtv(section.name),
-                                        font_family=Fonts.SEMIBOLD,
-                                        size=30,
-                                    ),
-                                ],
-                                alignment=MainAxisAlignment.SPACE_BETWEEN,
-                            ),
-                            Column(
-                                controls=[
-                                    Container(
-                                        content=Row(
-                                            controls=[
-                                                Image(
-                                                    src=get_svg(path=f'assets/icons/{setting.icon}.svg'),
-                                                    width=36,
-                                                ),
-                                                Text(
-                                                    value=await self.client.session.gtv(setting.name),
-                                                    font_family=Fonts.REGULAR,
-                                                    size=20,
-                                                ),
-                                            ],
-                                            spacing=12,
-                                        ),
-                                        ink=True,
-                                        on_click=setting.on_click,
-                                    )
-                                    for setting in section.settings
-                                ],
-                            ),
-                        ],
-                    ),
-                    padding=10,
-                ),
-            ),
-        self.controls = [
-            await self.get_header(),
-            *sections_controls,
+
+        main_sections_controls = [
+            ListItemButton(
+                icon=get_svg(path=f'assets/icons/{setting.icon}.svg'),
+                name=await self.client.session.gtv(key=setting.name),
+                on_click=setting.on_click,
+            )
+            for setting in parts
         ]
+
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key='admin_view_title'),
+            main_section_controls=main_sections_controls,
+        )
 
     async def coming_soon(self):
         pass

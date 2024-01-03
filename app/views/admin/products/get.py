@@ -21,10 +21,10 @@ from flet_core.dropdown import Option
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import Dropdown
-from app.controls.layout import AdminView
+from app.controls.layout import AdminBaseView
 
 
-class ProductView(AdminView):
+class ProductView(AdminBaseView):
     route = '/admin'
     product = dict
     dd_nutrient_type = Dropdown

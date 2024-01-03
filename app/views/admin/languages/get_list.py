@@ -20,13 +20,13 @@ import functools
 from flet_core import Container, Text, Column, ScrollMode
 
 from app.controls.information.card import Card
-from app.controls.layout import AdminView
+from app.controls.layout import AdminBaseView
 from app.utils import Fonts
 from app.views.admin.languages.get import LanguageView
 from app.views.admin.languages.create import CreateLanguageView
 
 
-class LanguageListView(AdminView):
+class LanguageListView(AdminBaseView):
     route = '/admin'
     languages: list[dict]
 

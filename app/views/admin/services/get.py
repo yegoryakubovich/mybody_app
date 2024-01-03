@@ -20,11 +20,11 @@ from flet_core import Container, Column
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField
-from app.controls.layout import AdminView
+from app.controls.layout import AdminBaseView
 from app.utils import Error
 
 
-class ServiceView(AdminView):
+class ServiceView(AdminBaseView):
     route = '/admin'
     service: dict
     tf_name: TextField

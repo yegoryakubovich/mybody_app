@@ -22,13 +22,13 @@ from flet_core import Row, Column, ScrollMode, Container
 from app.controls.button import ProductChipButton
 from app.controls.information import Text
 from app.controls.information.card import Card
-from app.controls.layout import AdminView
+from app.controls.layout import AdminBaseView
 from app.utils import Fonts
 from app.views.admin.products.create import CreateProductView
 from app.views.admin.products.get import ProductView
 
 
-class ProductListView(AdminView):
+class ProductListView(AdminBaseView):
     route = '/admin'
     products: list[dict]
     nutrient_type = None

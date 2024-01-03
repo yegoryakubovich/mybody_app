@@ -21,11 +21,11 @@ from flet_core import Container, Row, Column
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
-from app.controls.layout import AdminView
+from app.controls.layout import AdminBaseView
 from config import URL_ARTICLES_UPDATE, URL_ARTICLES_GET
 
 
-class ArticleTranslationView(AdminView):
+class ArticleTranslationView(AdminBaseView):
     route = '/admin'
 
     def __init__(self, language, article_id):

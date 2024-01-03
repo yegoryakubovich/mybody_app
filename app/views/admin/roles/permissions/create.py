@@ -21,10 +21,10 @@ from flet_core.dropdown import Option
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import Dropdown
-from app.controls.layout import AdminView
+from app.controls.layout import AdminBaseView
 
 
-class RoleCreatePermissionView(AdminView):
+class RoleCreatePermissionView(AdminBaseView):
     route = '/admin'
     dd_permission: Dropdown
     permissions = dict

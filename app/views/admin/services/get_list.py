@@ -20,13 +20,13 @@ import functools
 from flet_core import Container, Text, Column, ScrollMode
 
 from app.controls.information.card import Card
-from app.controls.layout import AdminView
+from app.controls.layout import AdminBaseView
 from app.utils import Fonts
 from app.views.admin.services.get import ServiceView
 from app.views.admin.services.create import CreateServiceView
 
 
-class ServiceListView(AdminView):
+class ServiceListView(AdminBaseView):
     route = '/admin'
     services: list[dict]
 

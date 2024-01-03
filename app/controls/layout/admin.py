@@ -84,7 +84,7 @@ class Section:
         return controls
 
 
-class AdminView(View):
+class AdminBaseView(View):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.padding = 0
@@ -100,7 +100,10 @@ class AdminView(View):
 
         title_control = await self.get_title(title=title, on_create_click=on_create_click)
 
-        controls = [title_control] + main_section_controls
+        controls = [
+           await self.get_header(),
+           title_control
+       ] + main_section_controls
         if sections is not None:
             for section in sections:
                 controls += await section.get_controls()

@@ -20,13 +20,13 @@ import functools
 from flet_core import Container, Text, Column, ScrollMode
 
 from app.controls.information.card import Card
-from app.controls.layout import AdminView
+from app.controls.layout import AdminBaseView
 from app.utils import Fonts
 from app.views.admin.currencies.create import CreateCurrencyView
 from app.views.admin.currencies.get import CurrencyView
 
 
-class CurrencyListView(AdminView):
+class CurrencyListView(AdminBaseView):
     route = '/admin'
     currencies: list[dict]
 

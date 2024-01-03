@@ -20,13 +20,13 @@ from flet_core import Container, Column, ScrollMode
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.information.card import Card
-from app.controls.layout import AdminView, Section
+from app.controls.layout import AdminBaseView, Section
 from app.utils import Fonts
 from app.views.admin.roles.permissions import RolePermissionView
 from app.views.admin.roles.permissions.create import RoleCreatePermissionView
 
 
-class RoleView(AdminView):
+class RoleView(AdminBaseView):
     route = '/admin'
     role = dict
     permissions = dict

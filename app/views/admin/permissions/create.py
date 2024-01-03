@@ -20,11 +20,11 @@ from flet_core import Container, Column
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField
-from app.controls.layout import AdminView
+from app.controls.layout import AdminBaseView
 from app.utils.error import Error
 
 
-class CreatePermissionView(AdminView):
+class CreatePermissionView(AdminBaseView):
     route = '/admin'
     tf_name: TextField
     tf_id_str: TextField

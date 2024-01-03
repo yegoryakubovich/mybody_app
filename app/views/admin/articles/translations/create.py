@@ -21,11 +21,11 @@ from flet_core.dropdown import Option
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField, Dropdown
-from app.controls.layout import AdminView
+from app.controls.layout import AdminBaseView
 from app.utils import Error
 
 
-class ArticleCreateTranslationView(AdminView):
+class ArticleCreateTranslationView(AdminBaseView):
     route = '/admin'
     dd_language: Dropdown
     tf_name: TextField
