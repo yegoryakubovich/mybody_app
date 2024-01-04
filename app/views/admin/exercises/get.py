@@ -15,7 +15,7 @@
 #
 
 
-from flet_core import Container, Column, Row
+from flet_core import Row
 from flet_core.dropdown import Option, Dropdown
 
 from app.controls.button import FilledButton
@@ -24,7 +24,7 @@ from app.controls.layout import AdminBaseView
 
 
 class ExerciseView(AdminBaseView):
-    route = '/admin'
+    route = '/admin/exercise/get'
     exercise = dict
     dd_exercise_type: Dropdown
 
@@ -56,36 +56,28 @@ class ExerciseView(AdminBaseView):
             value=self.exercise['type'],
             options=exercise_type_options,
         )
-        self.controls = [
-            await self.get_header(),
-            Container(
-                content=Column(
-                    controls=await self.get_controls(
-                        title=await self.client.session.gtv(key=self.exercise['name_text']),
-                        main_section_controls=[
-                            self.dd_exercise_type,
-                            Row(
-                                controls=[
-                                    FilledButton(
-                                        content=Text(
-                                            value=await self.client.session.gtv(key='update'),
-                                        ),
-                                        on_click=self.update_exercise,
-                                    ),
-                                    FilledButton(
-                                        content=Text(
-                                            value=await self.client.session.gtv(key='delete'),
-                                        ),
-                                        on_click=self.delete_exercise,
-                                    ),
-                                ],
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key=self.exercise['name_text']),
+            main_section_controls=[
+                self.dd_exercise_type,
+                Row(
+                    controls=[
+                        FilledButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='update'),
                             ),
-                        ],
-                    ),
+                            on_click=self.update_exercise,
+                        ),
+                        FilledButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='delete'),
+                            ),
+                            on_click=self.delete_exercise,
+                        ),
+                    ],
                 ),
-                padding=10,
-            ),
-        ]
+            ],
+         )
 
     async def delete_exercise(self, _):
         await self.client.session.api.exercise.delete(

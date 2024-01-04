@@ -17,12 +17,12 @@
 
 from .get import ArticleView
 from .get_list import ArticleListView
-from .create import CreateArticleView
+from .create import ArticleCreateView
 
 
 __all__ = [
     'ArticleListView',
-    'CreateArticleView',
+    'ArticleCreateView',
     'ArticleView',
     'translations',
 ]

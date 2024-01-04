@@ -15,7 +15,7 @@
 #
 
 
-from flet_core import Container, Column
+from flet_core import Row, ScrollMode
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -25,7 +25,7 @@ from app.utils import Error
 
 
 class ServiceView(AdminBaseView):
-    route = '/admin'
+    route = '/admin/service/get'
     service: dict
     tf_name: TextField
     tf_questions: TextField
@@ -37,44 +37,43 @@ class ServiceView(AdminBaseView):
     async def build(self):
         await self.set_type(loading=True)
         response = await self.client.session.api.service.get(
-            id_str=self.service_id_str
+            id_=self.service_id_str
         )
         self.service = response.service
         await self.set_type(loading=False)
 
         self.tf_name = TextField(
             label=await self.client.session.gtv(key='name'),
-            value=self.service['name'],
+            value=self.service['name_text'],
         )
         self.tf_questions = TextField(
-            label=await self.client.session.gtv(key='value_default'),
+            label=await self.client.session.gtv(key='questions'),
             value=self.service['questions'],
         )
-        self.controls = [
-            await self.get_header(),
-            Container(
-                content=Column(
-                    controls=await self.get_controls(
-                        title=await self.client.session.gtv(key=self.service['name_text']),
-                        main_section_controls=[
-                            FilledButton(
-                                content=Text(
-                                    value=await self.client.session.gtv(key='save'),
-                                ),
-                                on_click=self.delete_service,
+        self.scroll = ScrollMode.AUTO
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key=self.service['name_text']),
+            main_section_controls=[
+                self.tf_name,
+                self.tf_questions,
+                Row(
+                    controls=[
+                        FilledButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='save'),
                             ),
-                            FilledButton(
-                                content=Text(
-                                    value=await self.client.session.gtv(key='delete'),
-                                ),
-                                on_click=self.delete_service,
+                            on_click=self.delete_service,
+                        ),
+                        FilledButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='delete'),
                             ),
-                        ],
-                    ),
-                ),
-                padding=10,
-            ),
-        ]
+                            on_click=self.delete_service,
+                        ),
+                    ],
+                )
+            ],
+         )
 
     async def delete_service(self, _):
         await self.client.session.api.service.delete(

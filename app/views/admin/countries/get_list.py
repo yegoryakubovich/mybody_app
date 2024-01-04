@@ -17,17 +17,17 @@
 
 import functools
 
-from flet_core import Container, Text, Column, ScrollMode
+from flet_core import Text, ScrollMode
 
 from app.controls.information.card import Card
 from app.controls.layout import AdminBaseView
 from app.utils import Fonts
-from app.views.admin.countries.create import CreateCountryView
+from app.views.admin.countries.create import CountryCreateView
 from app.views.admin.countries.get import CountryView
 
 
 class CountryListView(AdminBaseView):
-    route = '/admin'
+    route = '/admin/country/list/get'
     countries: list[dict]
 
     async def build(self):
@@ -37,34 +37,26 @@ class CountryListView(AdminBaseView):
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO
-        self.controls = [
-            await self.get_header(),
-            Container(
-                content=Column(
-                    controls=await self.get_controls(
-                        title=await self.client.session.gtv(key='admin_country_list_get_view_title'),
-                        on_create_click=self.create_country,
-                        main_section_controls=[
-                            Card(
-                                controls=[
-                                    Text(
-                                        value=await self.client.session.gtv(key=country['name_text']),
-                                        size=18,
-                                        font_family=Fonts.SEMIBOLD,
-                                    ),
-                                ],
-                                on_click=functools.partial(self.country_view, country['id_str']),
-                            )
-                            for country in self.countries
-                        ],
-                    ),
-                ),
-                padding=10,
-            ),
-        ]
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key='admin_country_list_get_view_title'),
+            on_create_click=self.create_country,
+            main_section_controls=[
+                Card(
+                    controls=[
+                        Text(
+                            value=await self.client.session.gtv(key=country['name_text']),
+                            size=18,
+                            font_family=Fonts.SEMIBOLD,
+                        ),
+                    ],
+                    on_click=functools.partial(self.country_view, country['id_str']),
+                )
+                for country in self.countries
+            ],
+        )
 
     async def create_country(self, _):
-        await self.client.change_view(view=CreateCountryView())
+        await self.client.change_view(view=CountryCreateView())
 
     async def country_view(self, country_id_str, _):
         await self.client.change_view(view=CountryView(country_id_str=country_id_str))

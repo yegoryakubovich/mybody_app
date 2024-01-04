@@ -15,8 +15,6 @@
 #
 
 
-from flet_core import Container, Column
-
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField
@@ -24,35 +22,27 @@ from app.controls.layout import AdminBaseView
 from app.utils.error import Error
 
 
-class CreateRoleView(AdminBaseView):
-    route = '/admin'
+class RoleCreateView(AdminBaseView):
+    route = '/admin/role/create'
     tf_name: TextField
 
     async def build(self):
         self.tf_name = TextField(
             label=await self.client.session.gtv(key='name'),
         )
-        self.controls = [
-            await self.get_header(),
-            Container(
-                content=Column(
-                    controls=await self.get_controls(
-                        title=await self.client.session.gtv(key='admin_role_create_view_title'),
-                        main_section_controls=[
-                            self.tf_name,
-                            FilledButton(
-                                content=Text(
-                                    value=await self.client.session.gtv(key='create'),
-                                    size=16,
-                                ),
-                                on_click=self.create_role,
-                            ),
-                        ],
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key='admin_role_create_view_title'),
+            main_section_controls=[
+                self.tf_name,
+                FilledButton(
+                    content=Text(
+                        value=await self.client.session.gtv(key='create'),
+                        size=16,
                     ),
+                    on_click=self.create_role,
                 ),
-                padding=10,
-            ),
-        ]
+            ],
+        )
 
     async def create_role(self, _):
         fields = [(self.tf_name, 1, 32)]

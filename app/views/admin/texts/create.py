@@ -15,8 +15,6 @@
 #
 
 
-from flet_core import Container, Column
-
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField
@@ -25,8 +23,8 @@ from app.utils import Fonts, Error
 from .get import TextView
 
 
-class CreateTextView(AdminBaseView):
-    route = '/admin'
+class TextCreateView(AdminBaseView):
+    route = '/admin/text/create'
     tf_value_default: TextField
     tf_key: TextField
 
@@ -37,29 +35,21 @@ class CreateTextView(AdminBaseView):
         self.tf_key = TextField(
             label=await self.client.session.gtv(key='key'),
         )
-        self.controls = [
-            await self.get_header(),
-            Container(
-                content=Column(
-                    controls=await self.get_controls(
-                        title=await self.client.session.gtv(key='admin_text_create_view_title'),
-                        main_section_controls=[
-                            self.tf_value_default,
-                            self.tf_key,
-                            FilledButton(
-                                content=Text(
-                                    value=await self.client.session.gtv(key='create'),
-                                    size=15,
-                                    font_family=Fonts.REGULAR,
-                                ),
-                                on_click=self.create_text,
-                            ),
-                        ],
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key='admin_text_create_view_title'),
+            main_section_controls=[
+                self.tf_value_default,
+                self.tf_key,
+                FilledButton(
+                    content=Text(
+                        value=await self.client.session.gtv(key='create'),
+                        size=15,
+                        font_family=Fonts.REGULAR,
                     ),
+                    on_click=self.create_text,
                 ),
-                padding=10,
-            ),
-        ]
+            ],
+         )
 
     async def create_text(self, _):
         fields = [(self.tf_key, 2, 128), (self.tf_value_default, 1, 1024)]

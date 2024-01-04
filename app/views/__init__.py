@@ -16,7 +16,7 @@
 
 
 from .admin import AdminView
-from .admin.articles import CreateArticleView
+from .admin.articles import ArticleCreateView
 from .meal_report import MealReportView
 from .splash import SplashView
 from .set_language import SetLanguageView

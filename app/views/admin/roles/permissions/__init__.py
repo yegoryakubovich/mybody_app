@@ -15,11 +15,11 @@
 #
 
 
-from app.views.admin.roles.permissions.create import RoleCreatePermissionView
+from app.views.admin.roles.permissions.create import RolePermissionCreateView
 from app.views.admin.roles.permissions.get import RolePermissionView
 
 
 __all__ = [
-    'RoleCreatePermissionView',
+    'RolePermissionCreateView',
     'RolePermissionView',
 ]

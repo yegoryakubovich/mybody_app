@@ -137,7 +137,7 @@ class MealView(View):
             )
         ]
 
-        self.controls = [
+        self.controls = self.controls = [
             await self.get_header(),
             Container(
                 content=Column(

@@ -15,13 +15,13 @@
 #
 
 
-from app.views.admin.countries.create import CreateCountryView
+from app.views.admin.countries.create import CountryCreateView
 from app.views.admin.countries.get import CountryView
 from app.views.admin.countries.get_list import CountryListView
 
 
 __all__ = [
     'CountryListView',
-    'CreateCountryView',
+    'CountryCreateView',
     'CountryView',
 ]

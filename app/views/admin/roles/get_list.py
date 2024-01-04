@@ -17,17 +17,17 @@
 
 import functools
 
-from flet_core import Container, Text, Column, ScrollMode
+from flet_core import Text, ScrollMode
 
 from app.controls.information.card import Card
 from app.controls.layout import AdminBaseView
 from app.utils import Fonts
-from app.views.admin.roles.create import CreateRoleView
+from app.views.admin.roles.create import RoleCreateView
 from app.views.admin.roles.get import RoleView
 
 
 class RoleListView(AdminBaseView):
-    route = '/admin'
+    route = '/admin/role/list/get'
     roles: list[dict]
 
     async def build(self):
@@ -37,35 +37,27 @@ class RoleListView(AdminBaseView):
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO
-        self.controls = [
-            await self.get_header(),
-            Container(
-                content=Column(
-                    controls=await self.get_controls(
-                        title=await self.client.session.gtv(key='admin_role_get_list_view_title'),
-                        on_create_click=self.create_role,
-                        main_section_controls=[
-                            Card(
-                                controls=[
-                                    Text(
-                                        value=await self.client.session.gtv(key=role['name_text']),
-                                        size=18,
-                                        font_family=Fonts.SEMIBOLD,
-                                    ),
-                                ],
-                                on_click=functools.partial(self.role_view, role['id']),
-                            )
-                            for role in self.roles
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key='admin_role_get_list_view_title'),
+            on_create_click=self.create_role,
+            main_section_controls=[
+                Card(
+                    controls=[
+                        Text(
+                            value=await self.client.session.gtv(key=role['name_text']),
+                            size=18,
+                            font_family=Fonts.SEMIBOLD,
+                        ),
+                    ],
+                    on_click=functools.partial(self.role_view, role['id']),
+                )
+                for role in self.roles
 
-                        ],
-                    ),
-                ),
-                padding=10,
-            ),
-        ]
+            ],
+         )
 
     async def create_role(self, _):
-        await self.client.change_view(view=CreateRoleView())
+        await self.client.change_view(view=RoleCreateView())
 
     async def role_view(self, role_id, _):
         await self.client.change_view(view=RoleView(role_id=role_id))

@@ -17,17 +17,17 @@
 
 import functools
 
-from flet_core import Container, Text, Column, ScrollMode
+from flet_core import Text, ScrollMode
 
 from app.controls.information.card import Card
 from app.controls.layout import AdminBaseView
 from app.utils import Fonts
-from app.views.admin.currencies.create import CreateCurrencyView
+from app.views.admin.currencies.create import CurrencyCreateView
 from app.views.admin.currencies.get import CurrencyView
 
 
 class CurrencyListView(AdminBaseView):
-    route = '/admin'
+    route = '/admin/currency/list/get'
     currencies: list[dict]
 
     async def build(self):
@@ -37,34 +37,26 @@ class CurrencyListView(AdminBaseView):
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO
-        self.controls = [
-            await self.get_header(),
-            Container(
-                content=Column(
-                    controls=await self.get_controls(
-                        title=await self.client.session.gtv(key='admin_currency_list_get_view_title'),
-                        on_create_click=self.create_currency,
-                        main_section_controls=[
-                            Card(
-                                controls=[
-                                    Text(
-                                        value=await self.client.session.gtv(key=currency['id_str']),
-                                        size=18,
-                                        font_family=Fonts.SEMIBOLD,
-                                    ),
-                                ],
-                                on_click=functools.partial(self.currency_view, currency['id_str']),
-                            )
-                            for currency in self.currencies
-                        ],
-                    ),
-                ),
-                padding=10,
-            ),
-        ]
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key='admin_currency_list_get_view_title'),
+            on_create_click=self.create_currency,
+            main_section_controls=[
+                Card(
+                    controls=[
+                        Text(
+                            value=await self.client.session.gtv(key=currency['id_str']),
+                            size=18,
+                            font_family=Fonts.SEMIBOLD,
+                        ),
+                    ],
+                    on_click=functools.partial(self.currency_view, currency['id_str']),
+                )
+                for currency in self.currencies
+            ],
+        )
 
     async def create_currency(self, _):
-        await self.client.change_view(view=CreateCurrencyView())
+        await self.client.change_view(view=CurrencyCreateView())
 
     async def currency_view(self, currency_id_str, _):
         await self.client.change_view(view=CurrencyView(currency_id_str=currency_id_str))

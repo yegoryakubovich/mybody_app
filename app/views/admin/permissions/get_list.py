@@ -17,17 +17,17 @@
 
 import functools
 
-from flet_core import Container, Text, Column, ScrollMode
+from flet_core import Text, ScrollMode
 
 from app.controls.information.card import Card
 from app.controls.layout import AdminBaseView
 from app.utils import Fonts
-from app.views.admin.permissions.create import CreatePermissionView
+from app.views.admin.permissions.create import PermissionCreateView
 from app.views.admin.permissions.get import PermissionView
 
 
 class PermissionListView(AdminBaseView):
-    route = '/admin'
+    route = '/admin/permission/list/get'
     permissions: list[dict]
 
     async def build(self):
@@ -37,35 +37,27 @@ class PermissionListView(AdminBaseView):
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO
-        self.controls = [
-            await self.get_header(),
-            Container(
-                content=Column(
-                    controls=await self.get_controls(
-                        title=await self.client.session.gtv(key='admin_permission_get_list_view_title'),
-                        on_create_click=self.create_permission,
-                        main_section_controls=[
-                            Card(
-                                controls=[
-                                    Text(
-                                        value=await self.client.session.gtv(key=permission['name_text']),
-                                        size=18,
-                                        font_family=Fonts.SEMIBOLD,
-                                    ),
-                                ],
-                                on_click=functools.partial(self.permission_view, permission['id_str']),
-                            )
-                            for permission in self.permissions
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key='admin_permission_get_list_view_title'),
+            on_create_click=self.create_permission,
+            main_section_controls=[
+                Card(
+                    controls=[
+                        Text(
+                            value=await self.client.session.gtv(key=permission['name_text']),
+                            size=18,
+                            font_family=Fonts.SEMIBOLD,
+                        ),
+                    ],
+                    on_click=functools.partial(self.permission_view, permission['id_str']),
+                )
+                for permission in self.permissions
 
-                        ],
-                    ),
-                ),
-                padding=10,
-            ),
-        ]
+            ],
+        )
 
     async def create_permission(self, _):
-        await self.client.change_view(view=CreatePermissionView())
+        await self.client.change_view(view=PermissionCreateView())
 
     async def permission_view(self, permission_id_str, _):
         await self.client.change_view(view=PermissionView(permission_id_str=permission_id_str))

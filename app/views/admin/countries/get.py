@@ -15,7 +15,7 @@
 #
 
 
-from flet_core import Container, Column, Row
+from flet_core import Row
 from flet_core.dropdown import Option, Dropdown
 
 from app.controls.button import FilledButton
@@ -24,8 +24,11 @@ from app.controls.layout import AdminBaseView
 
 
 class CountryView(AdminBaseView):
-    route = '/admin'
+    route = '/admin/country/get'
     country = dict
+    languages = list[dict]
+    timezones = list[dict]
+    currencies = list[dict]
     dd_language = Dropdown
     dd_timezone = Dropdown
     dd_currency = Dropdown
@@ -40,28 +43,28 @@ class CountryView(AdminBaseView):
             id_str=self.country_id_str
         )
         self.country = response.country
-        languages = await self.client.session.api.language.get_list()
-        timezones = await self.client.session.api.timezone.get_list()
-        currencies = await self.client.session.api.currency.get_list()
+        self.languages = await self.client.session.api.language.get_list()
+        self.timezones = await self.client.session.api.timezone.get_list()
+        self.currencies = await self.client.session.api.currency.get_list()
         await self.set_type(loading=False)
 
         language_options = [
             Option(
                 text=language.get('name'),
                 key=language.get('id_str'),
-            ) for language in languages.languages
+            ) for language in self.languages.languages
         ]
         timezone_options = [
             Option(
                 text=timezone.get('id_str'),
                 key=timezone.get('id_str'),
-            ) for timezone in timezones.timezones
+            ) for timezone in self.timezones.timezones
         ]
         currency_options = [
             Option(
                 text=currency.get('name_text'),
                 key=currency.get('id_str'),
-            ) for currency in currencies.currencies
+            ) for currency in self.currencies.currencies
         ]
 
         self.dd_language = Dropdown(
@@ -79,38 +82,30 @@ class CountryView(AdminBaseView):
             value=self.country['currency'],
             options=currency_options,
         )
-        self.controls = [
-            await self.get_header(),
-            Container(
-                content=Column(
-                    controls=await self.get_controls(
-                        title=await self.client.session.gtv(key=self.country['name_text']),
-                        main_section_controls=[
-                            self.dd_language,
-                            self.dd_currency,
-                            self.dd_timezone,
-                            Row(
-                                controls=[
-                                    FilledButton(
-                                        content=Text(
-                                            value=await self.client.session.gtv(key='save'),
-                                        ),
-                                        on_click=self.update_country,
-                                    ),
-                                    FilledButton(
-                                        content=Text(
-                                            value=await self.client.session.gtv(key='delete'),
-                                        ),
-                                        on_click=self.delete_country,
-                                    ),
-                                ],
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key=self.country['name_text']),
+            main_section_controls=[
+                self.dd_language,
+                self.dd_currency,
+                self.dd_timezone,
+                Row(
+                    controls=[
+                        FilledButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='save'),
                             ),
-                        ],
-                    ),
+                            on_click=self.update_country,
+                        ),
+                        FilledButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='delete'),
+                            ),
+                            on_click=self.delete_country,
+                        ),
+                    ],
                 ),
-                padding=10,
-            ),
-        ]
+            ],
+        )
 
     async def delete_country(self, _):
         await self.client.session.api.country.delete(

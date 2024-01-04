@@ -15,7 +15,6 @@
 #
 
 
-from flet_core import Container, Column
 from flet_core.dropdown import Option
 
 from app.controls.button import FilledButton
@@ -25,53 +24,56 @@ from app.controls.layout import AdminBaseView
 from app.utils import Error
 
 
-class CreateCountryView(AdminBaseView):
-    route = '/admin'
+class CountryCreateView(AdminBaseView):
+    route = '/admin/country/create'
     tf_name: TextField
     tf_id_str: TextField
+    languages = list[dict]
+    timezones = list[dict]
+    currencies = list[dict]
     dd_language = Dropdown
     dd_timezone = Dropdown
     dd_currency = Dropdown
 
     async def build(self):
         await self.set_type(loading=True)
-        languages = await self.client.session.api.language.get_list()
-        timezones = await self.client.session.api.timezone.get_list()
-        currencies = await self.client.session.api.currency.get_list()
+        self.languages = await self.client.session.api.language.get_list()
+        self.timezones = await self.client.session.api.timezone.get_list()
+        self.currencies = await self.client.session.api.currency.get_list()
         await self.set_type(loading=False)
 
         language_options = [
             Option(
                 text=language.get('name'),
                 key=language.get('id_str'),
-            ) for language in languages.languages
+            ) for language in self.languages.languages
         ]
         timezone_options = [
             Option(
                 text=timezone.get('id_str'),
                 key=timezone.get('id_str'),
-            ) for timezone in timezones.timezones
+            ) for timezone in self.timezones.timezones
         ]
         currency_options = [
             Option(
                 text=currency.get('name_text'),
                 key=currency.get('id_str'),
-            ) for currency in currencies.currencies
+            ) for currency in self.currencies.currencies
         ]
 
         self.dd_language = Dropdown(
             label=await self.client.session.gtv(key='language'),
-            value=languages.languages[0]['id_str'],
+            value=self.languages.languages[0]['id_str'],
             options=language_options,
         )
         self.dd_timezone = Dropdown(
             label=await self.client.session.gtv(key='timezone'),
-            value=timezones.timezones[0]['id_str'],
+            value=self.timezones.timezones[0]['id_str'],
             options=timezone_options,
         )
         self.dd_currency = Dropdown(
             label=await self.client.session.gtv(key='currency'),
-            value=currencies.currencies[0]['id_str'],
+            value=self.currencies.currencies[0]['id_str'],
             options=currency_options,
         )
 
@@ -81,31 +83,23 @@ class CreateCountryView(AdminBaseView):
         self.tf_name = TextField(
             label=await self.client.session.gtv(key='name'),
         )
-        self.controls = [
-            await self.get_header(),
-            Container(
-                content=Column(
-                    controls=await self.get_controls(
-                        title=await self.client.session.gtv(key='admin_country_create_view_title'),
-                        main_section_controls=[
-                            self.tf_id_str,
-                            self.tf_name,
-                            self.dd_language,
-                            self.dd_timezone,
-                            self.dd_currency,
-                            FilledButton(
-                                content=Text(
-                                    value=await self.client.session.gtv(key='create'),
-                                    size=16,
-                                ),
-                                on_click=self.create_country,
-                            ),
-                        ],
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key='admin_country_create_view_title'),
+            main_section_controls=[
+                self.tf_id_str,
+                self.tf_name,
+                self.dd_language,
+                self.dd_timezone,
+                self.dd_currency,
+                FilledButton(
+                    content=Text(
+                        value=await self.client.session.gtv(key='create'),
+                        size=16,
                     ),
+                    on_click=self.create_country,
                 ),
-                padding=10,
-            ),
-        ]
+            ],
+        )
 
     async def create_country(self, _):
         fields = [(self.tf_id_str, 2, 16), (self.tf_name, 1, 1024)]

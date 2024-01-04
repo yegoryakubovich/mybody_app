@@ -18,7 +18,7 @@
 import functools
 from urllib.parse import urlencode
 
-from flet_core import Container, Row, Column, ScrollMode
+from flet_core import Row, ScrollMode
 
 from app.controls.button import FilledButton
 from app.controls.button.switch import StitchButton
@@ -26,8 +26,8 @@ from app.controls.information import Text
 from app.controls.information.card import Card
 from app.controls.layout.admin import AdminBaseView, Section
 from app.utils import Fonts
-from app.views.admin.articles.create import CreateArticleView
-from app.views.admin.articles.translations.create import ArticleCreateTranslationView
+from app.views.admin.articles.create import ArticleCreateView
+from app.views.admin.articles.translations.create import ArticleTranslationCreateView
 from app.views.admin.articles.translations.get import ArticleTranslationView
 from config import URL_ARTICLES_UPDATE, URL_ARTICLES_GET
 
@@ -50,79 +50,71 @@ class ArticleView(AdminBaseView):
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO
-        self.controls = [
-            await self.get_header(),
-            Container(
-                content=Column(
-                    controls=await self.get_controls(
-                        title=await self.client.session.gtv(key=self.article['name_text']),
-                        main_section_controls=[
-                            StitchButton(
-                                label=await self.client.session.gtv(key='admin_article_get_view_hide'),
-                                value=self.article['is_hide'],
-                                on_change=self.change_visibility
-                            ),
-                            Row(
-                                controls=[
-                                    FilledButton(
-                                        content=Text(
-                                            value=await self.client.session.gtv(key='admin_article_get_view_look'),
-                                        ),
-                                        url=URL_ARTICLES_GET + urlencode(
-                                            {
-                                                'id_': self.article.get('id'),
-                                                'token': '00000001:608c6cf5eb052a47e41e0ae21ff5c106',
-                                                'is_admin': False,
-                                            },
-                                        ),
-                                    ),
-                                    FilledButton(
-                                        content=Text(
-                                            value=await self.client.session.gtv(key='update'),
-                                        ),
-                                        url=URL_ARTICLES_UPDATE + urlencode(
-                                            {
-                                                'id_': self.article.get('id'),
-                                                'token': '00000001:608c6cf5eb052a47e41e0ae21ff5c106',
-                                                'is_admin': True,
-                                            },
-                                        ),
-                                    ),
-                                    FilledButton(
-                                        content=Text(
-                                            value=await self.client.session.gtv(key='delete'),
-                                        ),
-                                        on_click=self.delete_article,
-                                    ),
-                                ],
-                            ),
-                        ],
-                        sections=[
-                            Section(
-                                title=await self.client.session.gtv(key='translations'),
-                                on_create_click=self.create_translation,
-                                controls=[
-                                    Card(
-                                        controls=[
-                                            Text(
-                                                value=await self.client.session.gtv(
-                                                    key=translation.get('language')
-                                                ),
-                                                size=15,
-                                                font_family=Fonts.REGULAR,
-                                            ),
-                                        ],
-                                        on_click=functools.partial(self.translate_view, translation),
-                                    )
-                                    for translation in self.article['translations']
-                                ],
-                            ),
-                        ],
-                    ),
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key=self.article['name_text']),
+            main_section_controls=[
+                StitchButton(
+                    label=await self.client.session.gtv(key='admin_article_get_view_hide'),
+                    value=self.article['is_hide'],
+                    on_change=self.change_visibility
                 ),
-                padding=10,
-            ),
-        ]
+                Row(
+                    controls=[
+                        FilledButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='admin_article_get_view_look'),
+                            ),
+                            url=URL_ARTICLES_GET + urlencode(
+                                {
+                                    'id_': self.article.get('id'),
+                                    'token': '00000001:608c6cf5eb052a47e41e0ae21ff5c106',
+                                    'is_admin': False,
+                                },
+                            ),
+                        ),
+                        FilledButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='update'),
+                            ),
+                            url=URL_ARTICLES_UPDATE + urlencode(
+                                {
+                                    'id_': self.article.get('id'),
+                                    'token': '00000001:608c6cf5eb052a47e41e0ae21ff5c106',
+                                    'is_admin': True,
+                                },
+                            ),
+                        ),
+                        FilledButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='delete'),
+                            ),
+                            on_click=self.delete_article,
+                        ),
+                    ],
+                ),
+            ],
+            sections=[
+                Section(
+                    title=await self.client.session.gtv(key='translations'),
+                    on_create_click=self.create_translation,
+                    controls=[
+                        Card(
+                            controls=[
+                                Text(
+                                    value=await self.client.session.gtv(
+                                        key=translation.get('language')
+                                    ),
+                                    size=15,
+                                    font_family=Fonts.REGULAR,
+                                ),
+                            ],
+                            on_click=functools.partial(self.translate_view, translation),
+                        )
+                        for translation in self.article['translations']
+                    ],
+                )
+            ],
+        )
 
     async def delete_article(self, _):
         await self.client.session.api.article.delete(
@@ -139,13 +131,13 @@ class ArticleView(AdminBaseView):
 
     async def create_translation(self, _):
         await self.client.change_view(
-            view=ArticleCreateTranslationView(
+            view=ArticleTranslationCreateView(
                 article_id=self.article_id,
             ),
         )
 
     async def create_article(self, _):
-        await self.client.change_view(view=CreateArticleView())
+        await self.client.change_view(view=ArticleCreateView())
 
     async def translate_view(self, translation, _):
         await self.client.change_view(

@@ -15,14 +15,14 @@
 #
 
 
-from app.views.admin.currencies.create import CreateCurrencyView
+from app.views.admin.currencies.create import CurrencyCreateView
 from app.views.admin.currencies.get import CurrencyView
 from app.views.admin.currencies.get_list import CurrencyListView
 
 
 __all__ = [
     'CurrencyListView',
-    'CreateCurrencyView',
+    'CurrencyCreateView',
     'CurrencyView',
 ]
 

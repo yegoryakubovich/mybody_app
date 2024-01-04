@@ -17,17 +17,17 @@
 
 import functools
 
-from flet_core import Text, ScrollMode, Container, Column
+from flet_core import Text, ScrollMode
 
 from app.controls.information.card import Card
 from app.controls.layout import AdminBaseView
 from app.utils import Fonts
-from app.views.admin.articles.create import CreateArticleView
+from app.views.admin.articles.create import ArticleCreateView
 from app.views.admin.articles.get import ArticleView
 
 
 class ArticleListView(AdminBaseView):
-    route = '/admin/list/get'
+    route = '/admin/article/list/get'
     articles: list[dict]
 
     async def build(self):
@@ -41,27 +41,22 @@ class ArticleListView(AdminBaseView):
             title=await self.client.session.gtv(key='admin_article_list_view_title'),
             on_create_click=self.create_article,
             main_section_controls=[
-                Column(
+                Card(
                     controls=[
-                        Card(
-                            controls=[
-                                Text(
-                                    value=await self.client.session.gtv(key=article['name_text']),
-                                    size=18,
-                                    font_family=Fonts.SEMIBOLD,
-                                ),
-                            ],
-                            on_click=functools.partial(self.article_view, article['id']),
-                        )
-                        for article in self.articles
+                        Text(
+                            value=await self.client.session.gtv(key=article['name_text']),
+                            size=18,
+                            font_family=Fonts.SEMIBOLD,
+                        ),
                     ],
-                    spacing=8,
+                    on_click=functools.partial(self.article_view, article['id']),
                 )
+                for article in self.articles
             ],
         )
 
     async def create_article(self, _):
-        await self.client.change_view(view=CreateArticleView())
+        await self.client.change_view(view=ArticleCreateView())
 
     async def article_view(self, article_id, _):
         await self.client.change_view(view=ArticleView(article_id=article_id))

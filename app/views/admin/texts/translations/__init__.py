@@ -14,12 +14,12 @@
 # limitations under the License.
 #
 
-
-from app.views.admin.articles.translations.create import ArticleCreateTranslationView
-from app.views.admin.articles.translations.get import ArticleTranslationView
+from app.views.admin.texts.translations.create import TextTranslationCreateView
+from app.views.admin.texts.translations.get import TextTranslationView
 
 
 __all__ = [
-    'CreateTranslationTextView',
-    'TranslationTextView',
+    'TextTranslationCreateView',
+    'TextTranslationView',
 ]
+

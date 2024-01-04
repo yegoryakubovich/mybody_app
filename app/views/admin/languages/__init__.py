@@ -15,13 +15,13 @@
 #
 
 
-from app.views.admin.languages.create import CreateLanguageView
+from app.views.admin.languages.create import LanguageCreateView
 from app.views.admin.languages.get import LanguageView
 from app.views.admin.languages.get_list import LanguageListView
 
 
 __all__ = [
     'LanguageListView',
-    'CreateLanguageView',
+    'LanguageCreateView',
     'LanguageView',
 ]

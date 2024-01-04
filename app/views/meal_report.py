@@ -62,7 +62,7 @@ class MealReportView(View):
             ) for product in products
         ]
 
-        self.controls = [
+        self.controls = self.controls = [
             await self.get_header(),
             Container(
                 content=Column(

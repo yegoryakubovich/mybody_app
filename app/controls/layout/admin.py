@@ -17,7 +17,7 @@
 
 from typing import Any
 
-from flet_core import Row, Container, Image, MainAxisAlignment
+from flet_core import Row, Container, Image, MainAxisAlignment, Column
 from flet_manager.utils import get_svg
 
 from app.controls.information import Text
@@ -30,7 +30,7 @@ class Section:
     controls: list
     on_create_click: Any = None
 
-    def __init__(self, title: str, controls: list, on_create_click: Any = None,):
+    def __init__(self, title: str, controls: list, on_create_click: Any = None, ):
         self.title = title
         self.controls = controls
         self.on_create_click = on_create_click
@@ -79,8 +79,8 @@ class Section:
     async def get_controls(self) -> list:
         title_control = await self.get_title(title=self.title, on_create_click=self.on_create_click)
         controls = [
-            title_control
-        ] + self.controls
+                       title_control
+                   ] + self.controls
         return controls
 
 
@@ -100,10 +100,23 @@ class AdminBaseView(View):
 
         title_control = await self.get_title(title=title, on_create_click=on_create_click)
 
+        main_content = [
+            Container(
+                content=Column(
+                    controls=[
+                        title_control,
+                        *main_section_controls,
+                    ],
+                    spacing=8,
+                ),
+                padding=10,
+            ),
+        ]
+
         controls = [
-           await self.get_header(),
-           title_control
-       ] + main_section_controls
+            await self.get_header(),
+            *main_content,
+        ]
         if sections is not None:
             for section in sections:
                 controls += await section.get_controls()

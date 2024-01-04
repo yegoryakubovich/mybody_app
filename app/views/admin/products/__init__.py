@@ -15,13 +15,13 @@
 #
 
 
-from app.views.admin.products.create import CreateProductView
+from app.views.admin.products.create import ProductCreateView
 from app.views.admin.products.get import ProductView
 from app.views.admin.products.get_list import ProductListView
 
 
 __all__ = [
     'ProductListView',
-    'CreateProductView',
+    'ProductCreateView',
     'ProductView',
 ]

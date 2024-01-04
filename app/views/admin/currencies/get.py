@@ -15,15 +15,13 @@
 #
 
 
-from flet_core import Container, Column
-
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.layout import AdminBaseView
 
 
 class CurrencyView(AdminBaseView):
-    route = '/admin'
+    route = '/admin/currency/get'
     currency = dict
 
     def __init__(self, currency_id_str):
@@ -36,28 +34,19 @@ class CurrencyView(AdminBaseView):
             id_str=self.currency_id_str,
         )
         self.currency = response.currency
-        print( self.currency)
         await self.set_type(loading=False)
 
-        self.controls = [
-            await self.get_header(),
-            Container(
-                content=Column(
-                    controls=await self.get_controls(
-                        title=await self.client.session.gtv(key=self.currency['id_str']),
-                        main_section_controls=[
-                            FilledButton(
-                                content=Text(
-                                    value=await self.client.session.gtv(key='delete'),
-                                ),
-                                on_click=self.delete_currency,
-                            ),
-                        ],
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key=self.currency['id_str']),
+            main_section_controls=[
+                FilledButton(
+                    content=Text(
+                        value=await self.client.session.gtv(key='delete'),
                     ),
+                    on_click=self.delete_currency,
                 ),
-                padding=10,
-            ),
-        ]
+            ],
+        )
 
     async def delete_currency(self, _):
         await self.client.session.api.currency.delete(

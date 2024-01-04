@@ -17,18 +17,18 @@
 
 import functools
 
-from flet_core import Container, Column, ScrollMode
+from flet_core import ScrollMode
 
 from app.controls.information import Text
 from app.controls.information.card import Card
 from app.controls.layout import AdminBaseView
 from app.utils import Fonts
-from .create import CreateTextView
+from .create import TextCreateView
 from .get import TextView
 
 
 class TextListView(AdminBaseView):
-    route = '/admin'
+    route = '/admin/text/list/get'
     texts: list[dict]
 
     async def build(self):
@@ -38,39 +38,31 @@ class TextListView(AdminBaseView):
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO
-        self.controls = [
-            await self.get_header(),
-            Container(
-                content=Column(
-                    controls=await self.get_controls(
-                        title=await self.client.session.gtv(key='admin_text_get_list_view_title'),
-                        on_create_click=self.create_text,
-                        main_section_controls=[
-                            Card(
-                                controls=[
-                                    Text(
-                                        value=await self.client.session.gtv(key=text['key']),
-                                        size=18,
-                                        font_family=Fonts.SEMIBOLD,
-                                    ),
-                                    Text(
-                                        value=text['value_default'],
-                                        size=10,
-                                        font_family=Fonts.MEDIUM,
-                                    ),
-                                ],
-                                on_click=functools.partial(self.text_view, text['key']),
-                            )
-                            for text in self.texts
-                        ],
-                    ),
-                ),
-                padding=10,
-            ),
-        ]
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key='admin_text_get_list_view_title'),
+            on_create_click=self.create_text,
+            main_section_controls=[
+                Card(
+                    controls=[
+                        Text(
+                            value=await self.client.session.gtv(key=text['key']),
+                            size=18,
+                            font_family=Fonts.SEMIBOLD,
+                        ),
+                        Text(
+                            value=text['value_default'],
+                            size=10,
+                            font_family=Fonts.MEDIUM,
+                        ),
+                    ],
+                    on_click=functools.partial(self.text_view, text['key']),
+                )
+                for text in self.texts
+            ],
+         )
 
     async def create_text(self, _):
-        await self.client.change_view(view=CreateTextView())
+        await self.client.change_view(view=TextCreateView())
 
     async def text_view(self, key, _):
         await self.client.change_view(view=TextView(key=key))

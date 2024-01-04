@@ -15,8 +15,6 @@
 #
 
 
-from flet_core import Container, Column
-
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField
@@ -24,8 +22,8 @@ from app.controls.layout import AdminBaseView
 from app.utils.error import Error
 
 
-class CreatePermissionView(AdminBaseView):
-    route = '/admin'
+class PermissionCreateView(AdminBaseView):
+    route = '/admin/permission/create'
     tf_name: TextField
     tf_id_str: TextField
 
@@ -36,28 +34,20 @@ class CreatePermissionView(AdminBaseView):
         self.tf_name = TextField(
             label=await self.client.session.gtv(key='name'),
         )
-        self.controls = [
-            await self.get_header(),
-            Container(
-                content=Column(
-                    controls=await self.get_controls(
-                        title=await self.client.session.gtv(key='admin_permission_create_view_title'),
-                        main_section_controls=[
-                            self.tf_id_str,
-                            self.tf_name,
-                            FilledButton(
-                                content=Text(
-                                    value=await self.client.session.gtv(key='create'),
-                                    size=16,
-                                ),
-                                on_click=self.create_permission,
-                            ),
-                        ],
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key='admin_permission_create_view_title'),
+            main_section_controls=[
+                self.tf_id_str,
+                self.tf_name,
+                FilledButton(
+                    content=Text(
+                        value=await self.client.session.gtv(key='create'),
+                        size=16,
                     ),
+                    on_click=self.create_permission,
                 ),
-                padding=10,
-            ),
-        ]
+            ],
+         )
 
     async def create_permission(self, _):
         fields = [(self.tf_name, 1, 32), (self.tf_id_str, 1, 16)]

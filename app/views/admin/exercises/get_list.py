@@ -17,17 +17,17 @@
 
 import functools
 
-from flet_core import Container, Text, Column, ScrollMode
+from flet_core import Text, ScrollMode
 
 from app.controls.information.card import Card
 from app.controls.layout import AdminBaseView
 from app.utils import Fonts
-from app.views.admin.exercises.create import CreateExerciseView
+from app.views.admin.exercises.create import ExerciseCreateView
 from app.views.admin.exercises.get import ExerciseView
 
 
 class ExerciseListView(AdminBaseView):
-    route = '/admin'
+    route = '/admin/exercise/list/get'
     exercises: list[dict]
 
     async def build(self):
@@ -37,39 +37,31 @@ class ExerciseListView(AdminBaseView):
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO
-        self.controls = [
-            await self.get_header(),
-            Container(
-                content=Column(
-                    controls=await self.get_controls(
-                        title=await self.client.session.gtv(key='admin_exercises_list_get_view_title'),
-                        on_create_click=self.create_exercise,
-                        main_section_controls=[
-                            Card(
-                                controls=[
-                                    Text(
-                                        value=await self.client.session.gtv(key=exercise['name_text']),
-                                        size=18,
-                                        font_family=Fonts.SEMIBOLD,
-                                    ),
-                                    Text(
-                                        value=await self.client.session.gtv(key=exercise['type']),
-                                        size=10,
-                                        font_family=Fonts.MEDIUM,
-                                    ),
-                                ],
-                                on_click=functools.partial(self.exercise_view, exercise['id']),
-                            )
-                            for exercise in self.exercises
-                        ],
-                    ),
-                ),
-                padding=10,
-            ),
-        ]
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key='admin_exercises_list_get_view_title'),
+            on_create_click=self.create_exercise,
+            main_section_controls=[
+                Card(
+                    controls=[
+                        Text(
+                            value=await self.client.session.gtv(key=exercise['name_text']),
+                            size=18,
+                            font_family=Fonts.SEMIBOLD,
+                        ),
+                        Text(
+                            value=await self.client.session.gtv(key=exercise['type']),
+                            size=10,
+                            font_family=Fonts.MEDIUM,
+                        ),
+                    ],
+                    on_click=functools.partial(self.exercise_view, exercise['id']),
+                )
+                for exercise in self.exercises
+            ],
+         )
 
     async def create_exercise(self, _):
-        await self.client.change_view(view=CreateExerciseView())
+        await self.client.change_view(view=ExerciseCreateView())
 
     async def exercise_view(self, exercise_id, _):
         await self.client.change_view(view=ExerciseView(exercise_id=exercise_id))

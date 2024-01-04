@@ -17,17 +17,17 @@
 
 import functools
 
-from flet_core import Container, Text, Column, ScrollMode
+from flet_core import Text, ScrollMode
 
 from app.controls.information.card import Card
 from app.controls.layout import AdminBaseView
 from app.utils import Fonts
+from app.views.admin.services.create import ServiceCreateView
 from app.views.admin.services.get import ServiceView
-from app.views.admin.services.create import CreateServiceView
 
 
 class ServiceListView(AdminBaseView):
-    route = '/admin'
+    route = '/admin/service/list/get'
     services: list[dict]
 
     async def build(self):
@@ -37,34 +37,26 @@ class ServiceListView(AdminBaseView):
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO
-        self.controls = [
-            await self.get_header(),
-            Container(
-                content=Column(
-                    controls=await self.get_controls(
-                        title=await self.client.session.gtv(key='admin_service_list_get_view_title'),
-                        on_create_click=self.create_service,
-                        main_section_controls=[
-                            Card(
-                                controls=[
-                                    Text(
-                                        value=await self.client.session.gtv(key=service['name_text']),
-                                        size=18,
-                                        font_family=Fonts.SEMIBOLD,
-                                    ),
-                                ],
-                                on_click=functools.partial(self.service_view, service['id_str']),
-                            )
-                            for service in self.services
-                        ],
-                    ),
-                ),
-                padding=10,
-            ),
-        ]
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key='admin_service_list_get_view_title'),
+            on_create_click=self.create_service,
+            main_section_controls=[
+                Card(
+                    controls=[
+                        Text(
+                            value=await self.client.session.gtv(key=service['name_text']),
+                            size=18,
+                            font_family=Fonts.SEMIBOLD,
+                        ),
+                    ],
+                    on_click=functools.partial(self.service_view, service['id_str']),
+                )
+                for service in self.services
+            ],
+         )
 
     async def create_service(self, _):
-        await self.client.change_view(view=CreateServiceView())
+        await self.client.change_view(view=ServiceCreateView())
 
     async def service_view(self, service_id_str, _):
         await self.client.change_view(view=ServiceView(service_id_str=service_id_str))

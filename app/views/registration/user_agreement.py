@@ -16,7 +16,6 @@
 
 
 from flet_core import Column
-from mybody_api_client import Account
 
 from app.controls.button import FilledButton
 from app.controls.information import Text

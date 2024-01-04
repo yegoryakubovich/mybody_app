@@ -17,12 +17,10 @@
 
 from typing import Any
 
-from flet_core import Container, Column, Row, Image, MainAxisAlignment, ScrollMode
+from flet_core import ScrollMode
 from flet_manager.utils import get_svg
 
-from app.controls.information import Text
-from app.controls.layout import View, AdminBaseView
-from app.utils import Fonts
+from app.controls.layout import AdminBaseView
 from .accounts.get_list import AccountListView
 from .articles.get_list import ArticleListView
 from .countries import CountryListView
@@ -35,7 +33,7 @@ from .roles import RoleListView
 from .services import ServiceListView
 from .texts.get_list import TextListView
 from .timezones.get_list import TimezoneListView
-from .trainings.list import TrainingListView
+from .trainings.get_list import TrainingListView
 from ...controls.button import ListItemButton
 
 
@@ -53,7 +51,7 @@ class Setting:
 class Section:
     settings: list[Setting]
 
-    def __init__(self, name: str, settings: list[Setting]):
+    def __init__(self, settings: list[Setting]):
         self.settings = settings
 
 

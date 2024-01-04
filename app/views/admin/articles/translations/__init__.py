@@ -15,11 +15,11 @@
 #
 
 
-from app.views.admin.articles.translations.create import ArticleCreateTranslationView
+from app.views.admin.articles.translations.create import ArticleTranslationCreateView
 from app.views.admin.articles.translations.get import ArticleTranslationView
 
 
 __all__ = [
-    'ArticleCreateTranslationView',
+    'ArticleTranslationCreateView',
     'ArticleTranslationView',
 ]

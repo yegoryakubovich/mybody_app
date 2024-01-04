@@ -15,7 +15,6 @@
 #
 
 
-from flet_core import Container, Column
 from flet_core.dropdown import Option
 
 from app.controls.button import FilledButton
@@ -24,8 +23,8 @@ from app.controls.input import Dropdown
 from app.controls.layout import AdminBaseView
 
 
-class RoleCreatePermissionView(AdminBaseView):
-    route = '/admin'
+class RolePermissionCreateView(AdminBaseView):
+    route = '/admin/role/permissions/create'
     dd_permission: Dropdown
     permissions = dict
 
@@ -50,27 +49,19 @@ class RoleCreatePermissionView(AdminBaseView):
             value=self.permissions[0]['name_text'],
             options=permissions_options,
         )
-        self.controls = [
-            await self.get_header(),
-            Container(
-                content=Column(
-                    controls=await self.get_controls(
-                        title=await self.client.session.gtv(key='admin_role_permission_create_view_title'),
-                        main_section_controls=[
-                            self.dd_permission,
-                            FilledButton(
-                                content=Text(
-                                    value=await self.client.session.gtv(key='create'),
-                                    size=16,
-                                ),
-                                on_click=self.create_permission,
-                            ),
-                        ],
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key='admin_role_permission_create_view_title'),
+            main_section_controls=[
+                self.dd_permission,
+                FilledButton(
+                    content=Text(
+                        value=await self.client.session.gtv(key='create'),
+                        size=16,
                     ),
+                    on_click=self.create_permission,
                 ),
-                padding=10,
-            )
-        ]
+            ],
+         )
 
     async def create_permission(self, _):
         await self.client.session.api.role.create_permission(

@@ -15,15 +15,13 @@
 #
 
 
-from flet_core import Container, Column
-
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.layout import AdminBaseView
 
 
 class LanguageView(AdminBaseView):
-    route = '/admin'
+    route = '/admin/language/get'
     language = dict
 
     def __init__(self, language_id_str):
@@ -38,25 +36,17 @@ class LanguageView(AdminBaseView):
         self.language = response.language
         await self.set_type(loading=False)
 
-        self.controls = [
-            await self.get_header(),
-            Container(
-                content=Column(
-                    controls=await self.get_controls(
-                        title=await self.client.session.gtv(key=self.language['name_text']),
-                        main_section_controls=[
-                            FilledButton(
-                                content=Text(
-                                    value=await self.client.session.gtv(key='delete'),
-                                ),
-                                on_click=self.delete_language,
-                            ),
-                        ],
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key=self.language['name_text']),
+            main_section_controls=[
+                FilledButton(
+                    content=Text(
+                        value=await self.client.session.gtv(key='delete'),
                     ),
+                    on_click=self.delete_language,
                 ),
-                padding=10,
-            ),
-        ]
+            ],
+         )
 
     async def delete_language(self, _):
         await self.client.session.api.language.delete(

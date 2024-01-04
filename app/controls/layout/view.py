@@ -15,7 +15,7 @@
 #
 
 
-from flet_core import Container, Image, alignment, padding, BoxShadow, Row, MainAxisAlignment, TextOverflow
+from flet_core import Container, Image, alignment, padding, BoxShadow, Row, MainAxisAlignment
 from flet_manager.utils import get_svg
 from flet_manager.views import BaseView
 

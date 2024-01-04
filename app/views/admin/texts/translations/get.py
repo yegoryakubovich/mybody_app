@@ -15,7 +15,7 @@
 #
 
 
-from flet_core import Container, Row, Column
+from flet_core import Row
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -23,8 +23,8 @@ from app.controls.input import TextField
 from app.controls.layout import AdminBaseView
 
 
-class TranslationTextView(AdminBaseView):
-    route = '/admin'
+class TextTranslationView(AdminBaseView):
+    route = '/admin/text/translation/get'
     tf_value = TextField
 
     def __init__(self, language, text_key):
@@ -37,36 +37,28 @@ class TranslationTextView(AdminBaseView):
             label=await self.client.session.gtv(key='value'),
             value=self.language['value']
         )
-        self.controls = [
-            await self.get_header(),
-            Container(
-                content=Column(
-                    controls=await self.get_controls(
-                        title=self.language['language'],
-                        main_section_controls=[
-                            self.tf_value,
-                            Row(
-                                controls=[
-                                    FilledButton(
-                                        content=Text(
-                                            value=await self.client.session.gtv(key='save'),
-                                        ),
-                                        on_click=self.update_translation,
-                                    ),
-                                    FilledButton(
-                                        content=Text(
-                                            value=await self.client.session.gtv(key='delete'),
-                                        ),
-                                        on_click=self.delete_translation,
-                                    ),
-                                ],
+        self.controls = await self.get_controls(
+            title=self.language['language'],
+            main_section_controls=[
+                self.tf_value,
+                Row(
+                    controls=[
+                        FilledButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='save'),
                             ),
-                        ],
-                    ),
+                            on_click=self.update_translation,
+                        ),
+                        FilledButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='delete'),
+                            ),
+                            on_click=self.delete_translation,
+                        ),
+                    ],
                 ),
-                padding=10,
-            ),
-        ]
+            ],
+         )
 
     async def delete_translation(self, _):
         await self.client.session.api.text.delete_translation(

@@ -17,7 +17,7 @@
 
 import functools
 
-from flet_core import Container, Row, Column, ScrollMode
+from flet_core import Row, Column, ScrollMode
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -25,15 +25,15 @@ from app.controls.information.card import Card
 from app.controls.input import TextField
 from app.controls.layout import Section, AdminBaseView
 from app.utils import Fonts
-from .translations.create import CreateTranslationTextView
-from .translations.get import TranslationTextView
+from .translations.create import TextTranslationCreateView
+from .translations.get import TextTranslationView
 
 
 class TextView(AdminBaseView):
-    route = '/admin'
+    route = '/admin/text/get'
+    text = dict
     tf_key = TextField
     tf_value_default = TextField
-    text = dict
 
     def __init__(self, key):
         super().__init__()
@@ -56,65 +56,57 @@ class TextView(AdminBaseView):
             value=self.text['value_default']
         )
         self.scroll = ScrollMode.AUTO
-        self.controls = [
-            await self.get_header(),
-            Container(
-                content=Column(
-                    controls=await self.get_controls(
-                        title=self.text['value_default'],
-                        main_section_controls=[
-                            Column(
-                                controls=[
-                                    self.tf_key,
-                                    self.tf_value_default,
-                                    Row(
-                                        controls=[
-                                            FilledButton(
-                                                content=Text(
-                                                    value=await self.client.session.gtv(key='save'),
-                                                ),
-                                                on_click=self.update_text,
-                                            ),
-                                            FilledButton(
-                                                content=Text(
-                                                    value=await self.client.session.gtv(key='delete'),
-                                                ),
-                                                on_click=self.delete_text,
-                                            ),
-                                        ],
+        self.controls = await self.get_controls(
+            title=self.text['value_default'],
+            main_section_controls=[
+                Column(
+                    controls=[
+                        self.tf_key,
+                        self.tf_value_default,
+                        Row(
+                            controls=[
+                                FilledButton(
+                                    content=Text(
+                                        value=await self.client.session.gtv(key='save'),
                                     ),
-                                ],
-                            ),
-                        ],
-                        sections=[
-                            Section(
-                                title=await self.client.session.gtv(key='admin_article_get_view_translations'),
-                                on_create_click=self.create_translation,
-                                controls=[
-                                    Card(
-                                        controls=[
-                                            Text(
-                                                value=language['language'],
-                                                size=15,
-                                                font_family=Fonts.REGULAR,
-                                            ),
-                                            Text(
-                                                value=language['value'],
-                                                size=10,
-                                                font_family=Fonts.MEDIUM,
-                                            ),
-                                        ],
-                                        on_click=functools.partial(self.translation_view, language),
-                                    )
-                                    for language in self.text['translations']
-                                ],
-                            ),
-                        ],
-                    ),
+                                    on_click=self.update_text,
+                                ),
+                                FilledButton(
+                                    content=Text(
+                                        value=await self.client.session.gtv(key='delete'),
+                                    ),
+                                    on_click=self.delete_text,
+                                ),
+                            ],
+                        ),
+                    ],
                 ),
-                padding=10,
-            ),
-        ]
+            ],
+            sections=[
+                Section(
+                    title=await self.client.session.gtv(key='admin_article_get_view_translations'),
+                    on_create_click=self.create_translation,
+                    controls=[
+                        Card(
+                            controls=[
+                                Text(
+                                    value=language['language'],
+                                    size=15,
+                                    font_family=Fonts.REGULAR,
+                                ),
+                                Text(
+                                    value=language['value'],
+                                    size=10,
+                                    font_family=Fonts.MEDIUM,
+                                ),
+                            ],
+                            on_click=functools.partial(self.translation_view, language),
+                        )
+                        for language in self.text['translations']
+                    ],
+                ),
+            ],
+         )
 
     async def delete_text(self, _):
         await self.client.session.api.text.delete(
@@ -131,8 +123,8 @@ class TextView(AdminBaseView):
         await self.update_async()
 
     async def create_translation(self, _):
-        await self.client.change_view(view=CreateTranslationTextView(key=self.key))
+        await self.client.change_view(view=TextTranslationCreateView(key=self.key))
 
     async def translation_view(self, language, _):
         text_key = self.text['key']
-        await self.client.change_view(TranslationTextView(language=language, text_key=text_key))
+        await self.client.change_view(TextTranslationView(language=language, text_key=text_key))

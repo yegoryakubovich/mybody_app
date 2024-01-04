@@ -15,8 +15,6 @@
 #
 
 
-from flet_core import Container, Column
-
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField
@@ -24,7 +22,7 @@ from app.controls.layout import AdminBaseView
 from app.utils import Error
 
 
-class CreateTimezoneView(AdminBaseView):
+class TimezoneCreateView(AdminBaseView):
     route = '/admin'
     tf_deviation: TextField
     tf_id_str: TextField
@@ -36,28 +34,20 @@ class CreateTimezoneView(AdminBaseView):
         self.tf_deviation = TextField(
             label=await self.client.session.gtv(key='deviation'),
         )
-        self.controls = [
-            await self.get_header(),
-            Container(
-                content=Column(
-                    controls=await self.get_controls(
-                        title=await self.client.session.gtv(key='admin_timezone_create_view_title'),
-                        main_section_controls=[
-                            self.tf_id_str,
-                            self.tf_deviation,
-                            FilledButton(
-                                content=Text(
-                                    value=await self.client.session.gtv(key='create'),
-                                    size=16,
-                                ),
-                                on_click=self.create_timezone,
-                            ),
-                        ],
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key='admin_timezone_create_view_title'),
+            main_section_controls=[
+                self.tf_id_str,
+                self.tf_deviation,
+                FilledButton(
+                    content=Text(
+                        value=await self.client.session.gtv(key='create'),
+                        size=16,
                     ),
+                    on_click=self.create_timezone,
                 ),
-                padding=10,
-            ),
-        ]
+            ],
+         )
 
     async def create_timezone(self, _):
         fields = [(self.tf_id_str, 1, 16)]

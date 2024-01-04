@@ -15,7 +15,6 @@
 #
 
 
-from flet_core import Container, Column
 from flet_core.dropdown import Option
 
 from app.controls.button import FilledButton
@@ -25,19 +24,19 @@ from app.controls.layout import AdminBaseView
 from app.utils import Error
 
 
-class CreateProductView(AdminBaseView):
-    route = '/admin'
+class ProductCreateView(AdminBaseView):
+    route = '/admin/product/create'
+    articles = list[dict]
     tf_name: TextField
     dd_nutrients_type = Dropdown
     dd_articles = Dropdown
     dd_units = Dropdown
 
     async def build(self):
-
         await self.set_type(loading=True)
         response = await self.client.session.api.article.get_list(
         )
-        articles = response.articles
+        self.articles = response.articles
         await self.set_type(loading=False)
 
         nutrients_unit = [
@@ -53,7 +52,7 @@ class CreateProductView(AdminBaseView):
             Option(
                 text=article['name_text'],
                 key=article['id']
-            ) for article in articles
+            ) for article in self.articles
         ]
         nutrients_type_options = [
             Option(
@@ -75,7 +74,7 @@ class CreateProductView(AdminBaseView):
         )
         self.dd_articles = Dropdown(
             label=await self.client.session.gtv(key='article'),
-            value=await self.client.session.gtv(key=articles[0]['name_text']),
+            value=await self.client.session.gtv(key=self.articles[0]['name_text']),
             options=article_options,
         )
         self.dd_units = Dropdown(
@@ -83,30 +82,22 @@ class CreateProductView(AdminBaseView):
             value=nutrients_unit[0],
             options=nutrients_unit,
         )
-        self.controls = [
-            await self.get_header(),
-            Container(
-                content=Column(
-                    controls=await self.get_controls(
-                        title=await self.client.session.gtv(key='admin_product_create_view_title'),
-                        main_section_controls=[
-                            self.tf_name,
-                            self.dd_nutrients_type,
-                            self.dd_articles,
-                            self.dd_units,
-                            FilledButton(
-                                content=Text(
-                                    value=await self.client.session.gtv(key='create'),
-                                    size=16,
-                                ),
-                                on_click=self.create_product,
-                            ),
-                        ],
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key='admin_product_create_view_title'),
+            main_section_controls=[
+                self.tf_name,
+                self.dd_nutrients_type,
+                self.dd_articles,
+                self.dd_units,
+                FilledButton(
+                    content=Text(
+                        value=await self.client.session.gtv(key='create'),
+                        size=16,
                     ),
+                    on_click=self.create_product,
                 ),
-                padding=10,
-            ),
-        ]
+            ],
+         )
 
     async def create_product(self, _):
         from app.views.admin.products.get import ProductView

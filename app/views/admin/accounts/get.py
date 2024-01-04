@@ -14,13 +14,11 @@
 # limitations under the License.
 #
 
-from flet_core import Container, Column
-
 from app.controls.information import Text
-from app.controls.layout import View
+from app.controls.layout import AdminBaseView
 
 
-class AccountView(View):
+class AccountView(AdminBaseView):
     route = '/admin/accounts/get'
     account = list
 
@@ -36,39 +34,32 @@ class AccountView(View):
         self.account = response.account
         await self.set_type(loading=False)
 
-        self.controls = [
-            await self.get_header(),
-            Container(
-                content=Column(
-                    controls=[
-                        await self.get_title(
-                         title=await self.client.session.gtv(key=self.account['username']),
-                        ),
-                        Text(
-                            value=await self.client.session.gtv(key=self.account['firstname']),
-                        ),
-                        Text(
-                            value=await self.client.session.gtv(key=self.account['lastname']),
-                        ),
-                        Text(
-                            value=self.account['surname']
-                            if self.account['surname']
-                            else await self.client.session.gtv(key='no'),
-                        ),
-                        Text(
-                            value=await self.client.session.gtv(key=self.account['country']),
-                        ),
-                        Text(
-                            value=await self.client.session.gtv(key=self.account['language']),
-                        ),
-                        Text(
-                            value=await self.client.session.gtv(key=self.account['timezone']),
-                        ),
-                        Text(
-                            value=await self.client.session.gtv(key=self.account['currency']),
-                        ),
-                    ],
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key='admin_account_get_list_view_title'),
+            main_section_controls=[
+                Text(
+                    value=await self.client.session.gtv(key=self.account['firstname']),
                 ),
-                padding=10,
-            ),
-        ]
+                Text(
+                    value=await self.client.session.gtv(key=self.account['lastname']),
+                ),
+                Text(
+                    value=self.account['surname']
+                    if self.account['surname']
+                    else await self.client.session.gtv(key='no'),
+                ),
+                Text(
+                    value=await self.client.session.gtv(key=self.account['country']),
+                ),
+                Text(
+                    value=await self.client.session.gtv(key=self.account['language']),
+                ),
+                Text(
+                    value=await self.client.session.gtv(key=self.account['timezone']),
+                ),
+                Text(
+                    value=await self.client.session.gtv(key=self.account['currency']),
+                ),
+            ],
+        )
+

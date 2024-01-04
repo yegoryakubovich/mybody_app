@@ -17,12 +17,12 @@
 
 from .get import TextView
 from .get_list import TextListView
-from .create import CreateTextView
+from .create import TextCreateView
 
 
 __all__ = [
     'TextListView',
-    'CreateTextView',
+    'TextCreateView',
     'TextView',
     'translations'
 ]

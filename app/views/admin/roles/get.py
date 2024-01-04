@@ -15,7 +15,7 @@
 #
 import functools
 
-from flet_core import Container, Column, ScrollMode
+from flet_core import ScrollMode
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -23,11 +23,11 @@ from app.controls.information.card import Card
 from app.controls.layout import AdminBaseView, Section
 from app.utils import Fonts
 from app.views.admin.roles.permissions import RolePermissionView
-from app.views.admin.roles.permissions.create import RoleCreatePermissionView
+from app.views.admin.roles.permissions.create import RolePermissionCreateView
 
 
 class RoleView(AdminBaseView):
-    route = '/admin'
+    route = '/admin/role/get'
     role = dict
     permissions = dict
 
@@ -48,44 +48,36 @@ class RoleView(AdminBaseView):
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO
-        self.controls = [
-            await self.get_header(),
-            Container(
-                content=Column(
-                    controls=await self.get_controls(
-                        title=await self.client.session.gtv(key=self.role['name_text']),
-                        main_section_controls=[
-                            FilledButton(
-                                content=Text(
-                                    value=await self.client.session.gtv(key='delete'),
-                                ),
-                                on_click=self.delete_role,
-                            ),
-                        ],
-                        sections=[
-                            Section(
-                                title=await self.client.session.gtv(key='permission'),
-                                on_create_click=self.create_permission,
-                                controls=[
-                                    Card(
-                                        controls=[
-                                            Text(
-                                                value=permission['permission'],
-                                                size=15,
-                                                font_family=Fonts.REGULAR,
-                                            ),
-                                        ],
-                                        on_click=functools.partial(self.permission_view, permission['id']),
-                                    )
-                                    for permission in self.permissions
-                                ],
-                            ),
-                        ],
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key=self.role['name_text']),
+            main_section_controls=[
+                FilledButton(
+                    content=Text(
+                        value=await self.client.session.gtv(key='delete'),
                     ),
+                    on_click=self.delete_role,
                 ),
-                padding=10,
-            ),
-        ]
+            ],
+            sections=[
+                Section(
+                    title=await self.client.session.gtv(key='permission'),
+                    on_create_click=self.create_permission,
+                    controls=[
+                        Card(
+                            controls=[
+                                Text(
+                                    value=permission['permission'],
+                                    size=15,
+                                    font_family=Fonts.REGULAR,
+                                ),
+                            ],
+                            on_click=functools.partial(self.permission_view, permission['id']),
+                        )
+                        for permission in self.permissions
+                    ],
+                ),
+            ],
+         )
 
     async def delete_role(self, _):
         await self.client.session.api.role.delete(
@@ -94,7 +86,7 @@ class RoleView(AdminBaseView):
         await self.client.change_view(go_back=True)
 
     async def create_permission(self, _):
-        await self.client.change_view(view=RoleCreatePermissionView(role_id=self.role_id))
+        await self.client.change_view(view=RolePermissionCreateView(role_id=self.role_id))
 
     async def permission_view(self, permission_id, _):
         await self.client.change_view(view=RolePermissionView(permission_id=permission_id))

@@ -17,19 +17,19 @@
 
 import functools
 
-from flet_core import Row, Column, ScrollMode, Container
+from flet_core import Row, ScrollMode
 
 from app.controls.button import ProductChipButton
 from app.controls.information import Text
 from app.controls.information.card import Card
 from app.controls.layout import AdminBaseView
 from app.utils import Fonts
-from app.views.admin.products.create import CreateProductView
+from app.views.admin.products.create import ProductCreateView
 from app.views.admin.products.get import ProductView
 
 
 class ProductListView(AdminBaseView):
-    route = '/admin'
+    route = '/admin/product/list/get'
     products: list[dict]
     nutrient_type = None
 
@@ -42,63 +42,55 @@ class ProductListView(AdminBaseView):
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO
-        self.controls = [
-            await self.get_header(),
-            Container(
-                content=Column(
-                    controls=await self.get_controls(
-                        title=await self.client.session.gtv(key='admin_product_get_list_view_title'),
-                        on_create_click=self.create_product,
-                        main_section_controls=[
-                            Row(
-                                controls=[
-                                    ProductChipButton(
-                                        Text(
-                                            value=await self.client.session.gtv(key='fats'),
-                                        ).value,
-                                        on_click=self.fats
-                                    ),
-                                    ProductChipButton(
-                                        Text(
-                                            value=await self.client.session.gtv(key='proteins'),
-                                        ).value,
-                                        on_click=self.proteins
-                                    ),
-                                    ProductChipButton(
-                                        Text(
-                                            value=await self.client.session.gtv(key='carbohydrates'),
-                                        ).value,
-                                        on_click=self.carbohydrates,
-                                    ),
-                                    ProductChipButton(
-                                        Text(
-                                            value=await self.client.session.gtv(key='all_products'),
-                                        ).value,
-                                        on_click=self.all_type,
-                                    ),
-                                ],
-                            ),
-                        ] + [
-                            Card(
-                                controls=[
-                                    Text(
-                                        value=await self.client.session.gtv(key=product['name_text']),
-                                        size=18,
-                                        font_family=Fonts.SEMIBOLD,
-                                    ),
-                                ],
-                                on_click=functools.partial(self.product_view, product['id']),
-                            )
-                            for product in self.products
-                        ],
-                    ),
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key='admin_product_get_list_view_title'),
+            on_create_click=self.create_product,
+            main_section_controls=[
+                Row(
+                    controls=[
+                        ProductChipButton(
+                            Text(
+                                value=await self.client.session.gtv(key='fats'),
+                            ).value,
+                            on_click=self.fats
+                        ),
+                        ProductChipButton(
+                            Text(
+                                value=await self.client.session.gtv(key='proteins'),
+                            ).value,
+                            on_click=self.proteins
+                        ),
+                        ProductChipButton(
+                            Text(
+                                value=await self.client.session.gtv(key='carbohydrates'),
+                            ).value,
+                            on_click=self.carbohydrates,
+                        ),
+                        ProductChipButton(
+                            Text(
+                                value=await self.client.session.gtv(key='all_products'),
+                            ).value,
+                            on_click=self.all_type,
+                        ),
+                    ],
                 ),
-                padding=10,
-            ),
-        ]
+            ] + [
+                Card(
+                    controls=[
+                        Text(
+                            value=await self.client.session.gtv(key=product['name_text']),
+                            size=18,
+                            font_family=Fonts.SEMIBOLD,
+                        ),
+                    ],
+                    on_click=functools.partial(self.product_view, product['id']),
+                )
+                for product in self.products
+            ],
+         )
 
     async def create_product(self, _):
-        await self.client.change_view(view=CreateProductView())
+        await self.client.change_view(view=ProductCreateView())
 
     async def product_view(self, product_id, _):
         await self.client.change_view(view=ProductView(product_id=product_id))

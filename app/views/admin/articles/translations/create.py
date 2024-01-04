@@ -15,7 +15,6 @@
 #
 
 
-from flet_core import Container, Column
 from flet_core.dropdown import Option
 
 from app.controls.button import FilledButton
@@ -25,11 +24,10 @@ from app.controls.layout import AdminBaseView
 from app.utils import Error
 
 
-class ArticleCreateTranslationView(AdminBaseView):
-    route = '/admin'
+class ArticleTranslationCreateView(AdminBaseView):
+    route = '/admin/articles/translation/create'
     dd_language: Dropdown
     tf_name: TextField
-    article = list[dict]
 
     def __init__(self, article_id):
         super().__init__()
@@ -55,28 +53,20 @@ class ArticleCreateTranslationView(AdminBaseView):
             value=languages_options[0].key,
             options=languages_options,
         )
-        self.controls = [
-            await self.get_header(),
-            Container(
-                content=Column(
-                    controls=await self.get_controls(
-                        title=await self.client.session.gtv(key='admin_article_translation_create_view_title'),
-                        main_section_controls=[
-                            self.tf_name,
-                            self.dd_language,
-                            FilledButton(
-                                content=Text(
-                                    value=await self.client.session.gtv(key='create'),
-                                    size=16,
-                                ),
-                                on_click=self.create_translation,
-                            ),
-                        ],
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key='admin_article_translation_create_view_title'),
+            main_section_controls=[
+                self.tf_name,
+                self.dd_language,
+                FilledButton(
+                    content=Text(
+                        value=await self.client.session.gtv(key='create'),
+                        size=16,
                     ),
+                    on_click=self.create_translation,
                 ),
-                padding=10,
-            )
-        ]
+            ],
+        )
 
     async def create_translation(self, _):
         fields = [(self.tf_name, 1, 1024)]

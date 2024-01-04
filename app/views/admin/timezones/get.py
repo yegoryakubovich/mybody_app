@@ -15,15 +15,13 @@
 #
 
 
-from flet_core import Container, Column
-
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.layout import AdminBaseView
 
 
 class TimezoneView(AdminBaseView):
-    route = '/admin'
+    route = '/admin/timezone/get'
     timezone = dict
 
     def __init__(self, timezone_id_str):
@@ -38,25 +36,17 @@ class TimezoneView(AdminBaseView):
         self.timezone = response.timezone
         await self.set_type(loading=False)
 
-        self.controls = [
-            await self.get_header(),
-            Container(
-                content=Column(
-                    controls=await self.get_controls(
-                        title=await self.client.session.gtv(key=self.timezone['id_str']),
-                        main_section_controls=[
-                            FilledButton(
-                                content=Text(
-                                    value=await self.client.session.gtv(key='delete'),
-                                ),
-                                on_click=self.delete_timezone,
-                            ),
-                        ],
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key=self.timezone['id_str']),
+            main_section_controls=[
+                FilledButton(
+                    content=Text(
+                        value=await self.client.session.gtv(key='delete'),
                     ),
+                    on_click=self.delete_timezone,
                 ),
-                padding=10,
-            ),
-        ]
+            ],
+         )
 
     async def delete_timezone(self, _):
         await self.client.session.api.timezone.delete(

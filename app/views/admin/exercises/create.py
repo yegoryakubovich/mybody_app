@@ -15,7 +15,6 @@
 #
 
 
-from flet_core import Container, Column
 from flet_core.dropdown import Option
 
 from app.controls.button import FilledButton
@@ -25,8 +24,8 @@ from app.controls.layout import AdminBaseView
 from app.utils import Error
 
 
-class CreateExerciseView(AdminBaseView):
-    route = '/admin'
+class ExerciseCreateView(AdminBaseView):
+    route = '/admin/exercise/create'
     tf_name: TextField
     dd_exercise_type: Dropdown
 
@@ -50,28 +49,20 @@ class CreateExerciseView(AdminBaseView):
             options=exercise_type_options,
         )
 
-        self.controls = [
-            await self.get_header(),
-            Container(
-                content=Column(
-                    controls=await self.get_controls(
-                        title=await self.client.session.gtv(key='admin_exercise_create_view_title'),
-                        main_section_controls=[
-                            self.tf_name,
-                            self.dd_exercise_type,
-                            FilledButton(
-                                content=Text(
-                                    value=await self.client.session.gtv(key='create'),
-                                    size=16,
-                                ),
-                                on_click=self.create_exercise,
-                            ),
-                        ],
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key='admin_exercise_create_view_title'),
+            main_section_controls=[
+                self.tf_name,
+                self.dd_exercise_type,
+                FilledButton(
+                    content=Text(
+                        value=await self.client.session.gtv(key='create'),
+                        size=16,
                     ),
+                    on_click=self.create_exercise,
                 ),
-                padding=10,
-            ),
-        ]
+            ],
+         )
 
     async def create_exercise(self, _):
         fields = [(self.tf_name, 1, 1024)]
