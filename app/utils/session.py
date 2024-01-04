@@ -13,7 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-from types import SimpleNamespace
+
+
 from typing import Any
 
 from flet_core import Page
@@ -39,9 +40,11 @@ class Session:
     async def init(self):
         self.token = await self.get_cs(key='token')
         self.language = await self.get_cs(key='language')
+        self.text_pack_id = await self.get_cs(key='text_pack_id')
 
         self.api = MyBodyApiClient(token=self.token)
         response = await self.api.account.get_additional()
+        print(response)
 
         if response.state == 'error':
             self.token = None
@@ -63,12 +66,12 @@ class Session:
                 return AuthenticationView()
 
         else:
-            account = SimpleNamespace(**response.account)
-            if self.language != account.language:
+            self.account = response.account
+            self.language = self.account.language
+            if self.language != self.account.language:
                 await self.set_cs(key='language', value=self.language)
-            self.language = account.language
-
-            self.account = account
+            if self.account.text_pack_id is None:
+                pass
 
             from app.views.main import MainView
             # Go to Main
