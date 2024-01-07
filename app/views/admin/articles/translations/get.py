@@ -15,14 +15,12 @@
 #
 
 
-from urllib.parse import urlencode
-
 from flet_core import Row
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.layout import AdminBaseView
-from config import URL_ARTICLES_UPDATE, URL_ARTICLES_GET
+from app.utils.article import get_url_article, UrlTypes
 
 
 class ArticleTranslationView(AdminBaseView):
@@ -43,26 +41,24 @@ class ArticleTranslationView(AdminBaseView):
                             content=Text(
                                 value=await self.client.session.gtv(key='admin_article_get_view_look'),
                             ),
-                            url=URL_ARTICLES_GET + urlencode(
-                                {
-                                    'id_': self.article_id,
-                                    'token': '00000001:608c6cf5eb052a47e41e0ae21ff5c106',
-                                    'is_admin': False,
-                                    'language': self.language['language'],
-                                },
+                            url=get_url_article(
+                                id_=self.article_id,
+                                token=self.client.session.token,
+                                is_admin=False,
+                                type_=UrlTypes.GET,
+                                language=self.language['language'],
                             ),
                         ),
                         FilledButton(
                             content=Text(
                                 value=await self.client.session.gtv(key='update'),
                             ),
-                            url=URL_ARTICLES_UPDATE + urlencode(
-                                {
-                                    'id_': self.article_id,
-                                    'token': '00000001:608c6cf5eb052a47e41e0ae21ff5c106',
-                                    'is_admin': True,
-                                    'language': self.language['language'],
-                                },
+                            url=get_url_article(
+                                id_=self.article_id,
+                                token=self.client.session.token,
+                                is_admin=True,
+                                type_=UrlTypes.UPDATE,
+                                language=self.language['language'],
                             ),
                         ),
                         FilledButton(

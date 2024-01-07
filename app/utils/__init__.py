@@ -28,5 +28,5 @@ __all__ = [
     'themes',
     'Session',
     'Registration',
-    'Error'
+    'Error',
 ]

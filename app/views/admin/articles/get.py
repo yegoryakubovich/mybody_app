@@ -16,7 +16,6 @@
 
 
 import functools
-from urllib.parse import urlencode
 
 from flet_core import Row, ScrollMode
 
@@ -26,10 +25,10 @@ from app.controls.information import Text
 from app.controls.information.card import Card
 from app.controls.layout.admin import AdminBaseView, Section
 from app.utils import Fonts
+from app.utils.article import get_url_article, UrlTypes
 from app.views.admin.articles.create import ArticleCreateView
 from app.views.admin.articles.translations.create import ArticleTranslationCreateView
 from app.views.admin.articles.translations.get import ArticleTranslationView
-from config import URL_ARTICLES_UPDATE, URL_ARTICLES_GET
 
 
 class ArticleView(AdminBaseView):
@@ -63,24 +62,22 @@ class ArticleView(AdminBaseView):
                             content=Text(
                                 value=await self.client.session.gtv(key='admin_article_get_view_look'),
                             ),
-                            url=URL_ARTICLES_GET + urlencode(
-                                {
-                                    'id_': self.article.get('id'),
-                                    'token': '00000001:608c6cf5eb052a47e41e0ae21ff5c106',
-                                    'is_admin': False,
-                                },
+                            url=get_url_article(
+                                id_=self.article.get('id'),
+                                token=self.client.session.token,
+                                is_admin=False,
+                                type_=UrlTypes.GET,
                             ),
                         ),
                         FilledButton(
                             content=Text(
                                 value=await self.client.session.gtv(key='update'),
                             ),
-                            url=URL_ARTICLES_UPDATE + urlencode(
-                                {
-                                    'id_': self.article.get('id'),
-                                    'token': '00000001:608c6cf5eb052a47e41e0ae21ff5c106',
-                                    'is_admin': True,
-                                },
+                            url=get_url_article(
+                                id_=self.article.get('id'),
+                                token=self.client.session.token,
+                                is_admin=True,
+                                type_=UrlTypes.UPDATE,
                             ),
                         ),
                         FilledButton(
