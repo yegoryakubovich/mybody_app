@@ -1,8 +1,8 @@
 version: '3.7'
 
 services:
-  container_name: mybody_app
   app:
+    container_name: mybody_app
     build:
       dockerfile: dockerfile
     environment:
