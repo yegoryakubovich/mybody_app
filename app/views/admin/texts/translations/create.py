@@ -38,7 +38,7 @@ class TextTranslationCreateView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.text.get(
+        response = await self.client.session.api.client.text.get(
             key=self.key
         )
         self.text = response.text
@@ -80,7 +80,7 @@ class TextTranslationCreateView(AdminBaseView):
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len, max_len):
                 return
-        await self.client.session.api.text.create_translation(
+        await self.client.session.api.admin.text.create_translation(
             text_key=self.text['key'],
             language=self.dd_language_id_str.value,
             value=self.tf_value.value,

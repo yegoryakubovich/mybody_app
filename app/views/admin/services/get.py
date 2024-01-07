@@ -76,7 +76,7 @@ class ServiceView(AdminBaseView):
          )
 
     async def delete_service(self, _):
-        await self.client.session.api.service.delete(
+        await self.client.session.api.admin.service.delete(
             id_str=self.service_id_str,
         )
         await self.client.change_view(go_back=True)
@@ -86,7 +86,7 @@ class ServiceView(AdminBaseView):
         for field, min_len, max_len, error_key in fields:
             if not await Error.check_field(self, field, min_len, max_len):
                 return
-        await self.client.session.api.country.update(
+        await self.client.session.api.admin.country.update(
             id_str=self.service_id_str,
             name=self.tf_name.value,
             questions=self.tf_questions.value,

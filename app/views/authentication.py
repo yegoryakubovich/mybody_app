@@ -35,13 +35,12 @@ class AuthenticationView(AuthView):
         # Create session
         username = self.tf_username.value
         password = self.tf_password.value
-        session = await self.client.session.api.session.create(
+        session = await self.client.session.api.client.session.create(
             username=username,
             password=password,
         )
-
         # Get result, set in CS
-        token = session.token
+        token = session
         await self.client.session.set_cs(key='token', value=token)
 
         # Change view
@@ -63,7 +62,7 @@ class AuthenticationView(AuthView):
         )
 
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='login'),
+            title=await self.client.session.gtv(key='authorization'),
             controls=[
                 Column(
                     controls=[
@@ -71,7 +70,7 @@ class AuthenticationView(AuthView):
                         self.tf_password,
                         FilledButton(
                             content=Text(
-                                value=await self.client.session.gtv(key='login'),
+                                value=await self.client.session.gtv(key='sign_in'),
                                 size=16,
                             ),
                             on_click=self.authenticate,
@@ -86,7 +85,7 @@ class AuthenticationView(AuthView):
                                         font_family=Fonts.REGULAR,
                                     ),
                                     Text(
-                                        value=await self.client.session.gtv(key='Sign Up'),
+                                        value=await self.client.session.gtv(key='create'),
                                         size=16,
                                         font_family=Fonts.SEMIBOLD,
                                         color='#008F12',  # FIXME

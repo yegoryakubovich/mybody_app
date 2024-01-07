@@ -13,14 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-
+from flet_core import ScrollMode
 from flet_core.dropdown import Option
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import Dropdown, TextField
 from app.controls.layout import AuthView
+from app.utils import Error
 from app.views.registration.user_agreement import UserAgreement
 
 
@@ -38,42 +38,6 @@ class RegistrationDataView(AuthView):
         self.currencies = currencies
         self.timezones = timezones
         super().__init__(**kwargs)
-
-    async def change_view(self, _):
-        if len(self.tf_firstname.value) < 2 or len(self.tf_firstname.value) > 32:
-            self.tf_firstname.error_text = await self.client.session.gtv(key='firstname_min_max_letter')
-        elif len(self.tf_lastname.value) < 2 or len(self.tf_lastname.value) > 32:
-            self.tf_lastname.error_text = await self.client.session.gtv(key='lastname_min_max_letter')
-        elif self.tf_surname.value and (len(self.tf_surname.value) < 2 or len(self.tf_surname.value) > 32):
-            self.tf_surname.error_text = await self.client.session.gtv(key='surname_min_max_letter')
-        elif not self.dd_country.value:
-            self.dd_country.error_text = await self.client.session.gtv(key='country_error')
-        elif not self.dd_currency.value:
-            self.dd_currency.error_text = await self.client.session.gtv(key='currency_error')
-        elif not self.dd_timezone.value:
-            self.dd_timezone.error_text = await self.client.session.gtv(key='timezone_error')
-        else:
-            # Save in Registration
-            self.client.session.registration.firstname = self.tf_firstname.value
-            self.client.session.registration.lastname = self.tf_lastname.value
-            self.client.session.registration.surname = self.tf_surname.value
-            self.client.session.registration.country = self.dd_country.value
-            self.client.session.registration.currency = self.dd_currency.value
-            self.client.session.registration.timezone = self.dd_timezone.value
-
-            await self.client.change_view(view=UserAgreement())
-
-        await self.update_async()
-        for field in [
-            self.tf_firstname,
-            self.tf_lastname,
-            self.tf_surname,
-            self.dd_country,
-            self.dd_currency,
-            self.dd_currency,
-            self.dd_timezone
-        ]:
-            field.error_text = None
 
     async def build(self):
         country_options = [
@@ -118,7 +82,7 @@ class RegistrationDataView(AuthView):
         )
 
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='account_creation'),
+            title=await self.client.session.gtv(key='registration_account_create_view_title'),
             controls=[
                 self.tf_firstname,
                 self.tf_lastname,
@@ -135,3 +99,19 @@ class RegistrationDataView(AuthView):
                 ),
             ],
         )
+
+    async def change_view(self, _):
+        fields = [(self.tf_firstname, 2, 32), (self.tf_lastname, 2, 32)]
+        for field, min_len, max_len in fields:
+            if not await Error.check_field(self, field, min_len, max_len):
+                return
+        if self.tf_surname.value and (len(self.tf_surname.value) < 2 or len(self.tf_surname.value) > 32):
+            self.tf_surname.error_text = await self.client.session.gtv(key='error_count_letter')
+            await self.update_async()
+        self.client.session.registration.firstname = self.tf_firstname.value
+        self.client.session.registration.lastname = self.tf_lastname.value
+        self.client.session.registration.surname = self.tf_surname.value
+        self.client.session.registration.country = self.dd_country.value
+        self.client.session.registration.currency = self.dd_currency.value
+        self.client.session.registration.timezone = self.dd_timezone.value
+        await self.client.change_view(view=UserAgreement())

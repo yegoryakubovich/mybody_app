@@ -21,7 +21,7 @@ from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField
 from app.controls.layout import AuthView
-from app.utils import Fonts
+from app.utils import Fonts, Error
 from app.utils.registration import Registration
 from app.views.registration.registration_data import RegistrationDataView
 
@@ -32,44 +32,38 @@ class RegistrationView(AuthView):
     tf_password: TextField
 
     async def check_username(self, tf_username):
-        response = await self.client.session.api.account.check_username(username=tf_username)
+        response = await self.client.session.api.client.account.check_username(username=tf_username)
         return response.state == 'error'
 
     async def change_view(self, _):
-        check_username_error = await self.client.session.gtv(key='check_username_error')
-        username_error = await self.client.session.gtv(key='username_min_max_letter')
-        password_error = await self.client.session.gtv(key='password_min_max_letter')
+        check_username_error = await self.client.session.gtv(key='error_check_username')
 
-        if len(self.tf_username.value) < 6 or len(self.tf_username.value) > 32:
-            self.tf_username.error_text = username_error
-        elif await self.check_username(self.tf_username.value):
+        fields = [(self.tf_username, 1, 32), (self.tf_password, 1, 32)]
+        for field, min_len, max_len in fields:
+            if not await Error.check_field(self, field, min_len, max_len):
+                return
+        if await self.check_username(self.tf_username.value):
             self.tf_username.error_text = check_username_error
-        elif len(self.tf_password.value) < 6 or len(self.tf_password.value) > 128:
-            self.tf_password.error_text = password_error
+            await self.update_async()
         else:
             # Save in Registration
             self.client.session.registration = Registration()
             self.client.session.registration.username = self.tf_username.value
             self.client.session.registration.password = self.tf_password.value
 
-            currencies = await self.client.session.api.currency.get_list()
-            countries = await self.client.session.api.country.get_list()
-            timezones = await self.client.session.api.timezone.get_list()
+            currencies = await self.client.session.api.client.currency.get_list()
+            countries = await self.client.session.api.client.country.get_list()
+            timezones = await self.client.session.api.client.timezone.get_list()
 
             await self.client.change_view(
                 view=RegistrationDataView(
-                    currencies=currencies.currencies,
-                    countries=countries.countries,
-                    timezones=timezones.timezones,
+                    currencies=currencies,
+                    countries=countries,
+                    timezones=timezones,
                 ),
             )
 
         await self.update_async()
-        for field in [
-            self.tf_username,
-            self.tf_password,
-        ]:
-            field.error_text = None
 
     async def go_authentication(self, _):
         from app.views.authentication import AuthenticationView
@@ -83,9 +77,8 @@ class RegistrationView(AuthView):
             label=await self.client.session.gtv(key='password'),
             password=True,
         )
-
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='account_creation'),
+            title=await self.client.session.gtv(key='registration_account_create_view_title'),
             controls=[
                 Column(
                     controls=[
@@ -103,12 +96,13 @@ class RegistrationView(AuthView):
                             content=Row(
                                 controls=[
                                     Text(
-                                        value=await self.client.session.gtv(key='Already have an account?'),
+                                        value=await self.client.session.gtv(
+                                            key='registration_account_create_view_question'),
                                         size=16,
                                         font_family=Fonts.REGULAR,
                                     ),
                                     Text(
-                                        value=await self.client.session.gtv(key='Sign In'),
+                                        value=await self.client.session.gtv(key='sign_in'),
                                         size=16,
                                         font_family=Fonts.SEMIBOLD,
                                         color='#008F12',  # FIXME

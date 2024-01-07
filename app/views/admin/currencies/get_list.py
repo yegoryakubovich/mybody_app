@@ -32,7 +32,7 @@ class CurrencyListView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.currency.get_list()
+        response = await self.client.session.api.client.currency.get_list()
         self.currencies = response.currencies
         await self.set_type(loading=False)
 

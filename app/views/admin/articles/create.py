@@ -50,8 +50,7 @@ class ArticleCreateView(AdminBaseView):
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len, max_len):
                 return
-        response = await self.client.session.api.article.create(
+        article_id = await self.client.session.api.admin.article.create(
             name=self.tf_name.value,
         )
-        article_id = response.id
         await self.client.change_view(view=ArticleView(article_id=article_id))

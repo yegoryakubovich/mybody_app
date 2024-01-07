@@ -64,7 +64,7 @@ class RolePermissionCreateView(AdminBaseView):
          )
 
     async def create_permission(self, _):
-        await self.client.session.api.role.create_permission(
+        await self.client.session.api.admin.role.create_permission(
             role_id=self.role_id,
             permission=self.dd_permission.value,
         )

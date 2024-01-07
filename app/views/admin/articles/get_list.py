@@ -28,12 +28,11 @@ from app.views.admin.articles.get import ArticleView
 
 class ArticleListView(AdminBaseView):
     route = '/admin/article/list/get'
-    articles: list[dict]
+    articles: dict
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.article.get_list()
-        self.articles = response.articles
+        self.articles = await self.client.session.api.client.article.get_list()
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO

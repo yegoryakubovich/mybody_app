@@ -56,7 +56,7 @@ class TextCreateView(AdminBaseView):
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len, max_len):
                 return
-        response = await self.client.session.api.text.create(
+        response = await self.client.session.api.admin.text.create(
             value_default=self.tf_value_default.value,
             key=self.tf_key.value,
         )

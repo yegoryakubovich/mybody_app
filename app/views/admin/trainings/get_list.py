@@ -34,7 +34,7 @@ class TrainingListView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.training.get_list()
+        response = await self.client.session.api.client.training.get_list()
         self.trainings = response.trainings
         await self.set_type(loading=False)
 

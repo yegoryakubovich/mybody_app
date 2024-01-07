@@ -78,9 +78,19 @@ class Section:
 
     async def get_controls(self) -> list:
         title_control = await self.get_title(title=self.title, on_create_click=self.on_create_click)
+
         controls = [
-                       title_control
-                   ] + self.controls
+            Container(
+                content=Column(
+                    controls=[
+                        title_control,
+                        *self.controls,
+                    ],
+                    spacing=8,
+                ),
+                padding=10,
+            ),
+        ]
         return controls
 
 

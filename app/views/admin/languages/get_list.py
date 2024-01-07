@@ -32,7 +32,7 @@ class LanguageListView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.language.get_list()
+        response = await self.client.session.api.client.language.get_list()
         self.languages = response.languages
         await self.set_type(loading=False)
 

@@ -18,3 +18,4 @@
 VERSION = '0.1'
 URL_ARTICLES_GET = 'https://articles.mybody.by/get?'
 URL_ARTICLES_UPDATE = 'https://articles.mybody.by/update?'
+IS_TEST = True

@@ -61,14 +61,14 @@ class TextTranslationView(AdminBaseView):
          )
 
     async def delete_translation(self, _):
-        await self.client.session.api.text.delete_translation(
+        await self.client.session.api.admin.text.delete_translation(
             text_key=self.text_key,
             language=self.language['language'],
         )
         await self.client.change_view(go_back=True)
 
     async def update_translation(self, _):
-        await self.client.session.api.text.update_translation(
+        await self.client.session.api.admin.text.update_translation(
             text_key=self.text_key,
             language=self.language['language'],
             value=self.tf_value.value,

@@ -28,6 +28,8 @@ class ArticleTranslationCreateView(AdminBaseView):
     route = '/admin/articles/translation/create'
     dd_language: Dropdown
     tf_name: TextField
+    languages: list[dict]
+    article: dict
 
     def __init__(self, article_id):
         super().__init__()
@@ -35,14 +37,25 @@ class ArticleTranslationCreateView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        languages = await self.client.session.api.language.get_list()
+        self.article = await self.client.session.api.client.article.get(
+            id_=self.article_id
+        )
+        self.languages = await self.client.session.api.client.language.get_list()
         await self.set_type(loading=False)
+
+        existing_translation_languages = [
+            translation.get('language') for translation in self.article.get('translations', [])
+        ]
+        available_languages = [
+            language for language in self.languages
+            if language.get('id_str') not in existing_translation_languages
+        ]
 
         languages_options = [
             Option(
                 text=language.get('name'),
                 key=language.get('id_str'),
-            ) for language in languages.languages
+            ) for language in available_languages
         ]
 
         self.tf_name = TextField(
@@ -73,7 +86,7 @@ class ArticleTranslationCreateView(AdminBaseView):
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len, max_len):
                 return
-        await self.client.session.api.article.create_translation(
+        await self.client.session.api.admin.article.create_translation(
             id_=self.article_id,
             language=self.dd_language.value,
             name=self.tf_name.value,

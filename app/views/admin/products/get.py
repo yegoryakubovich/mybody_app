@@ -38,13 +38,11 @@ class ProductView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.product.get(
+        self.product = await self.client.session.api.client.product.get(
             id_=self.product_id
         )
-        self.product = response.product
-        response = await self.client.session.api.article.get_list(
+        self.articles = await self.client.session.api.client.article.get_list(
         )
-        self.articles = response.articles
         await self.set_type(loading=False)
 
         nutrients_unit = [
@@ -110,20 +108,19 @@ class ProductView(AdminBaseView):
                     ],
                 ),
             ]
-        ),
+        )
 
     async def delete_product(self, _):
-        await self.client.session.api.product.delete(
+        await self.client.session.api.admin.product.delete(
             id_=self.product_id
         )
         await self.client.change_view(go_back=True)
 
     async def update_product(self, _):
-        response = await self.client.session.api.product.update(
+        await self.client.session.api.admin.product.update(
             id_=self.product_id,
             type_=self.dd_nutrient_type.value,
             unit=self.dd_units.value,
             article_id=self.dd_articles.value,
         )
-        print(response)
-        await self.update_async()
+        await self.client.change_view(go_back=True)

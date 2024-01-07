@@ -20,8 +20,10 @@ from typing import Any
 from flet_core import Page
 from flet_manager.utils import Client
 from mybody_api_client import MyBodyApiClient
+from mybody_api_client.utils.base_section import ApiException
 
 from app.utils.registration import Registration
+from config import IS_TEST
 
 
 class Session:
@@ -42,11 +44,20 @@ class Session:
         self.language = await self.get_cs(key='language')
         self.text_pack_id = await self.get_cs(key='text_pack_id')
 
-        self.api = MyBodyApiClient(token=self.token)
-        response = await self.api.account.get_additional()
-        print(response)
+        self.api = MyBodyApiClient(token=self.token, is_test=IS_TEST)
 
-        if response.state == 'error':
+        try:
+            self.account = await self.api.client.account.get()
+            self.language = self.account.language
+            if self.language != self.account.language:
+                await self.set_cs(key='language', value=self.language)
+            if self.account.text_pack_id is None:
+                pass
+
+            from app.views.main import MainView
+            # Go to Main
+            return MainView()
+        except ApiException:
             self.token = None
             await self.set_cs(key='token', value=self.token)
 
@@ -58,24 +69,12 @@ class Session:
 
                 # Go to Set Language
                 return SetLanguageView(
-                    languages=await self.client.session.api.language.get_list(),
+                    languages=await self.client.session.api.client.language.get_list(),
                     next_view=AuthenticationView(),
                 )
             else:
                 # Go to Auth
                 return AuthenticationView()
-
-        else:
-            self.account = response.account
-            self.language = self.account.language
-            if self.language != self.account.language:
-                await self.set_cs(key='language', value=self.language)
-            if self.account.text_pack_id is None:
-                pass
-
-            from app.views.main import MainView
-            # Go to Main
-            return MainView()
 
     # Client storage
     async def get_cs(self, key: str) -> Any:

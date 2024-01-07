@@ -27,7 +27,7 @@ class UserAgreement(AuthView):
     route = '/registration'
 
     async def change_view(self, _):
-        await self.client.session.api.account.create(
+        await self.client.session.api.client.account.create(
             username=self.client.session.registration.username,
             password=self.client.session.registration.password,
             firstname=self.client.session.registration.firstname,
@@ -44,7 +44,7 @@ class UserAgreement(AuthView):
 
     async def build(self):
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='account_creation'),
+            title=await self.client.session.gtv(key='registration_account_create_view_title'),
             controls=[
                 Column(
                     controls=[

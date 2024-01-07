@@ -34,10 +34,9 @@ class ExerciseView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.exercise.get(
+        self.exercise = await self.client.session.api.client.exercise.get(
             id_=self.exercise_id
         )
-        self.exercise = response.exercise
         await self.set_type(loading=False)
 
         exercise_type = [
@@ -80,13 +79,13 @@ class ExerciseView(AdminBaseView):
          )
 
     async def delete_exercise(self, _):
-        await self.client.session.api.exercise.delete(
+        await self.client.session.api.admin.exercise.delete(
             id_=self.exercise_id,
         )
         await self.client.change_view(go_back=True)
 
     async def update_exercise(self, _):
-        await self.client.session.api.exercise.update(
+        await self.client.session.api.admin.exercise.update(
             id_=self.exercise_id,
             type_=self.dd_exercise_type.value,
         )

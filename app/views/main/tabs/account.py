@@ -204,40 +204,40 @@ class AccountTab(BaseTab):
 
         sections = [
             Section(
-                name='my_account',
+                name=await self.client.session.gtv(key='my_account'),
                 settings=[
                     Setting(
-                        name='notifications',
+                        name=await self.client.session.gtv(key='notifications'),
                         icon='notifications',
                         on_click=self.coming_soon,
                     ),
                     Setting(
-                        name='security',
+                        name=await self.client.session.gtv(key='security'),
                         icon='security',
                         on_click=self.coming_soon,
                     ),
                     Setting(
-                        name='language',
+                        name=await self.client.session.gtv(key='language'),
                         icon='language',
                         on_click=self.language_set,
                     ),
                     Setting(
-                        name='logout',
+                        name=await self.client.session.gtv(key='logout'),
                         icon='logout',
                         on_click=self.log_out,
                     ),
                 ],
             ),
             Section(
-                name='info',
+                name=await self.client.session.gtv(key='info'),
                 settings=[
                     Setting(
-                        name='articles',
+                        name=await self.client.session.gtv(key='articles'),
                         icon='notifications',
                         on_click=self.coming_soon,
                     ),
                     Setting(
-                        name='policies',
+                        name=await self.client.session.gtv(key='policies'),
                         icon='security',
                         on_click=self.coming_soon,
                     ),

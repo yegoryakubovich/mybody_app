@@ -30,7 +30,7 @@ class TimezoneView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.timezone.get(
+        response = await self.client.session.api.client.timezone.get(
             id_str=self.timezone_id_str
         )
         self.timezone = response.timezone
@@ -49,7 +49,7 @@ class TimezoneView(AdminBaseView):
          )
 
     async def delete_timezone(self, _):
-        await self.client.session.api.timezone.delete(
+        await self.client.session.api.admin.timezone.delete(
             id_str=self.timezone_id_str,
         )
         await self.client.change_view(go_back=True)

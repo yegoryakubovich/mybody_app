@@ -43,10 +43,9 @@ class ArticleView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.article.get(
+        self.article = await self.client.session.api.client.article.get(
             id_=self.article_id
         )
-        self.article = response.article
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO
@@ -117,13 +116,13 @@ class ArticleView(AdminBaseView):
         )
 
     async def delete_article(self, _):
-        await self.client.session.api.article.delete(
+        await self.client.session.api.admin.article.delete(
             id_=self.article_id,
         )
         await self.client.change_view(go_back=True)
 
     async def change_visibility(self, _):
-        await self.client.session.api.article.update(
+        await self.client.session.api.admin.article.update(
             id_=self.article_id,
             is_hide=not self.article['is_hide'],
         )

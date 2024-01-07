@@ -109,13 +109,13 @@ class TextView(AdminBaseView):
          )
 
     async def delete_text(self, _):
-        await self.client.session.api.text.delete(
+        await self.client.session.api.admin.text.delete(
             key=self.text['key'],
         )
         await self.client.change_view(go_back=True)
 
     async def update_text(self, _):
-        await self.client.session.api.text.update(
+        await self.client.session.api.admin.text.update(
             key=self.text['key'],
             value_default=self.tf_value_default.value,
             new_key=self.tf_key.value

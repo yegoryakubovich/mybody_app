@@ -34,7 +34,7 @@ class SetLanguageView(AuthView):
     async def select(self, _):
         language = self.dropdown.value
         if not language:
-            self.dropdown.error_text = await self.client.session.gtv(key='select_language_error')
+            self.dropdown.error_text = await self.client.session.gtv(key='error_language_select')
             await self.update_async()
             await self.dropdown.focus_async()
         else:
@@ -47,7 +47,7 @@ class SetLanguageView(AuthView):
             await self.client.change_view(view=self.next_view)
 
     async def build(self):
-        languages = self.languages.languages
+        languages = self.languages
 
         options = [
             Option(
@@ -60,7 +60,7 @@ class SetLanguageView(AuthView):
             options=options,
         )
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='set_language'),
+            title=await self.client.session.gtv(key='set_language_view_title'),
             controls=[
                 self.dropdown,
                 FilledButton(

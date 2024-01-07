@@ -39,7 +39,7 @@ class CountryView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.country.get(
+        response = await self.client.session.api.client.country.get(
             id_str=self.country_id_str
         )
         self.country = response.country
@@ -108,13 +108,13 @@ class CountryView(AdminBaseView):
         )
 
     async def delete_country(self, _):
-        await self.client.session.api.country.delete(
+        await self.client.session.api.admin.country.delete(
             id_str=self.country_id_str,
         )
         await self.client.change_view(go_back=True)
 
     async def update_country(self, _):
-        await self.client.session.api.country.update(
+        await self.client.session.api.admin.country.update(
             id_str=self.country_id_str,
             language=self.dd_language.value,
             currency=self.dd_currency.value,

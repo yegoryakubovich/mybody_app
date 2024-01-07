@@ -178,7 +178,7 @@ class ServiceCreateView(AdminBaseView):
                 return
 
         questions = json.dumps(self.questions)
-        await self.client.session.api.service.create(
+        await self.client.session.api.admin.service.create(
             id_str=self.tf_id_str.value,
             name=self.tf_name.value,
             questions=questions,

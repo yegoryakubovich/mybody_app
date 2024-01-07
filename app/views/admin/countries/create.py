@@ -106,7 +106,7 @@ class CountryCreateView(AdminBaseView):
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len, max_len):
                 return
-        await self.client.session.api.country.create(
+        await self.client.session.api.admin.country.create(
             id_str=self.tf_id_str.value,
             name=self.tf_name.value,
             language=self.dd_language.value,

@@ -92,7 +92,7 @@ class CreateTrainingView(View):
         elif len(self.tf_key.value) < 2 or len(self.tf_key.value) > 128:
             self.tf_key.error_text = await self.client.session.gtv(key='key_min_max_letter')
         else:
-            await self.client.session.api.text.create(
+            await self.client.session.api.admin.text.create(
                 value_default=self.tf_value_default.value,
                 key=self.tf_key.value,
             )

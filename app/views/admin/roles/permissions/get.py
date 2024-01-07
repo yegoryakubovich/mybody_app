@@ -49,7 +49,7 @@ class RolePermissionView(AdminBaseView):
         )
 
     async def delete_permission(self, _):
-        await self.client.session.api.role.delete_permission(
+        await self.client.session.api.admin.role.delete_permission(
             id_=self.permission_id,
         )
         await self.client.change_view(go_back=True)

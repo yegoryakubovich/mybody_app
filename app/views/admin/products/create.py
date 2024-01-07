@@ -34,9 +34,8 @@ class ProductCreateView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.article.get_list(
+        self.articles = await self.client.session.api.client.article.get_list(
         )
-        self.articles = response.articles
         await self.set_type(loading=False)
 
         nutrients_unit = [
@@ -59,7 +58,7 @@ class ProductCreateView(AdminBaseView):
                 text=nutrient_type,
             ) for nutrient_type in nutrients_type
         ]
-        nutrients_unit = [
+        nutrients_unit_options = [
             Option(
                 text=nutrient_unit,
             ) for nutrient_unit in nutrients_unit
@@ -72,23 +71,23 @@ class ProductCreateView(AdminBaseView):
             value=nutrients_type[0],
             options=nutrients_type_options,
         )
+        self.dd_units = Dropdown(
+            label=await self.client.session.gtv(key='units'),
+            value=nutrients_unit[0],
+            options=nutrients_unit_options,
+        )
         self.dd_articles = Dropdown(
             label=await self.client.session.gtv(key='article'),
             value=await self.client.session.gtv(key=self.articles[0]['name_text']),
             options=article_options,
-        )
-        self.dd_units = Dropdown(
-            label=await self.client.session.gtv(key='units'),
-            value=nutrients_unit[0],
-            options=nutrients_unit,
         )
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='admin_product_create_view_title'),
             main_section_controls=[
                 self.tf_name,
                 self.dd_nutrients_type,
-                self.dd_articles,
                 self.dd_units,
+                self.dd_articles,
                 FilledButton(
                     content=Text(
                         value=await self.client.session.gtv(key='create'),
@@ -105,11 +104,11 @@ class ProductCreateView(AdminBaseView):
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len, max_len):
                 return
-        response = await self.client.session.api.product.create(
+        product_id = await self.client.session.api.admin.product.create(
             name=self.tf_name.value,
             type_=self.dd_nutrients_type.value,
-            article_id=self.dd_articles.value,
-            unit=self.dd_units.value
+            article_id=self.dd_articles.value or 0,
+            unit=self.dd_units.value,
         )
-        product_id = response.id
+        print(product_id)
         await self.client.change_view(view=ProductView(product_id=product_id))

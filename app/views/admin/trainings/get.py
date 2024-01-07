@@ -33,7 +33,7 @@ class TrainingView(View):
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.text.get(
+        response = await self.client.session.api.client.text.get(
             id_=self.text_id
         )
         self.text = response.text
