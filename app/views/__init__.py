@@ -26,6 +26,7 @@ from .main import MainView
 from .meal import MealView
 from .training import TrainingView
 
+
 views = [
     SplashView,
     SetLanguageView,

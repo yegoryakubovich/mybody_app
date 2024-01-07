@@ -44,6 +44,7 @@ class AuthenticationView(AuthView):
         await self.client.session.set_cs(key='token', value=token)
 
         # Change view
+        self.client.page.views.clear()
         view = await self.client.session.init()
         await self.set_type(loading=False)
         await self.client.change_view(view=view)
@@ -80,7 +81,7 @@ class AuthenticationView(AuthView):
                             content=Row(
                                 controls=[
                                     Text(
-                                        value=await self.client.session.gtv(key='Dont have an account?'),
+                                        value=await self.client.session.gtv(key='authentication_view_question'),
                                         size=16,
                                         font_family=Fonts.REGULAR,
                                     ),
