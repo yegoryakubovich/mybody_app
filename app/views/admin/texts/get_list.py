@@ -33,8 +33,7 @@ class TextListView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.client.text.get_list()
-        self.texts = response.texts
+        self.texts = await self.client.session.api.admin.text.get_list()
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO

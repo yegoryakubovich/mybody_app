@@ -38,27 +38,39 @@ class TextTranslationCreateView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.client.text.get(
-            key=self.key
+        self.text = await self.client.session.api.admin.text.get(
+            key=self.key,
         )
-        self.text = response.text
-        languages = await self.client.session.api.language.get_list()
+        self.languages = await self.client.session.api.client.language.get_list()
         await self.set_type(loading=False)
+
+        existing_translation_languages = [
+            translation.get('language') for translation in self.text.get('translations', [])
+        ]
+        available_languages = [
+            language for language in self.languages
+            if language.get('id_str') not in existing_translation_languages
+        ]
 
         languages_options = [
             Option(
                 text=language.get('name'),
                 key=language.get('id_str'),
-            ) for language in languages.languages
+            ) for language in available_languages
         ]
 
+        if languages_options:
+            self.dd_language_id_str = Dropdown(
+                label=await self.client.session.gtv(key='language'),
+                value=languages_options[0].key,
+                options=languages_options,
+            )
+        else:
+            self.dd_language_id_str = Dropdown(
+                value=await self.client.session.gtv(key='not_language'),
+            )
         self.tf_value = TextField(
             label=await self.client.session.gtv(key='translation'),
-        )
-        self.dd_language_id_str = Dropdown(
-            label=await self.client.session.gtv(key='language'),
-            value=languages_options[0].key,
-            options=languages_options,
         )
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='admin_translation_text_create_view_title'),
@@ -73,7 +85,7 @@ class TextTranslationCreateView(AdminBaseView):
                     on_click=self.create_translation,
                 ),
             ],
-        ),
+        )
 
     async def create_translation(self, _):
         fields = [(self.tf_value, 1, 1024)]

@@ -37,14 +37,12 @@ class RoleView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.client.role.get(
+        self.role = await self.client.session.api.client.role.get(
             id_=self.role_id
         )
-        self.role = response.role
-        response = await self.client.session.api.client.role.get_list_permission(
+        self.permissions = await self.client.session.api.client.role.get_list_permissions(
             role_id=self.role_id,
         )
-        self.permissions = response.role_permissions
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO

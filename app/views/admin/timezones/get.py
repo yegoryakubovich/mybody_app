@@ -30,14 +30,13 @@ class TimezoneView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.client.timezone.get(
+        self.timezone = await self.client.session.api.client.timezone.get(
             id_str=self.timezone_id_str
         )
-        self.timezone = response.timezone
         await self.set_type(loading=False)
 
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key=self.timezone['id_str']),
+            title=self.timezone['id_str'],
             main_section_controls=[
                 FilledButton(
                     content=Text(

@@ -34,7 +34,7 @@ class TextTranslationView(AdminBaseView):
 
     async def build(self):
         self.tf_value = TextField(
-            label=await self.client.session.gtv(key='value'),
+            label=await self.client.session.gtv(key='translation'),
             value=self.language['value']
         )
         self.controls = await self.get_controls(

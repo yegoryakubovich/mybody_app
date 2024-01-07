@@ -30,10 +30,9 @@ class RolePermissionView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.role.get_permission(
+        self.permission = await self.client.session.api.role.get_permission(
             id_=self.permission_id
         )
-        self.permission = response.role_permission
         await self.set_type(loading=False)
 
         self.controls = await self.get_controls(

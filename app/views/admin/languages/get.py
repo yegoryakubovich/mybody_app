@@ -30,14 +30,13 @@ class LanguageView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.client.language.get(
+        self.language = await self.client.session.api.client.language.get(
             id_str=self.language_id_str
         )
-        self.language = response.language
         await self.set_type(loading=False)
 
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key=self.language['name_text']),
+            title=self.language['name_text'],
             main_section_controls=[
                 FilledButton(
                     content=Text(

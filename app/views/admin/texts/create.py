@@ -29,17 +29,17 @@ class TextCreateView(AdminBaseView):
     tf_key: TextField
 
     async def build(self):
-        self.tf_value_default = TextField(
-            label=await self.client.session.gtv(key='value_default'),
-        )
         self.tf_key = TextField(
             label=await self.client.session.gtv(key='key'),
+        )
+        self.tf_value_default = TextField(
+            label=await self.client.session.gtv(key='value_default'),
         )
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='admin_text_create_view_title'),
             main_section_controls=[
-                self.tf_value_default,
                 self.tf_key,
+                self.tf_value_default,
                 FilledButton(
                     content=Text(
                         value=await self.client.session.gtv(key='create'),
@@ -56,9 +56,8 @@ class TextCreateView(AdminBaseView):
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len, max_len):
                 return
-        response = await self.client.session.api.admin.text.create(
+        key = await self.client.session.api.admin.text.create(
             value_default=self.tf_value_default.value,
             key=self.tf_key.value,
         )
-        key = response.key
         await self.client.change_view(view=TextView(key=key))

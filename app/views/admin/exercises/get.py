@@ -39,20 +39,20 @@ class ExerciseView(AdminBaseView):
         )
         await self.set_type(loading=False)
 
-        exercise_type = [
-            await self.client.session.gtv(key='time'),
-            await self.client.session.gtv(key='quantity'),
-        ]
+        exercise_type_dict = {
+            await self.client.session.gtv(key='time'): 'time',
+            await self.client.session.gtv(key='quantity'): 'quantity',
+        }
         exercise_type_options = [
             Option(
                 text=exercise_type,
-                key=exercise_type,
-            ) for exercise_type in exercise_type
+                key=exercise_type_dict[exercise_type],
+            ) for exercise_type in exercise_type_dict
         ]
 
         self.dd_exercise_type = Dropdown(
             label=await self.client.session.gtv(key='type'),
-            value=self.exercise['type'],
+            value=list(exercise_type_dict.values())[0],
             options=exercise_type_options,
         )
         self.controls = await self.get_controls(

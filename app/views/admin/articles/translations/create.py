@@ -38,7 +38,7 @@ class ArticleTranslationCreateView(AdminBaseView):
     async def build(self):
         await self.set_type(loading=True)
         self.article = await self.client.session.api.client.article.get(
-            id_=self.article_id
+            id_=self.article_id,
         )
         self.languages = await self.client.session.api.client.language.get_list()
         await self.set_type(loading=False)

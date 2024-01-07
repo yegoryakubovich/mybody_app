@@ -31,9 +31,6 @@ class CurrencyCreateView(AdminBaseView):
         self.tf_id_str = TextField(
             label=await self.client.session.gtv(key='key'),
         )
-        self.tf_name = TextField(
-            label=await self.client.session.gtv(key='name'),
-        )
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='admin_currency_create_view_title'),
             main_section_controls=[
@@ -50,12 +47,11 @@ class CurrencyCreateView(AdminBaseView):
         )
 
     async def create_currency(self, _):
-        fields = [(self.tf_id_str, 2, 16), (self.tf_name, 1, 1024)]
+        fields = [(self.tf_id_str, 2, 16)]
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len, max_len):
                 return
         await self.client.session.api.admin.currency.create(
             id_str=self.tf_id_str.value,
-            name=self.tf_name.value,
         )
         await self.client.change_view(go_back=True)

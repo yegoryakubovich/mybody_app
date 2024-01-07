@@ -32,19 +32,18 @@ class CurrencyListView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.client.currency.get_list()
-        self.currencies = response.currencies
+        self.currencies = await self.client.session.api.client.currency.get_list()
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='admin_currency_list_get_view_title'),
+            title=await self.client.session.gtv(key='admin_currency_get_list_view_title'),
             on_create_click=self.create_currency,
             main_section_controls=[
                 Card(
                     controls=[
                         Text(
-                            value=await self.client.session.gtv(key=currency['id_str']),
+                            value=currency['id_str'],
                             size=18,
                             font_family=Fonts.SEMIBOLD,
                         ),

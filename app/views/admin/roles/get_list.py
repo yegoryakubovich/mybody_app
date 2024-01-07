@@ -32,8 +32,7 @@ class RoleListView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.role.get_list()
-        self.roles = response.roles
+        self.roles = await self.client.session.api.client.role.get_list()
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO

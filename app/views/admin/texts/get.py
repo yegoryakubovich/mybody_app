@@ -41,10 +41,9 @@ class TextView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.text.get(
+        self.text = await self.client.session.api.admin.text.get(
             key=self.key
         )
-        self.text = response.text
         await self.set_type(loading=False)
 
         self.tf_key = TextField(
@@ -84,7 +83,7 @@ class TextView(AdminBaseView):
             ],
             sections=[
                 Section(
-                    title=await self.client.session.gtv(key='admin_article_get_view_translations'),
+                    title=await self.client.session.gtv(key='translation'),
                     on_create_click=self.create_translation,
                     controls=[
                         Card(

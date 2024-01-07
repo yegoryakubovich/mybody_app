@@ -39,32 +39,31 @@ class CountryView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.client.country.get(
+        self.country = await self.client.session.api.client.country.get(
             id_str=self.country_id_str
         )
-        self.country = response.country
-        self.languages = await self.client.session.api.language.get_list()
-        self.timezones = await self.client.session.api.timezone.get_list()
-        self.currencies = await self.client.session.api.currency.get_list()
+        self.languages = await self.client.session.api.client.language.get_list()
+        self.timezones = await self.client.session.api.client.timezone.get_list()
+        self.currencies = await self.client.session.api.client.currency.get_list()
         await self.set_type(loading=False)
 
         language_options = [
             Option(
                 text=language.get('name'),
                 key=language.get('id_str'),
-            ) for language in self.languages.languages
+            ) for language in self.languages
         ]
         timezone_options = [
             Option(
                 text=timezone.get('id_str'),
                 key=timezone.get('id_str'),
-            ) for timezone in self.timezones.timezones
+            ) for timezone in self.timezones
         ]
         currency_options = [
             Option(
                 text=currency.get('name_text'),
                 key=currency.get('id_str'),
-            ) for currency in self.currencies.currencies
+            ) for currency in self.currencies
         ]
 
         self.dd_language = Dropdown(
