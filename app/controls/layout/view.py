@@ -52,27 +52,33 @@ class View(BaseView):
             ),
         )
 
-    async def get_title(self, title: str, go_back_button=True, on_create_click=None):
+    async def get_title(self, title: str, go_back_button=True, on_create_click=None, back_with_restart=False):
 
         async def go_back(_):
-            await self.client.change_view(go_back=True)
+            await self.client.change_view(go_back=True, with_restart=back_with_restart)
 
-        left_controls = [
-            Container(
-                content=Image(
-                    src=get_svg(path='assets/icons/arrow_back.svg'),
-                    height=20,
-                    color='#000000',
+        left_controls = []
+        # Go back button
+        if go_back_button:
+            left_controls.append(
+                Container(
+                    content=Image(
+                        src=get_svg(path='assets/icons/arrow_back.svg'),
+                        height=20,
+                        color='#000000',
+                    ),
+                    ink=True,
+                    on_click=go_back,
                 ),
-                ink=True,
-                on_click=go_back,
-            ),
+            )
+        # Title
+        left_controls.append(
             Text(
                 value=title,
                 size=36,
                 font_family=Fonts.SEMIBOLD,
             ),
-        ]
+        )
 
         right_controls = []
 

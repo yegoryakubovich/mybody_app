@@ -49,6 +49,7 @@ class ArticleView(AdminBaseView):
 
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
+            back_with_restart=True,
             title=await self.client.session.gtv(key=self.article['name_text']),
             main_section_controls=[
                 StitchButton(
