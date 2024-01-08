@@ -24,8 +24,8 @@ from flet_manager.utils import get_svg
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.utils import Fonts
-from app.views.meal import MealView
-from app.views.training import TrainingView
+from app.views.main.meal.meal import MealView
+from app.views.main.training.training import TrainingView
 from app.views.main.tabs.base import BaseTab
 
 

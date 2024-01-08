@@ -15,19 +15,6 @@
 #
 
 
-from app.controls.layout import View
-from app.utils import Session
-
-
-class SplashView(View):
-    route = '/splash'
-
-    async def on_load(self):
-        await self.set_type(loading=True)
-        self.client.session = Session(client=self.client)
-        view = await self.client.session.init()
-        await self.set_type(loading=False)
-        await self.client.change_view(view=view)
-
-    async def build(self):
-        self.controls = []
+from .init import InitView
+from .authentication import AuthenticationView
+from .language import LanguageView

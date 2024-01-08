@@ -23,11 +23,9 @@ from flet_manager.utils import get_svg
 
 from app.controls.button import ListItemButton
 from app.views.admin.admin import AdminView
-from app.views.splash import SplashView
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.utils import Fonts
-from app.views.set_language import SetLanguageView
 from app.views.main.tabs.base import BaseTab
 from config import VERSION
 
@@ -77,12 +75,8 @@ class AccountTab(BaseTab):
         await self.bs_log_out.update_async()
 
     async def language_set(self, _):
-        await self.client.change_view(
-            view=SetLanguageView(
-                languages=await self.client.session.api.language.get_list(),
-                next_view=SplashView(),
-            ),
-        )
+        from app.views.auth.init import InitView
+        await self.client.change_view(view=InitView())
 
     async def logout(self, _):
         await self.view.set_type(loading=True)

@@ -20,7 +20,7 @@ from typing import Any
 from flet_core import Column, Container, Image, Row, ScrollMode, Text, padding
 from flet_manager.utils import get_svg
 
-from app.views.meal_report import MealReportView
+from .report import MealReportView
 from app.controls.button import FilledButton
 from app.controls.button.product_chip import ProductChipButton
 from app.controls.layout import View

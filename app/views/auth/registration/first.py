@@ -23,10 +23,10 @@ from app.controls.input import TextField
 from app.controls.layout import AuthView
 from app.utils import Fonts, Error
 from app.utils.registration import Registration
-from app.views.registration.registration_data import RegistrationDataView
+from app.views.auth.registration.second import RegistrationSecondView
 
 
-class RegistrationView(AuthView):
+class RegistrationFirstView(AuthView):
     route = '/registration'
     tf_username: TextField
     tf_password: TextField
@@ -56,7 +56,7 @@ class RegistrationView(AuthView):
             timezones = await self.client.session.api.client.timezone.get_list()
 
             await self.client.change_view(
-                view=RegistrationDataView(
+                view=RegistrationSecondView(
                     currencies=currencies,
                     countries=countries,
                     timezones=timezones,
@@ -66,7 +66,7 @@ class RegistrationView(AuthView):
         await self.update_async()
 
     async def go_authentication(self, _):
-        from app.views.authentication import AuthenticationView
+        from app.views.auth.authentication import AuthenticationView
         await self.client.change_view(view=AuthenticationView())
 
     async def build(self):

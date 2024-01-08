@@ -13,7 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-from flet_core import ScrollMode
+
+
 from flet_core.dropdown import Option
 
 from app.controls.button import FilledButton
@@ -21,10 +22,10 @@ from app.controls.information import Text
 from app.controls.input import Dropdown, TextField
 from app.controls.layout import AuthView
 from app.utils import Error
-from app.views.registration.user_agreement import UserAgreement
+from app.views.auth.registration.agreement import AgreementRegistrationView
 
 
-class RegistrationDataView(AuthView):
+class RegistrationSecondView(AuthView):
     route = '/registration'
     dd_country: Dropdown
     dd_currency: Dropdown
@@ -114,4 +115,4 @@ class RegistrationDataView(AuthView):
         self.client.session.registration.country = self.dd_country.value
         self.client.session.registration.currency = self.dd_currency.value
         self.client.session.registration.timezone = self.dd_timezone.value
-        await self.client.change_view(view=UserAgreement())
+        await self.client.change_view(view=AgreementRegistrationView())

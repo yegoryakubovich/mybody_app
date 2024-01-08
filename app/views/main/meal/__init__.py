@@ -15,15 +15,5 @@
 #
 
 
-from .registration import RegistrationView
-from .registration_data import RegistrationDataView
-from .registration_successful import RegistrationSuccessfulView
-from .user_agreement import UserAgreement
-
-
-__all__ = [
-    'RegistrationView',
-    'RegistrationDataView',
-    'UserAgreement',
-    'RegistrationSuccessfulView',
-]
+from .meal import MealView
+from .report import MealReportView

@@ -110,5 +110,4 @@ class ProductCreateView(AdminBaseView):
             article_id=self.dd_articles.value or 0,
             unit=self.dd_units.value,
         )
-        print(product_id)
         await self.client.change_view(view=ProductView(product_id=product_id))

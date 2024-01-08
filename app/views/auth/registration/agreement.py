@@ -20,10 +20,10 @@ from flet_core import Column
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.layout import AuthView
-from app.views.registration.registration_successful import RegistrationSuccessfulView
+from app.views.auth.registration.successful import RegistrationSuccessfulView
 
 
-class UserAgreement(AuthView):
+class AgreementRegistrationView(AuthView):
     route = '/registration'
 
     async def change_view(self, _):

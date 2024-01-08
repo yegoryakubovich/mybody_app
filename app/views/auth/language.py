@@ -20,40 +20,43 @@ from flet_core.dropdown import Option
 from app.controls.button import FilledButton
 from app.controls.input import Dropdown
 from app.controls.layout import AuthView
+from app.utils import Session
+from app.views.auth.authentication import AuthenticationView
+from config import LANGUAGE_DEFAULT
 
 
-class SetLanguageView(AuthView):
-    route = '/language'
+class LanguageView(AuthView):
+    route = '/'
     dropdown: Dropdown
+    languages: list
 
-    def __init__(self, languages, next_view, **kwargs):
-        self.languages = languages
-        self.next_view = next_view
-        super().__init__(**kwargs)
+    async def get_text_pack(self, language: str):
+        self.client.session.text_pack = await self.client.session.api.client.text.get_pack(language=language)
+        await self.client.session.set_cs(key='text_pack', value=self.client.session.text_pack)
 
     async def select(self, _):
         language = self.dropdown.value
+
+        # If user not selected language
         if not language:
             self.dropdown.error_text = await self.client.session.gtv(key='error_language_select')
             await self.update_async()
             await self.dropdown.focus_async()
-        else:
-            await self.set_type(loading=True)
+            return
 
-            self.client.session.language = language
-            await self.client.session.set_cs(key='language', value=language)
-
-            await self.set_type(loading=False)
-            await self.client.change_view(view=self.next_view)
+        await self.client.session.set_cs(key='language', value=language)
+        from .init import InitView
+        await self.client.change_view(view=InitView())
 
     async def build(self):
-        languages = self.languages
+        self.languages = await self.client.session.api.client.language.get_list()
+        await self.get_text_pack(language=LANGUAGE_DEFAULT)
 
         options = [
             Option(
                 text=language.get('name'),
                 key=language.get('id_str'),
-            ) for language in languages
+            ) for language in self.languages
         ]
         self.dropdown = Dropdown(
             label=await self.client.session.gtv(key='language'),

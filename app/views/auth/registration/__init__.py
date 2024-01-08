@@ -15,6 +15,7 @@
 #
 
 
-VERSION = '0.1'
-IS_TEST = True
-LANGUAGE_DEFAULT = 'eng'
+from .first import RegistrationFirstView
+from .second import RegistrationSecondView
+from .successful import RegistrationSuccessfulView
+from .agreement import AgreementRegistrationView

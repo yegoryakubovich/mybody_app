@@ -17,35 +17,21 @@
 
 from .admin import AdminView
 from .admin.articles import ArticleCreateView
-from .meal_report import MealReportView
-from .splash import SplashView
-from .set_language import SetLanguageView
-from .authentication import AuthenticationView
-from .registration import RegistrationView, RegistrationDataView
+from .auth import InitView
 from .main import MainView
-from .meal import MealView
-from .training import TrainingView
+from app.views.main.meal.meal import MealView
+from app.views.main.training.training import TrainingView
 
 
 views = [
-    SplashView,
-    SetLanguageView,
-    AuthenticationView,
-    RegistrationView,
-    RegistrationDataView,
+    InitView,
     MainView,
-    AdminView,
 ]
 
 
 __all__ = [
     'views',
-    'SplashView',
     'MealView',
-    'MealReportView',
-    'SetLanguageView',
-    'AuthenticationView',
-    'registration',
     'MainView',
     'admin',
     'TrainingView',

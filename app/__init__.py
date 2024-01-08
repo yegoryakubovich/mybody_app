@@ -19,7 +19,7 @@ from os.path import abspath
 
 from flet_manager import App
 
-from app.views import views, SplashView
+from app.views import views, InitView
 from .utils import fonts, themes
 
 
@@ -27,7 +27,7 @@ def create_app():
     app = App(
         name='My Body',
         views=views,
-        view_main=SplashView,
+        view_main=InitView,
         assets_dir=abspath('assets'),
         fonts=fonts,
         themes=themes,
