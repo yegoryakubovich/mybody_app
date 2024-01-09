@@ -53,4 +53,4 @@ class ArticleCreateView(AdminBaseView):
         article_id = await self.client.session.api.admin.article.create(
             name=self.tf_name.value,
         )
-        await self.client.change_view(view=ArticleView(article_id=article_id))
+        await self.client.change_view(view=ArticleView(article_id=article_id), delete_current=True)
