@@ -28,7 +28,7 @@ from app.controls.layout import AdminBaseView
 from app.utils import Fonts, Error
 
 
-class ServiceCreateView(AdminBaseView):
+class ServiceQuestionCreateView(AdminBaseView):
     route = '/admin/service/get'
     questions: list[dict] = []
     textfields: list[tuple] = []

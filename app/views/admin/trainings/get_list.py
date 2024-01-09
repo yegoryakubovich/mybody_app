@@ -40,7 +40,7 @@ class TrainingListView(AdminBaseView):
 
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='trainings'),
+            title=await self.client.session.gtv(key='admin_training_get_list_view_title'),
             on_create_click=self.create_training,
             main_section_controls=[
                 Card(

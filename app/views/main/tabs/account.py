@@ -301,7 +301,7 @@ class AccountTab(BaseTab):
         ] + sections_controls + [
             Container(
                 content=Text(
-                    value=await self.client.session.gtv(key='version: ') + VERSION,  # FIXME
+                    value=await self.client.session.gtv(key='version ') + VERSION,  # FIXME
                     font_family=Fonts.REGULAR,
                     size=16,
                 ),

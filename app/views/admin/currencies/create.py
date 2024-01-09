@@ -29,13 +29,12 @@ class CurrencyCreateView(AdminBaseView):
 
     async def build(self):
         self.tf_id_str = TextField(
-            label=await self.client.session.gtv(key='key'),
+            label=await self.client.session.gtv(key='name'),
         )
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='admin_currency_create_view_title'),
             main_section_controls=[
                 self.tf_id_str,
-                self.tf_name,
                 FilledButton(
                     content=Text(
                         value=await self.client.session.gtv(key='create'),

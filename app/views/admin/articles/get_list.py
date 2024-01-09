@@ -37,7 +37,7 @@ class ArticleListView(AdminBaseView):
 
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='admin_article_list_view_title'),
+            title=await self.client.session.gtv(key='admin_article_get_list_view_title'),
             on_create_click=self.create_article,
             main_section_controls=[
                 Card(

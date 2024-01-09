@@ -22,8 +22,7 @@ from flet_core import Text, ScrollMode
 from app.controls.information.card import Card
 from app.controls.layout import AdminBaseView
 from app.utils import Fonts
-from app.views.admin.services.create import ServiceCreateView
-from app.views.admin.services.get import ServiceView
+from app.views.admin.services import ServiceCreateView, ServiceView
 
 
 class ServiceListView(AdminBaseView):
@@ -32,13 +31,12 @@ class ServiceListView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.service.get_list()
-        self.services = response.services
+        self.services = await self.client.session.api.client.service.get_list()
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='admin_service_list_get_view_title'),
+            title=await self.client.session.gtv(key='admin_service_get_list_view_title'),
             on_create_click=self.create_service,
             main_section_controls=[
                 Card(

@@ -130,7 +130,7 @@ class HomeTab(BaseTab):
 
         api_response = {'state': 'suc', 'meals': [
             {'name': 'Breakfast', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '7:00', 'end_time': '10:00'},
-            {'name': 'Tiffin', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '10:00', 'end_time': '13:00'},
+            {'name': 'Brunch', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '10:00', 'end_time': '13:00'},
             {'name': 'Lunch', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '13:00', 'end_time': '16:00'},
             {'name': 'Afternoon meal', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '16:00', 'end_time': '19:00'},
             {'name': 'Dinner', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '19:00', 'end_time': '20:00'},
@@ -168,7 +168,7 @@ class HomeTab(BaseTab):
                 content=Column(
                     controls=[
                         Text(
-                            value=await self.client.session.gtv(key=f'Good_Morning, {firstname}!'),
+                            value=await self.client.session.gtv(key='good_morning') + f' {firstname}!',
                             size=25,
                             font_family=Fonts.SEMIBOLD,
                         ),
@@ -176,7 +176,7 @@ class HomeTab(BaseTab):
                             controls=[
                                 FilledButton(
                                     content=Text(
-                                        value=await self.client.session.gtv(key='Current_meal'),
+                                        value=await self.client.session.gtv(key='main_tabs_home_view_current_meal'),
                                         size=16,
                                         font_family=Fonts.MEDIUM,
                                     ),

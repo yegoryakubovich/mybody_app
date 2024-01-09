@@ -15,20 +15,25 @@
 #
 
 
+import functools
+import json
+
 from flet_core import Row, ScrollMode
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
+from app.controls.information.card import Card
 from app.controls.input import TextField
-from app.controls.layout import AdminBaseView
-from app.utils import Error
+from app.controls.layout import AdminBaseView, Section
+from app.utils import Error, Fonts
+from app.views.admin.services.questions import ServiceQuestionView
 
 
 class ServiceView(AdminBaseView):
     route = '/admin/service/get'
     service: dict
     tf_name: TextField
-    tf_questions: TextField
+    tf_id_str: TextField
 
     def __init__(self, service_id_str):
         super().__init__()
@@ -36,26 +41,21 @@ class ServiceView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.service.get(
+        self.service = await self.client.session.api.client.service.get(
             id_=self.service_id_str
         )
-        self.service = response.service
+        questions = json.loads(self.service["questions"])
         await self.set_type(loading=False)
 
         self.tf_name = TextField(
             label=await self.client.session.gtv(key='name'),
             value=self.service['name_text'],
         )
-        self.tf_questions = TextField(
-            label=await self.client.session.gtv(key='questions'),
-            value=self.service['questions'],
-        )
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key=self.service['name_text']),
             main_section_controls=[
                 self.tf_name,
-                self.tf_questions,
                 Row(
                     controls=[
                         FilledButton(
@@ -73,7 +73,25 @@ class ServiceView(AdminBaseView):
                     ],
                 )
             ],
-         )
+            sections=[
+                Section(
+                    title=await self.client.session.gtv(key='title'),
+                    controls=[
+                        Card(
+                            controls=[
+                                Text(
+                                    value=question['title'],
+                                    size=15,
+                                    font_family=Fonts.REGULAR,
+                                ),
+                            ],
+                            on_click=functools.partial(self.question_view, question),
+                        )
+                        for question in questions
+                    ],
+                )
+            ],
+        )
 
     async def delete_service(self, _):
         await self.client.session.api.admin.service.delete(
@@ -81,8 +99,11 @@ class ServiceView(AdminBaseView):
         )
         await self.client.change_view(go_back=True)
 
+    async def question_view(self, question, _):
+        await self.client.change_view(view=ServiceQuestionView(question))
+
     async def update_service(self, _):
-        fields = [(self.tf_questions, 2, 8192), (self.tf_name, 1, 1024)]
+        fields = [(self.tf_name, 1, 1024)]
         for field, min_len, max_len, error_key in fields:
             if not await Error.check_field(self, field, min_len, max_len):
                 return
