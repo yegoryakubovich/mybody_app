@@ -15,17 +15,13 @@
 #
 
 
-from .admin import AdminBaseView, Section
-from .auth import AuthView
-from .client import ClientBaseView, ClientSection
-from .view import View
+from app.views.auth.service.create import ServiceCreateView
+from app.views.auth.service.get import ServiceView
+from app.views.auth.service.get_list import ServiceListView
 
 
 __all__ = [
-    'View',
-    'AuthView',
-    'AdminBaseView',
-    'ClientBaseView',
-    'Section',
-    'ClientSection',
+    'ServiceListView',
+    'ServiceView',
+    'ServiceCreateView',
 ]

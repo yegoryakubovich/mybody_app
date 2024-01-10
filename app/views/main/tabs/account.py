@@ -26,6 +26,7 @@ from app.views.admin.admin import AdminView
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.utils import Fonts
+from app.views.auth.service.get_list import ServiceListView
 from app.views.main.tabs.base import BaseTab
 from config import VERSION
 
@@ -228,7 +229,7 @@ class AccountTab(BaseTab):
                     Setting(
                         name=await self.client.session.gtv(key='articles'),
                         icon='notifications',
-                        on_click=self.coming_soon,
+                        on_click=self.get_services,
                     ),
                     Setting(
                         name=await self.client.session.gtv(key='policies'),
@@ -310,3 +311,6 @@ class AccountTab(BaseTab):
                 padding=padding.symmetric(vertical=4),
             ),
         ]
+
+    async def get_services(self, _):
+        await self.client.change_view(view=ServiceListView())

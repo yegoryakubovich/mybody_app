@@ -61,14 +61,12 @@ class AccountListView(AdminBaseView):
                         Row(
                             controls=[
                                 Text(
-                                    value=await self.client.session.gtv(
-                                        key=account['firstname']),
+                                    value=account['firstname'],
                                     size=13,
                                     font_family=Fonts.REGULAR,
                                 ),
                                 Text(
-                                    value=await self.client.session.gtv(
-                                        key=account['lastname']),
+                                    value=account['lastname'],
                                     size=13,
                                     font_family=Fonts.REGULAR,
                                 ),
@@ -86,7 +84,7 @@ class AccountListView(AdminBaseView):
                     on_next=self.next_page,
                 ),
             ]
-        ),
+        )
 
     async def account_view(self, account_id, _):
         await self.client.change_view(view=AccountView(account_id=account_id))

@@ -15,17 +15,13 @@
 #
 
 
-from .admin import AdminBaseView, Section
-from .auth import AuthView
-from .client import ClientBaseView, ClientSection
-from .view import View
+from app.views.admin.accounts.role.create import AccountRoleCreateView
+from app.views.admin.accounts.role.get import AccountRoleView
+from app.views.admin.accounts.role.get_list import AccountRoleListView
 
 
 __all__ = [
-    'View',
-    'AuthView',
-    'AdminBaseView',
-    'ClientBaseView',
-    'Section',
-    'ClientSection',
+    'AccountRoleCreateView',
+    'AccountRoleView',
+    'AccountRoleListView',
 ]

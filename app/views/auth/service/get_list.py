@@ -17,45 +17,46 @@
 
 import functools
 
-from flet_core import Text, ScrollMode
+from flet_core import ScrollMode
 
+from app.controls.information import Text
 from app.controls.information.card import Card
-from app.controls.layout import AdminBaseView
+from app.controls.layout import ClientBaseView
 from app.utils import Fonts
-from app.views.admin.roles.create import RoleCreateView
-from app.views.admin.roles.get import RoleView
+from app.views.auth.service.get import ServiceView
 
 
-class RoleListView(AdminBaseView):
-    route = '/admin/role/list/get'
-    roles: list[dict]
+class ServiceListView(ClientBaseView):
+    route = '/client/service/list/get'
+    services: list[dict]
 
     async def build(self):
         await self.set_type(loading=True)
-        self.roles = await self.client.session.api.client.role.get_list()
+        self.services = await self.client.session.api.client.service.get_list()
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='admin_role_get_list_view_title'),
-            on_create_click=self.create_role,
+            title=await self.client.session.gtv(key='client_service_get_list_view_title'),
             main_section_controls=[
-                Card(
+                Text(
+                    value=await self.client.session.gtv(key='Выберите желаемый пакет услуг'),
+                    size=18,
+                    font_family=Fonts.SEMIBOLD,
+                ),
+                *[Card(
                     controls=[
                         Text(
-                            value=await self.client.session.gtv(key=role['name_text']),
+                            value=await self.client.session.gtv(key=service['name_text']),
                             size=18,
                             font_family=Fonts.SEMIBOLD,
                         ),
                     ],
-                    on_click=functools.partial(self.role_view, role['id']),
+                    on_click=functools.partial(self.service_view, service['id_str']),
                 )
-                for role in self.roles
-            ],
-         )
+                    for service in self.services]
+            ]
+        )
 
-    async def create_role(self, _):
-        await self.client.change_view(view=RoleCreateView())
-
-    async def role_view(self, role_id, _):
-        await self.client.change_view(view=RoleView(role_id=role_id))
+    async def service_view(self, service_id_str, _):
+        await self.client.change_view(view=ServiceView(service_id_str=service_id_str))

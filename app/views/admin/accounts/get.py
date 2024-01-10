@@ -13,14 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.layout import AdminBaseView
+from app.views.admin.accounts.role import AccountRoleListView
 
 
 class AccountView(AdminBaseView):
     route = '/admin/accounts/get'
     account = list
+    service = list
 
     def __init__(self, account_id):
         super().__init__()
@@ -28,38 +30,48 @@ class AccountView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.client.account.get(
+        self.account = await self.client.session.api.admin.account.get(
             id_=self.account_id
         )
-        self.account = response.account
         await self.set_type(loading=False)
 
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='admin_account_get_list_view_title'),
             main_section_controls=[
                 Text(
-                    value=await self.client.session.gtv(key=self.account['firstname']),
+                    value=self.account['firstname'],
                 ),
                 Text(
-                    value=await self.client.session.gtv(key=self.account['lastname']),
+                    value=self.account['lastname'],
                 ),
                 Text(
                     value=self.account['surname']
                     if self.account['surname']
-                    else await self.client.session.gtv(key='no'),
+                    else None,
                 ),
                 Text(
-                    value=await self.client.session.gtv(key=self.account['country']),
+                    value=self.account['country'],
                 ),
                 Text(
-                    value=await self.client.session.gtv(key=self.account['language']),
+                    value=self.account['language'],
                 ),
                 Text(
-                    value=await self.client.session.gtv(key=self.account['timezone']),
+                    value=self.account['timezone'],
                 ),
                 Text(
-                    value=await self.client.session.gtv(key=self.account['currency']),
+                    value=self.account['currency'],
+                ),
+                FilledButton(
+                    content=Text(
+                        value=await self.client.session.gtv(key='roles'),
+                    ),
+                    on_click=self.role_view,
                 ),
             ],
         )
 
+    async def delete_article(self):
+        pass
+
+    async def role_view(self, _):
+        await self.client.change_view(view=AccountRoleListView(account_id=self.account_id))
