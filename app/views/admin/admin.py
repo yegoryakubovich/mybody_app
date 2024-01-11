@@ -17,7 +17,7 @@
 
 from typing import Any
 
-from flet_core import ScrollMode
+from flet_core import ScrollMode, Column
 from flet_manager.utils import get_svg
 
 from app.controls.layout import AdminBaseView
@@ -130,12 +130,17 @@ class AdminView(AdminBaseView):
         ]
 
         main_sections_controls = [
-            ListItemButton(
-                icon=get_svg(path=f'assets/icons/{setting.icon}.svg'),
-                name=await self.client.session.gtv(key=setting.name),
-                on_click=setting.on_click,
-            )
-            for setting in parts
+            Column(
+                controls=[
+                    ListItemButton(
+                        icon=get_svg(path=f'assets/icons/{setting.icon}.svg'),
+                        name=await self.client.session.gtv(key=setting.name),
+                        on_click=setting.on_click,
+                    )
+                    for setting in parts
+                ],
+                spacing=4,
+            ),
         ]
 
         self.controls = await self.get_controls(

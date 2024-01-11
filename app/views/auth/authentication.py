@@ -51,7 +51,7 @@ class AuthenticationView(AuthView):
 
     async def go_registration(self, _):
         from app.views.auth.registration import RegistrationFirstView
-        await self.client.change_view(view=RegistrationFirstView())
+        await self.client.change_view(view=RegistrationFirstView(), delete_current=True)
 
     async def build(self):
         self.tf_username = TextField(

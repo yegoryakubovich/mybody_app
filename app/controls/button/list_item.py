@@ -39,7 +39,6 @@ class ListItemButton(Container):
                 ],
                 spacing=12,
             ),
-            margin=margin.symmetric(horizontal=16),
             padding=padding.symmetric(vertical=4),
             ink=True,
             on_click=on_click,

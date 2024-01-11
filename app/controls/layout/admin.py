@@ -124,7 +124,7 @@ class AdminBaseView(View):
                     ],
                     spacing=8,
                 ),
-                padding=10,
+                padding=16,
             ),
         ]
 

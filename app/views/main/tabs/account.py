@@ -199,40 +199,40 @@ class AccountTab(BaseTab):
 
         sections = [
             Section(
-                name=await self.client.session.gtv(key='my_account'),
+                name='my_account',
                 settings=[
                     Setting(
-                        name=await self.client.session.gtv(key='notifications'),
+                        name='notifications',
                         icon='notifications',
                         on_click=self.coming_soon,
                     ),
                     Setting(
-                        name=await self.client.session.gtv(key='security'),
+                        name='security',
                         icon='security',
                         on_click=self.coming_soon,
                     ),
                     Setting(
-                        name=await self.client.session.gtv(key='language'),
+                        name='language',
                         icon='language',
                         on_click=self.language_set,
                     ),
                     Setting(
-                        name=await self.client.session.gtv(key='logout'),
+                        name='logout',
                         icon='logout',
                         on_click=self.log_out,
                     ),
                 ],
             ),
             Section(
-                name=await self.client.session.gtv(key='info'),
+                name='info',
                 settings=[
                     Setting(
-                        name=await self.client.session.gtv(key='articles'),
+                        name='articles',
                         icon='notifications',
                         on_click=self.get_services,
                     ),
                     Setting(
-                        name=await self.client.session.gtv(key='policies'),
+                        name='policies',
                         icon='security',
                         on_click=self.coming_soon,
                     ),
@@ -249,7 +249,6 @@ class AccountTab(BaseTab):
                                 font_family=Fonts.SEMIBOLD,
                                 size=30,
                             ),
-                            margin=margin.symmetric(horizontal=16),
                         ),
                         Column(
                             controls=[
@@ -265,6 +264,7 @@ class AccountTab(BaseTab):
                     ],
                 ),
                 padding=padding.only(top=12),
+                margin=padding.symmetric(horizontal=16),
             ) for section in sections
         ]
 
