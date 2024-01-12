@@ -24,7 +24,6 @@ from app.views.auth.service import ServiceCreateView
 
 
 class ServiceView(ClientBaseView):
-    route = '/admin/articles/get'
     service = dict
 
     def __init__(self, service_id_str):

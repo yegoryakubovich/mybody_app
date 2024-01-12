@@ -19,13 +19,12 @@ from typing import Any
 
 from flet_core import Container, alignment, padding, Column, CrossAxisAlignment, CircleAvatar, \
     Image, BottomSheet, margin, TextAlign, Row, MainAxisAlignment, Stack, IconButton, icons
-from flet_manager.utils import get_svg
 
-from app.controls.button import ListItemButton
-from app.views.admin.admin import AdminView
 from app.controls.button import FilledButton
+from app.controls.button import ListItemButton
 from app.controls.information import Text
-from app.utils import Fonts
+from app.utils import Fonts, Icons
+from app.views.admin.admin import AdminView
 from app.views.auth.service.get_list import ServiceListView
 from app.views.main.tabs.base import BaseTab
 from config import VERSION
@@ -95,9 +94,7 @@ class AccountTab(BaseTab):
                     controls=[
                         Container(
                             content=Image(
-                                src=get_svg(
-                                    path='assets/icons/chill.svg',
-                                ),
+                                src=Icons.CHILL,
                                 color='#1d1d1d',  # FIXME
                             ),
                             margin=margin.only(bottom=16),
@@ -134,9 +131,7 @@ class AccountTab(BaseTab):
                                 controls=[
                                     Container(
                                         content=Image(
-                                            src=get_svg(
-                                                path='assets/icons/go_out.svg',
-                                            ),
+                                            src=Icons.LOGOUT,
                                         ),
                                         margin=margin.only(bottom=16),
                                     ),
@@ -203,22 +198,22 @@ class AccountTab(BaseTab):
                 settings=[
                     Setting(
                         name='notifications',
-                        icon='notifications',
+                        icon=Icons.NOTIFICATIONS,
                         on_click=self.coming_soon,
                     ),
                     Setting(
                         name='security',
-                        icon='security',
+                        icon=Icons.SECURITY,
                         on_click=self.coming_soon,
                     ),
                     Setting(
                         name='language',
-                        icon='language',
+                        icon=Icons.LANGUAGE,
                         on_click=self.language_set,
                     ),
                     Setting(
                         name='logout',
-                        icon='logout',
+                        icon=Icons.LOGOUT,
                         on_click=self.log_out,
                     ),
                 ],
@@ -228,12 +223,12 @@ class AccountTab(BaseTab):
                 settings=[
                     Setting(
                         name='articles',
-                        icon='notifications',
+                        icon=Icons.NOTIFICATIONS,
                         on_click=self.get_services,
                     ),
                     Setting(
                         name='policies',
-                        icon='security',
+                        icon=Icons.SECURITY,
                         on_click=self.coming_soon,
                     ),
                 ],
@@ -253,7 +248,7 @@ class AccountTab(BaseTab):
                         Column(
                             controls=[
                                 ListItemButton(
-                                    icon=get_svg(path=f'assets/icons/{setting.icon}.svg'),
+                                    icon=setting.icon,
                                     name=await self.client.session.gtv(key=setting.name),
                                     on_click=setting.on_click,
                                 )
@@ -274,9 +269,7 @@ class AccountTab(BaseTab):
                     controls=[
                         CircleAvatar(
                             content=Image(
-                                src=get_svg(
-                                    path='assets/icons/account.svg',
-                                ),
+                                src=Icons.ACCOUNT,
                                 color='#1d1d1d',  # FIXME
                             ),
                             bgcolor='#E4E4E4',

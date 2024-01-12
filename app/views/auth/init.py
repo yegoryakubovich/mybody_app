@@ -24,7 +24,6 @@ from app.views.auth.authentication import AuthenticationView
 
 
 class InitView(AuthView):
-    route = '/'
     dropdown: Dropdown
     languages: list
 
@@ -51,7 +50,6 @@ class InitView(AuthView):
             return
 
         await self.client.change_view(view=MainView())
-
 
     async def build(self):
         pass

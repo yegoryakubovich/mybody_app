@@ -19,14 +19,13 @@ from datetime import datetime
 from typing import Any
 
 from flet_core import Column, Row, Container, MainAxisAlignment, Image
-from flet_manager.utils import get_svg
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
-from app.utils import Fonts
+from app.utils import Fonts, Icons
 from app.views.main.meal.meal import MealView
-from app.views.main.training.training import TrainingView
 from app.views.main.tabs.base import BaseTab
+from app.views.main.training.training import TrainingView
 
 
 class Meal:
@@ -63,9 +62,9 @@ class MealButton(Container):
         self.border_radius = 10
         self.padding = 10
         images = [
-            get_svg(path=f'assets/icons/carbohydrates.svg', ),
-            get_svg(path=f'assets/icons/protein.svg'),
-            get_svg(path=f'assets/icons/fats.svg'),
+            Icons.CARBOHYDRATES,
+            Icons.PROTEIN,
+            Icons.FATS,
         ]
         self.name_text = Text(
             value=name,
@@ -73,7 +72,7 @@ class MealButton(Container):
         )
         self.nutrient_texts = list(map(lambda value: Text(value=value, font_family=Fonts.REGULAR), nutrients))
         self.images = list(map(lambda src: Image(src=src, width=15), images))
-        self.arrow_image = Image(src=get_svg(path=f'assets/icons/arrow_next.svg'), width=15)
+        self.arrow_image = Image(src=Icons.BACK, width=15)
         self.content = Row(
             controls=[
                 Container(content=self.name_text, expand=7),
@@ -239,7 +238,7 @@ class HomeTab(BaseTab):
                                              Row(
                                                  controls=[
                                                      Image(
-                                                         src=get_svg(path=f'assets/icons/chill.svg'),
+                                                         src=Icons.CHILL,
                                                          width=15,
                                                          color='#FFFFFF'
                                                      ),

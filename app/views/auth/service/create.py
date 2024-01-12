@@ -15,7 +15,7 @@
 #
 import json
 
-from flet_core import Row, Column, ScrollMode
+from flet_core import Column, ScrollMode
 from flet_core.dropdown import Option
 
 from app.controls.button import FilledButton
@@ -27,10 +27,11 @@ from app.utils import Fonts
 
 
 class ServiceCreateView(ClientBaseView):
-    route = '/client/service/create'
     service = dict
     page_account: int = 1
     total_pages: int = 1
+    tf_id_str: str
+    answers: None
 
     def __init__(self, service_id_str):
         super().__init__()

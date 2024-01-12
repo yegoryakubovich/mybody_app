@@ -24,8 +24,6 @@ from app.utils import Fonts, Session
 
 
 class RegistrationSuccessfulView(AuthView):
-    route = '/registration'
-
     async def init(self, _):
         await self.set_type(loading=True)
         self.client.session = Session(client=self.client)

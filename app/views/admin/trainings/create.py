@@ -29,6 +29,10 @@ class CreateTrainingView(View):
     route = '/admin'
     dd_account_service_id: Dropdown
     dd_article_id: Dropdown
+    product: None
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
     async def build(self):
         await self.set_type(loading=True)

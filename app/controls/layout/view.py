@@ -21,7 +21,7 @@ from flet_manager.views import BaseView
 
 from app.controls.information import Text
 from app.controls.information.loading import Loading
-from app.utils import Fonts
+from app.utils import Fonts, Icons
 
 
 class View(BaseView):
@@ -63,7 +63,7 @@ class View(BaseView):
             left_controls.append(
                 Container(
                     content=Image(
-                        src=get_svg(path='assets/icons/arrow_back.svg'),
+                        src=Icons.BACK,
                         height=20,
                         color='#000000',
                     ),
@@ -88,7 +88,7 @@ class View(BaseView):
                     content=Row(
                         controls=[
                             Image(
-                                src=get_svg(path='assets/icons/addition.svg'),
+                                src=Icons.CREATE,
                                 height=10,
                                 color='#FFFFFF',
                             ),

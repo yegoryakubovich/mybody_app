@@ -34,6 +34,7 @@ class ServiceView(AdminBaseView):
     service: dict
     tf_name: TextField
     tf_id_str: TextField
+    tf_questions: None
 
     def __init__(self, service_id_str):
         super().__init__()

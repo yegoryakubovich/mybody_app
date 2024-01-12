@@ -20,13 +20,10 @@ from flet_core.dropdown import Option
 from app.controls.button import FilledButton
 from app.controls.input import Dropdown
 from app.controls.layout import AuthView
-from app.utils import Session
-from app.views.auth.authentication import AuthenticationView
 from config import LANGUAGE_DEFAULT
 
 
 class LanguageView(AuthView):
-    route = '/'
     dropdown: Dropdown
     languages: list
 

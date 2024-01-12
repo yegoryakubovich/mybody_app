@@ -26,7 +26,6 @@ from app.views.auth.registration.agreement import AgreementRegistrationView
 
 
 class RegistrationSecondView(AuthView):
-    route = '/registration'
     dd_country: Dropdown
     dd_currency: Dropdown
     dd_timezone: Dropdown

@@ -27,7 +27,6 @@ from app.views.auth.registration.second import RegistrationSecondView
 
 
 class RegistrationFirstView(AuthView):
-    route = '/registration'
     tf_username: TextField
     tf_password: TextField
 

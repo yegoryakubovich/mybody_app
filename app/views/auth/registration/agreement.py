@@ -24,8 +24,6 @@ from app.views.auth.registration.successful import RegistrationSuccessfulView
 
 
 class AgreementRegistrationView(AuthView):
-    route = '/registration'
-
     async def change_view(self, _):
         await self.client.session.api.client.account.create(
             username=self.client.session.registration.username,

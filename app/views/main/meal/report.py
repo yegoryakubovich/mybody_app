@@ -110,7 +110,8 @@ class MealReportView(View):
                                 Row(
                                     controls=[
                                         ProductChipButton(
-                                            f"{meal.name} {meal.weight}{await self.client.session.gtv(key='g')}"
+                                            text=f"{meal.name} {meal.weight}{await self.client.session.gtv(key='g')}",
+                                            on_click=None,
                                         )
                                         for meal in meals
                                     ],

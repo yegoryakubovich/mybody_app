@@ -16,34 +16,29 @@
 
 
 from flet_core import ListView, padding
-from flet_manager.utils import get_svg
 
 from app.controls.layout.view import View
 from app.controls.navigation import BottomNavigation, BottomNavigationTab
-from .tabs import HomeTab, StatsTab, AccountTab
+from .tabs import HomeTab, AccountTab
+from ...utils import Icons
 
 
 class Tab:
-    def __init__(self, name: str, icon_path: str, control):
+    def __init__(self, name: str, icon: str, control):
         self.name = name
-        self.icon = get_svg(path=icon_path)
+        self.icon = icon
         self.control = control
 
 
 TABS = [
     Tab(
         name='Home',
-        icon_path='assets/icons/plan.svg',
+        icon=Icons.PLAN,
         control=HomeTab,
     ),
     Tab(
-        name='Statistics',
-        icon_path='assets/icons/stats.svg',
-        control=StatsTab,
-    ),
-    Tab(
         name='Account',
-        icon_path='assets/icons/account.svg',
+        icon=Icons.ACCOUNT,
         control=AccountTab,
     ),
 ]
@@ -67,17 +62,6 @@ class MainView(View):
     async def set_body(self, controls):
         self.body.controls = controls
         await self.body.update_async()
-
-    async def on_load(self):
-        for tab in self.tabs:
-            control = tab.control(client=self.client, view=self)
-            await control.build()
-            await control.on_load()
-            tab.controls = [await control.get()]
-
-        self.tab_selected = self.tab_default
-        await self.tab_default.set_state(activated=True)
-        await self.set_body(controls=self.tab_selected.controls)
 
     async def build(self):
         self.body = ListView(expand=True, padding=padding.only(bottom=36))
@@ -104,3 +88,13 @@ class MainView(View):
                 tabs=self.tabs,
             ),
         ]
+
+        for tab in self.tabs:
+            control = tab.control(client=self.client, view=self)
+            await control.build()
+            await control.on_load()
+            tab.controls = [await control.get()]
+
+        self.tab_selected = self.tab_default
+        await self.tab_default.set_state(activated=True)
+        await self.set_body(controls=self.tab_selected.controls)

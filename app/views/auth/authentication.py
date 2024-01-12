@@ -25,7 +25,6 @@ from app.utils import Fonts
 
 
 class AuthenticationView(AuthView):
-    route = '/authentication'
     tf_username: TextField
     tf_password: TextField
 

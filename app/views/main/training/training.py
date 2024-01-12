@@ -163,7 +163,8 @@ class TrainingView(View):
                                                             [
                                                                 Text(
                                                                     value=f'{exercises[i].quantity} '
-                                                                          f'{await self.client.session.gtv(key="""sec""")}' if
+                                                                          f'{await self.client.session.gtv(key="sec")}'
+                                                                    if
                                                                     exercises[i].is_time else str(
                                                                         exercises[i].quantity),
                                                                     color='#000000',

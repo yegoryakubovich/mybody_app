@@ -18,7 +18,6 @@
 from typing import Any
 
 from flet_core import ScrollMode, Column
-from flet_manager.utils import get_svg
 
 from app.controls.layout import AdminBaseView
 from .accounts.get_list import AccountListView
@@ -35,6 +34,7 @@ from .texts.get_list import TextListView
 from .timezones.get_list import TimezoneListView
 from .trainings.get_list import TrainingListView
 from ...controls.button import ListItemButton
+from ...utils import Icons
 
 
 class Setting:
@@ -64,67 +64,67 @@ class AdminView(AdminBaseView):
         parts = [
             Setting(
                 name='admin_account_get_list_view_title',
-                icon='notifications',
+                icon=Icons.ADMIN_ACCOUNTS,
                 on_click=self.get_accounts,
             ),
             Setting(
                 name='admin_article_get_list_view_title',
-                icon='notifications',
+                icon=Icons.ADMIN_ARTICLES,
                 on_click=self.get_articles,
             ),
             Setting(
                 name='admin_text_get_list_view_title',
-                icon='notifications',
+                icon=Icons.ADMIN_TEXTS,
                 on_click=self.get_texts,
             ),
             Setting(
                 name='admin_product_get_list_view_title',
-                icon='notifications',
+                icon=Icons.ADMIN_PRODUCTS,
                 on_click=self.get_products,
             ),
             Setting(
                 name='admin_language_get_list_view_title',
-                icon='notifications',
+                icon=Icons.LANGUAGE,
                 on_click=self.get_languages,
             ),
             Setting(
                 name='admin_currency_get_list_view_title',
-                icon='notifications',
+                icon=Icons.CURRENCY,
                 on_click=self.get_currencies,
             ),
             Setting(
                 name='admin_timezone_get_list_view_title',
-                icon='notifications',
+                icon=Icons.TIMEZONE,
                 on_click=self.get_timezones,
             ),
             Setting(
                 name='admin_country_get_list_view_title',
-                icon='notifications',
+                icon=Icons.COUNTRY,
                 on_click=self.get_countries,
             ),
             Setting(
                 name='admin_exercise_get_list_view_title',
-                icon='notifications',
+                icon=Icons.ADMIN_EXERCISES,
                 on_click=self.get_exercises,
             ),
             Setting(
                 name='admin_permission_get_list_view_title',
-                icon='notifications',
+                icon=Icons.ADMIN_PERMISSIONS,
                 on_click=self.get_permissions,
             ),
             Setting(
                 name='admin_role_get_list_view_title',
-                icon='notifications',
+                icon=Icons.ADMIN_ROLES,
                 on_click=self.get_roles,
             ),
             Setting(
                 name='admin_service_get_list_view_title',
-                icon='notifications',
+                icon=Icons.ADMIN_SERVICES,
                 on_click=self.get_services,
             ),
             Setting(
                 name='trainings',
-                icon='notifications',
+                icon=Icons.NOT_FOUNT,
                 on_click=self.get_trainings,
             ),
         ]
@@ -133,7 +133,7 @@ class AdminView(AdminBaseView):
             Column(
                 controls=[
                     ListItemButton(
-                        icon=get_svg(path=f'assets/icons/{setting.icon}.svg'),
+                        icon=setting.icon,
                         name=await self.client.session.gtv(key=setting.name),
                         on_click=setting.on_click,
                     )

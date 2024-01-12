@@ -27,7 +27,6 @@ from app.views.auth.service.get import ServiceView
 
 
 class ServiceListView(ClientBaseView):
-    route = '/client/service/list/get'
     services: list[dict]
 
     async def build(self):
