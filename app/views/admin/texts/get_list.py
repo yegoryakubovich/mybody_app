@@ -49,7 +49,7 @@ class TextListView(AdminBaseView):
                             font_family=Fonts.SEMIBOLD,
                         ),
                         Text(
-                            value=text['value_default'],
+                            value=text['key'],
                             size=10,
                             font_family=Fonts.MEDIUM,
                         ),

@@ -72,7 +72,7 @@ class MealButton(Container):
         )
         self.nutrient_texts = list(map(lambda value: Text(value=value, font_family=Fonts.REGULAR), nutrients))
         self.images = list(map(lambda src: Image(src=src, width=15), images))
-        self.arrow_image = Image(src=Icons.BACK, width=15)
+        self.arrow_image = Image(src=Icons.NEXT, width=15)
         self.content = Row(
             controls=[
                 Container(content=self.name_text, expand=7),
@@ -200,7 +200,7 @@ class HomeTab(BaseTab):
                             ],
                         ),
                         Text(
-                            value=await self.client.session.gtv(key='Today_Meals'),
+                            value=await self.client.session.gtv(key='meals'),
                             size=20,
                             font_family=Fonts.SEMIBOLD,
                         ),
@@ -216,7 +216,7 @@ class HomeTab(BaseTab):
                             ],
                         ),
                         Text(
-                            value=await self.client.session.gtv(key='Training'),
+                            value=await self.client.session.gtv(key='trainings'),
                             size=20,
                             font_family=Fonts.SEMIBOLD,
                         ),

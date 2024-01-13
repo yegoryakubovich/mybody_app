@@ -59,3 +59,4 @@ class Icons:
     FAQ = get_svg('faq')
     ABOUT = get_svg('about')
     SUPPORT = get_svg('support')
+    NEXT = get_svg('next')
