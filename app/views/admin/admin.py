@@ -69,7 +69,7 @@ class AdminView(AdminBaseView):
             ),
             Setting(
                 name='admin_article_get_list_view_title',
-                icon=Icons.ADMIN_ARTICLES,
+                icon=Icons.ARTICLES,
                 on_click=self.get_articles,
             ),
             Setting(

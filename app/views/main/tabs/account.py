@@ -18,11 +18,10 @@
 from typing import Any
 
 from flet_core import Container, alignment, padding, Column, CrossAxisAlignment, CircleAvatar, \
-    Image, BottomSheet, margin, TextAlign, Row, MainAxisAlignment, Stack, IconButton, icons
+    Image, margin, TextAlign
 
-from app.controls.button import FilledButton
 from app.controls.button import ListItemButton
-from app.controls.information import Text
+from app.controls.information import Text, BottomSheet
 from app.utils import Fonts, Icons
 from app.views.admin.admin import AdminView
 from app.views.auth.service.get_list import ServiceListView
@@ -52,7 +51,7 @@ class Section:
 
 class AccountTab(BaseTab):
     bs_coming_soon: BottomSheet
-    bs_log_out = BottomSheet
+    bs_logout = BottomSheet
     go_admin_counter: int
 
     async def go_admin(self, _):
@@ -60,130 +59,35 @@ class AccountTab(BaseTab):
         if self.go_admin_counter < 5:
             return
         self.go_admin_counter = 0
+        if 'admin' not in self.client.session.account.permissions:
+            print('ERROR')  # FIXME
         await self.client.change_view(view=AdminView())
 
-    async def coming_soon(self, _):
-        self.bs_coming_soon.open = True
-        await self.bs_coming_soon.update_async()
-
-    async def bs_close(self, _):
-        self.bs_log_out.open = False
-        await self.bs_log_out.update_async()
-
-    async def log_out(self, _):
-        self.bs_log_out.open = True
-        await self.bs_log_out.update_async()
-
-    async def language_set(self, _):
-        from app.views.auth.init import InitView
-        await self.client.change_view(view=InitView())
+    async def update_language(self, _):
+        from app.views.auth.language import LanguageView
+        await self.client.change_view(view=LanguageView(), delete_current=True)
 
     async def logout(self, _):
-        await self.view.set_type(loading=True)
         await self.client.session.set_cs(key='token', value=None)
-
-        # Change view
-        view = await self.client.session.init()
-        await self.view.set_type(loading=False)
-        await self.client.change_view(view=view)
-
-    async def bs_init(self):
-        self.bs_coming_soon = BottomSheet(
-            Container(
-                Column(
-                    controls=[
-                        Container(
-                            content=Image(
-                                src=Icons.CHILL,
-                                color='#1d1d1d',  # FIXME
-                            ),
-                            margin=margin.only(bottom=16),
-                        ),
-                        Text(
-                            value=await self.client.session.gtv(key='coming_soon'),
-                            font_family=Fonts.SEMIBOLD,
-                            size=28,
-                        ),
-                        Text(
-                            value='This feature is temporarily unavailable. We are already working on it!',  # FIXME
-                            font_family=Fonts.REGULAR,
-                            size=16,
-                            text_align=TextAlign.CENTER,
-                        ),
-                    ],
-                    spacing=4,
-                    tight=True,
-                    horizontal_alignment=CrossAxisAlignment.CENTER,
-                ),
-                padding=padding.symmetric(vertical=24, horizontal=128),
-            ),
-            open=False,
-        )
-        self.view.client.page.overlay.append(self.bs_coming_soon)
-
-    async def bs_go_out_init(self):
-        self.bs_log_out = BottomSheet(
-            Container(
-                Stack(
-                    controls=[
-                        Container(
-                            Column(
-                                controls=[
-                                    Container(
-                                        content=Image(
-                                            src=Icons.LOGOUT,
-                                        ),
-                                        margin=margin.only(bottom=16),
-                                    ),
-                                    Text(
-                                        value=await self.client.session.gtv(key='log_out'),
-                                        font_family=Fonts.SEMIBOLD,
-                                        size=28,
-                                    ),
-                                    Text(
-                                        value='Are you sure you want to log out of your account?',  # FIXME
-                                        font_family=Fonts.REGULAR,
-                                        size=16,
-                                        text_align=TextAlign.CENTER,
-                                    ),
-                                    Row(
-                                        controls=[
-                                            FilledButton(
-                                                content=Text(
-                                                    value=await self.client.session.gtv(key='Logout'),
-                                                    color='#000000'
-                                                ),
-                                                width=300,
-                                                on_click=self.logout,
-                                            ),
-                                        ],
-                                        alignment=MainAxisAlignment.CENTER
-                                    ),
-                                ],
-                                spacing=10,
-                                tight=True,
-                                horizontal_alignment=CrossAxisAlignment.CENTER,
-                            ),
-                            padding=padding.symmetric(vertical=24, horizontal=128),
-                        ),
-                        IconButton(
-                            icon=icons.CLOSE,
-                            on_click=self.bs_close,
-                            top=1,
-                            right=0,
-                        ),
-                    ],
-                ),
-                padding=10,
-            ),
-            open=False,
-        )
-
-        self.view.client.page.overlay.append(self.bs_log_out)
+        from app.views.auth.init import InitView
+        await self.client.change_view(view=InitView(), delete_current=True)
 
     async def build(self):
-        await self.bs_init()
-        await self.bs_go_out_init()
+        # Bottom Sheets
+        self.bs_coming_soon = BottomSheet(
+            icon=Icons.CHILL,
+            title=await self.client.session.gtv(key='coming_soon'),
+            description=await self.client.session.gtv(key='coming_soon_description'),
+        )
+        self.bs_logout = BottomSheet(
+            icon=Icons.LOGOUT,
+            title=await self.client.session.gtv(key='logout_title'),
+            description=await self.client.session.gtv(key='logout_description'),
+            button_title=await self.client.session.gtv(key='confirm'),
+            button_on_click=self.logout,
+        )
+        self.view.client.page.overlay.append(self.bs_coming_soon)
+        self.view.client.page.overlay.append(self.bs_logout)
 
         # Go Admin
         self.go_admin_counter = 0
@@ -199,22 +103,22 @@ class AccountTab(BaseTab):
                     Setting(
                         name='notifications',
                         icon=Icons.NOTIFICATIONS,
-                        on_click=self.coming_soon,
+                        on_click=self.bs_coming_soon.open_,
                     ),
                     Setting(
                         name='security',
                         icon=Icons.SECURITY,
-                        on_click=self.coming_soon,
+                        on_click=self.bs_coming_soon.open_,
                     ),
                     Setting(
                         name='language',
                         icon=Icons.LANGUAGE,
-                        on_click=self.language_set,
+                        on_click=self.update_language,
                     ),
                     Setting(
                         name='logout',
                         icon=Icons.LOGOUT,
-                        on_click=self.log_out,
+                        on_click=self.bs_logout.open_,
                     ),
                 ],
             ),
@@ -223,13 +127,33 @@ class AccountTab(BaseTab):
                 settings=[
                     Setting(
                         name='articles',
-                        icon=Icons.NOTIFICATIONS,
-                        on_click=self.get_services,
+                        icon=Icons.ARTICLES,
+                        on_click=self.bs_coming_soon.open_,
+                    ),
+                ],
+            ),
+            Section(
+                name='help',
+                settings=[
+                    Setting(
+                        name='about',
+                        icon=Icons.ABOUT,
+                        on_click=self.bs_coming_soon.open_,
                     ),
                     Setting(
-                        name='policies',
-                        icon=Icons.SECURITY,
-                        on_click=self.coming_soon,
+                        name='support',
+                        icon=Icons.SUPPORT,
+                        on_click=self.bs_coming_soon.open_,
+                    ),
+                    Setting(
+                        name='faq',
+                        icon=Icons.FAQ,
+                        on_click=self.bs_coming_soon.open_,
+                    ),
+                    Setting(
+                        name='privacy_policy',
+                        icon=Icons.PRIVACY_POLICY,
+                        on_click=self.bs_coming_soon.open_,
                     ),
                 ],
             ),
@@ -242,7 +166,7 @@ class AccountTab(BaseTab):
                             content=Text(
                                 value=await self.client.session.gtv(section.name),
                                 font_family=Fonts.SEMIBOLD,
-                                size=30,
+                                size=26,
                             ),
                         ),
                         Column(
@@ -289,19 +213,20 @@ class AccountTab(BaseTab):
                     spacing=0,
                     horizontal_alignment=CrossAxisAlignment.CENTER,
                 ),
-                padding=padding.symmetric(vertical=24),
+                padding=padding.only(top=24),
                 alignment=alignment.center,
             ),
         ] + sections_controls + [
             Container(
                 content=Text(
-                    value=await self.client.session.gtv(key='version ') + VERSION,  # FIXME
+                    value=f'{await self.client.session.gtv(key="version")} {VERSION}',
                     font_family=Fonts.REGULAR,
                     size=16,
                 ),
                 alignment=alignment.center,
                 on_click=self.go_admin,
                 padding=padding.symmetric(vertical=4),
+                ink=True,
             ),
         ]
 

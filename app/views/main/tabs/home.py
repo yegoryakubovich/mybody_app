@@ -128,11 +128,11 @@ class HomeTab(BaseTab):
     async def build(self):
 
         api_response = {'state': 'suc', 'meals': [
-            {'name': 'Breakfast', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '7:00', 'end_time': '10:00'},
-            {'name': 'Brunch', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '10:00', 'end_time': '13:00'},
-            {'name': 'Lunch', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '13:00', 'end_time': '16:00'},
-            {'name': 'Afternoon meal', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '16:00', 'end_time': '19:00'},
-            {'name': 'Dinner', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '19:00', 'end_time': '20:00'},
+            {'name': 'meal_1', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '7:00', 'end_time': '10:00'},
+            {'name': 'meal_2', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '10:00', 'end_time': '13:00'},
+            {'name': 'meal_3', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '13:00', 'end_time': '16:00'},
+            {'name': 'meal_4', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '16:00', 'end_time': '19:00'},
+            {'name': 'meal_5', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '19:00', 'end_time': '20:00'},
         ]}
 
         firstname = self.client.session.account.firstname
@@ -167,7 +167,7 @@ class HomeTab(BaseTab):
                 content=Column(
                     controls=[
                         Text(
-                            value=await self.client.session.gtv(key='good_morning') + f' {firstname}!',
+                            value=await self.client.session.gtv(key='good_morning') + f', {firstname}!',
                             size=25,
                             font_family=Fonts.SEMIBOLD,
                         ),

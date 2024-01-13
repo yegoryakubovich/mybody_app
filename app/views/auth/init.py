@@ -51,5 +51,3 @@ class InitView(AuthView):
 
         await self.client.change_view(view=MainView())
 
-    async def build(self):
-        pass
