@@ -88,6 +88,6 @@ class BottomSheet(BottomSheetFlet):
         self.open = False
         await self.update_async()
 
-    async def open_(self, _):
+    async def open_(self, _=None):
         self.open = True
         await self.update_async()

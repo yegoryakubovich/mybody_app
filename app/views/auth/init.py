@@ -31,6 +31,9 @@ class InitView(AuthView):
         text_pack = await self.client.session.api.client.text.get_pack(language=language)
         await self.client.session.set_cs(key='text_pack', value=text_pack)
 
+    async def build(self):
+        self.controls = []
+
     async def on_load(self):
         await self.set_type(loading=True)
         self.client.session = Session(client=self.client)

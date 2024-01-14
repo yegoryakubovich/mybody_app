@@ -22,6 +22,7 @@ from flet_manager.utils import Client
 from mybody_api_client import MyBodyApiClient
 from mybody_api_client.utils.base_section import ApiException
 
+from app.utils import Icons
 from app.utils.registration import Registration
 from config import IS_TEST
 
@@ -36,11 +37,15 @@ class Session:
     text_pack: dict | None
     api: MyBodyApiClient
     registration: Registration
+    bs_error: Any
 
     def __init__(self, client: Client):
         self.client = client
         self.page = client.page
         self.account = None
+
+    async def error(self, code=0):
+        await self.bs_error.open_()
 
     async def init(self):
         self.token = await self.get_cs(key='token')
@@ -56,6 +61,14 @@ class Session:
                 await self.set_cs(key='language', value=self.language)
         except ApiException:
             await self.set_cs(key='token', value=None)
+
+        from app.controls.information.bottomsheet import BottomSheet
+        self.bs_error = BottomSheet(
+            icon=Icons.BACK,
+            title=await self.client.session.gtv(key='error'),
+            description=await self.client.session.gtv(key='error'),
+        )
+        self.page.overlay.append(self.bs_error)
 
     # Client storage
     async def get_cs(self, key: str) -> Any:
