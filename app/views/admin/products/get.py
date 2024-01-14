@@ -28,7 +28,7 @@ class ProductView(AdminBaseView):
     route = '/admin/product/get'
     product = dict
     articles = list[dict]
-    dd_nutrient_type = Dropdown
+    dd_type = Dropdown
     dd_articles = Dropdown
     dd_units = Dropdown
 
@@ -45,40 +45,42 @@ class ProductView(AdminBaseView):
         )
         await self.set_type(loading=False)
 
-        nutrients_unit = [
-            await self.client.session.gtv(key='gr'),
-            await self.client.session.gtv(key='ml'),
-        ]
-        nutrients_type = [
-            await self.client.session.gtv(key='proteins'),
-            await self.client.session.gtv(key='fats'),
-            await self.client.session.gtv(key='carbohydrates'),
-        ]
-        nutrient_type_options = [
-            Option(
-                text=nutrient_type,
-            ) for nutrient_type in nutrients_type
-        ]
+        nutrients_type_dict = {
+            await self.client.session.gtv(key='proteins'): 'proteins',
+            await self.client.session.gtv(key='fats'): 'fats',
+            await self.client.session.gtv(key='carbohydrates'): 'carbohydrates',
+        }
+        nutrients_unit_dict = {
+            await self.client.session.gtv(key='gr'): 'gr',
+            await self.client.session.gtv(key='ml'): 'ml',
+        }
         article_options = [
             Option(
                 text=article['name_text'],
                 key=article['id']
             ) for article in self.articles
         ]
-        nutrients_unit = [
+        nutrients_type_options = [
+            Option(
+                text=nutrient_type,
+                key=nutrients_type_dict[nutrient_type],
+            ) for nutrient_type in nutrients_type_dict
+        ]
+        nutrients_unit_options = [
             Option(
                 text=nutrient_unit,
-            ) for nutrient_unit in nutrients_unit
+                key=nutrients_unit_dict[nutrient_unit],
+            ) for nutrient_unit in nutrients_unit_dict
         ]
-        self.dd_nutrient_type = Dropdown(
+        self.dd_type = Dropdown(
             label=await self.client.session.gtv(key='type'),
             value=self.product['type'],
-            options=nutrient_type_options,
+            options=nutrients_type_options,
         )
         self.dd_units = Dropdown(
             label=await self.client.session.gtv(key='unit'),
             value=self.product['unit'],
-            options=nutrients_unit,
+            options=nutrients_unit_options,
         )
         self.dd_articles = Dropdown(
             label=await self.client.session.gtv(key='article'),
@@ -88,9 +90,9 @@ class ProductView(AdminBaseView):
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key=self.product['name_text']),
             main_section_controls=[
-                self.dd_nutrient_type,
-                self.dd_articles,
+                self.dd_type,
                 self.dd_units,
+                self.dd_articles,
                 Row(
                     controls=[
                         FilledButton(
@@ -119,8 +121,8 @@ class ProductView(AdminBaseView):
     async def update_product(self, _):
         await self.client.session.api.admin.product.update(
             id_=self.product_id,
-            type_=self.dd_nutrient_type.value,
+            type_=self.dd_type.value,
             unit=self.dd_units.value,
-            article_id=self.dd_articles.value,
+            article_id=self.dd_articles.value or 0,
         )
-        await self.client.change_view(go_back=True)
+        await self.client.change_view(go_back=True, with_restart=True)

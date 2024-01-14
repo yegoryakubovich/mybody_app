@@ -17,8 +17,7 @@
 
 from typing import Any
 
-from flet_core import Container, alignment, padding, Column, CrossAxisAlignment, CircleAvatar, \
-    Image, margin, TextAlign
+from flet_core import Container, alignment, padding, Column, CrossAxisAlignment, CircleAvatar, Image
 
 from app.controls.button import ListItemButton
 from app.controls.information import Text, BottomSheet
