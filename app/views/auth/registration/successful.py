@@ -16,11 +16,10 @@
 
 
 from flet_core import Text, Image, Container, Column, alignment, MainAxisAlignment, CrossAxisAlignment
-from flet_manager.utils import get_svg
 
 from app.controls.button import FilledButton
 from app.controls.layout import AuthView
-from app.utils import Fonts, Session
+from app.utils import Fonts, Session, Icons
 
 
 class RegistrationSuccessfulView(AuthView):
@@ -66,9 +65,7 @@ class RegistrationSuccessfulView(AuthView):
                                         font_family=Fonts.SEMIBOLD,
                                     ),
                                     Image(
-                                        src=get_svg(
-                                            path='assets/icons/logos/icon_successful.svg',
-                                        ),
+                                        src=Icons.SUCCESSFUL,
                                         height=200,
                                     ),
                                     FilledButton(

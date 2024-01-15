@@ -2,11 +2,15 @@ version: '3.7'
 
 services:
   app:
-    container_name: mybody_app
+    container_name: mybody_test_api
     build:
       dockerfile: dockerfile
     environment:
       MODULE_NAME: "main"
       MAX_WORKERS: 2
     ports:
-      - "4001:80"
+      - "4010:80"
+    volumes:
+      - ./assets/articles:/app/assets/articles
+      - ./assets/texts_packs:/app/assets/texts_packs
+      - ./assets/images:/app/assets/images

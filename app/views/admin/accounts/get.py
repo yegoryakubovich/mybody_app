@@ -13,16 +13,21 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import functools
+
 from app.controls.button import FilledButton
-from app.controls.information import Text
-from app.controls.layout import AdminBaseView
+from app.controls.information import Text, Card
+from app.controls.layout import AdminBaseView, Section
+from app.utils import Fonts
 from app.views.admin.accounts.role import AccountRoleListView
+from app.views.admin.accounts.service.get import AccountServiceView
 
 
 class AccountView(AdminBaseView):
     route = '/admin/accounts/get'
     account = list
     service = list
+    account_service = list
 
     def __init__(self, account_id):
         super().__init__()
@@ -31,6 +36,9 @@ class AccountView(AdminBaseView):
     async def build(self):
         await self.set_type(loading=True)
         self.account = await self.client.session.api.admin.account.get(
+            id_=self.account_id
+        )
+        self.account_service = await self.client.session.api.admin.account.get_service(
             id_=self.account_id
         )
         await self.set_type(loading=False)
@@ -66,6 +74,24 @@ class AccountView(AdminBaseView):
                         value=await self.client.session.gtv(key='roles'),
                     ),
                     on_click=self.role_view,
+                )
+            ],
+            sections=[
+                Section(
+                    title=await self.client.session.gtv(key='service'),
+                    controls=[
+                        Card(
+                            controls=[
+                                Text(
+                                    value=language['language'],
+                                    size=15,
+                                    font_family=Fonts.REGULAR,
+                                ),
+                            ],
+                            on_click=functools.partial(self.translation_view, language),
+                        )
+                        for language in self.text['translations']
+                    ],
                 ),
             ],
         )
@@ -75,3 +101,6 @@ class AccountView(AdminBaseView):
 
     async def role_view(self, _):
         await self.client.change_view(view=AccountRoleListView(account_id=self.account_id))
+
+    async def service_view(self, _):
+        await self.client.change_view(view=AccountServiceView(account_id=self.account_id))
