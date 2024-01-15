@@ -60,3 +60,5 @@ class Icons:
     ABOUT = get_svg('about')
     SUPPORT = get_svg('support')
     NEXT = get_svg('next')
+    LIGHT = get_svg('light')
+    DARK = get_svg('dark')

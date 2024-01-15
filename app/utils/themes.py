@@ -15,7 +15,7 @@
 #
 
 
-from flet_core import Theme, ColorScheme, PageTransitionsTheme, PageTransitionTheme
+from flet_core import Theme, ColorScheme, PageTransitionsTheme, PageTransitionTheme, TextTheme
 
 from flet_manager.utils import Themes
 
@@ -33,11 +33,22 @@ themes = Themes(
     light=Theme(
         color_scheme=ColorScheme(
             primary='#008F12',
+            on_primary='#FFFFFF',
+            primary_container='#B3E5B9',
+            on_primary_container='#005B0C',
+            surface='#CDEBD1',
+            on_surface='#005B0C',
+            background='#FAFAFA',
         ),
+        text_theme=TextTheme(),
         page_transitions=page_transitions,
     ),
     dark=Theme(
-        color_scheme_seed='#1d1d1d',
+        color_scheme=ColorScheme(
+            primary='#232323',
+            on_primary='#FFFFFF',
+            background='#FAFAFA',
+        ),
         page_transitions=page_transitions,
     ),
 )
