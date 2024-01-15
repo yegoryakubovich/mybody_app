@@ -17,7 +17,7 @@
 
 from typing import Any
 
-from flet_core import Container, alignment, padding, Column, CrossAxisAlignment, CircleAvatar, Image
+from flet_core import Container, alignment, padding, Column, CrossAxisAlignment, CircleAvatar, Image, colors
 
 from app.controls.button import ListItemButton
 from app.controls.information import Text, BottomSheet
@@ -193,9 +193,9 @@ class AccountTab(BaseTab):
                         CircleAvatar(
                             content=Image(
                                 src=Icons.ACCOUNT,
-                                color='#1d1d1d',  # FIXME
+                                color=colors.TERTIARY,  # FIXME
                             ),
-                            bgcolor='#E4E4E4',
+                            bgcolor=colors.TERTIARY_CONTAINER,
                             radius=38,
                         ),
                         Text(

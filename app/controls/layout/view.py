@@ -15,7 +15,7 @@
 #
 
 
-from flet_core import Container, Image, alignment, padding, BoxShadow, Row, MainAxisAlignment
+from flet_core import Container, Image, alignment, padding, BoxShadow, Row, MainAxisAlignment, colors
 from flet_manager.utils import get_svg
 from flet_manager.views import BaseView
 
@@ -44,9 +44,9 @@ class View(BaseView):
             ),
             alignment=alignment.center,
             padding=padding.symmetric(vertical=18, horizontal=96),
-            bgcolor='#FFFFFF',  # FIXME
+            bgcolor=colors.BACKGROUND,
             shadow=BoxShadow(
-                color='#DDDDDD',  # FIXME
+                color=colors.SHADOW,
                 spread_radius=1,
                 blur_radius=20,
             ),

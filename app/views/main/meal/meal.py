@@ -17,7 +17,7 @@
 
 from typing import Any
 
-from flet_core import Column, Container, Image, Row, ScrollMode, Text, padding
+from flet_core import Column, Container, Image, Row, ScrollMode, Text, padding, colors
 from flet_manager.utils import get_svg
 
 from .report import MealReportView
@@ -59,7 +59,6 @@ class MealView(View):
         await self.client.change_view(view=MealReportView())
 
     async def build(self):
-        self.bgcolor = '#FFFFFF'  # FIXME
         self.scroll = ScrollMode.ALWAYS
 
         products = ['Rise', 'Buckwheat', 'Oatmeal', 'Barley']  # FIXME
@@ -153,7 +152,7 @@ class MealView(View):
                                             src=get_svg(
                                                 path=f'assets/icons/arrow_back.svg',
                                             ),
-                                            color='#000000',  # FIXME
+                                            color=colors.TERTIARY,  # FIXME
                                             height=20,
                                         ),
                                         on_click=self.go_back,  # FIXME
@@ -172,7 +171,7 @@ class MealView(View):
                             Text(
                                 value=await self.client.session.gtv(key='Dont_Forget_To_Make_a_Report'),  # FIXME
                                 size=18,
-                                color='#000000',
+                                color='#000000',  # FIXME
                                 font_family=Fonts.REGULAR,
                             ),
                             padding=padding.only(bottom=15),
@@ -182,7 +181,7 @@ class MealView(View):
                             Text(
                                 value=await self.client.session.gtv(key='Indicated_Finish_Weight'),  # FIXME
                                 size=18,
-                                color='#000000',
+                                color='#000000',  # FIXME
                                 font_family=Fonts.REGULAR,
                             ),
                             padding=padding.only(bottom=15),  # FIXME
@@ -192,7 +191,7 @@ class MealView(View):
                                 content=Text(
                                     value=await self.client.session.gtv(key='Make_a_Report'),
                                     size=14,
-                                    color='#ffffff',
+                                    color='#ffffff',  # FIXME
                                     font_family=Fonts.REGULAR,
                                 ),
                                 on_click=self.go_meal_report,

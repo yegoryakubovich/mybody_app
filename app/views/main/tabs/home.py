@@ -100,14 +100,14 @@ class MealButton(Container):
         end_datetime = datetime.strptime(end_time, '%H:%M').time()
 
         if start_datetime <= now <= end_datetime:
-            color = '#FFFFFF'
-            bgcolor = '#008F12'
+            color = '#FFFFFF'  # FIXME
+            bgcolor = '#008F12'  # FIXME
         elif now > end_datetime:
-            color = '#000000'
-            bgcolor = '#A0EAA0'
+            color = '#000000'  # FIXME
+            bgcolor = '#A0EAA0'  # FIXME
         else:
-            color = '#000000'
-            bgcolor = '#D2E9D2'
+            color = '#000000'  # FIXME
+            bgcolor = '#D2E9D2'  # FIXME
 
         self.bgcolor = bgcolor
         self.update_text_and_image_color(color)

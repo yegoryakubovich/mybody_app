@@ -1,7 +1,7 @@
 from typing import Any
 
 from flet_core import (ButtonStyle, Column, Container, Image, MaterialState, RoundedRectangleBorder, Row, ScrollMode,
-                       Text, TextStyle, padding)
+                       Text, TextStyle, padding, colors)
 from flet_manager.utils import get_svg
 
 from app.controls.button import FilledButton
@@ -26,7 +26,7 @@ class AddButton(FilledButton):
         self.content = Text(
             value='Add',  # FIXME await self.client.session.gtv(key='+Add')
             size=14,
-            color='#ffffff',
+            color='#ffffff',  # FIXME
             font_family=Fonts.REGULAR,
         )
         self.on_click = on_click
@@ -38,7 +38,7 @@ class AddButton(FilledButton):
                 MaterialState.DEFAULT: RoundedRectangleBorder(radius=6),
             },
             overlay_color={
-                MaterialState.DEFAULT: '#51B62E',
+                MaterialState.DEFAULT: '#51B62E',  # FIXME
                 MaterialState.HOVERED: '#51B62E',  # FIXME
             },
             shadow_color=None,
@@ -50,7 +50,6 @@ class MealReportView(View):
         await self.client.change_view(go_back=True)
 
     async def build(self):
-        self.bgcolor = '#FFFFFF'  # FIXME
         self.scroll = ScrollMode.ALWAYS
 
         products = ['Rise', 'Buckwheat', 'Oatmeal', 'Barley']  # FIXME
@@ -75,10 +74,10 @@ class MealReportView(View):
                                             src=get_svg(
                                                 path=f'assets/icons/arrow_back.svg',
                                             ),
-                                            color='#000000',  # FIXME
+                                            color=colors.TERTIARY,
                                             height=20,
                                         ),
-                                        on_click=self.go_back,  # FIXME
+                                        on_click=self.go_back,
                                     ),
                                     Text(
                                         value=await self.client.session.gtv(key='Meal_Report'),  # FIXME
@@ -94,7 +93,7 @@ class MealReportView(View):
                             Text(
                                 value=await self.client.session.gtv(key='Report_Guide'),  # FIXME
                                 size=18,
-                                color='#000000',
+                                color='#000000',  # FIXME
                                 font_family=Fonts.REGULAR,
                             ),
                             padding=padding.only(bottom=15),
@@ -128,16 +127,15 @@ class MealReportView(View):
                                 label=await self.client.session.gtv(key='Notes'),  # FIXME
                                 text_style=TextStyle(
                                     font_family=Fonts.MEDIUM,
-                                    color='#000000',
-
+                                    color='#000000',  # FIXME
                                 ),
                                 label_style=TextStyle(
                                     font_family=Fonts.BOLD,
-                                    color='#868686',
+                                    color='#868686',  # FIXME
                                 ),
-                                cursor_color='#868686',
+                                cursor_color='#868686',  # FIXME
                                 border_width=1.5,
-                                border_color='#868686',
+                                border_color='#868686',  # FIXME
                                 multiline=True,
                             ),
                             padding=padding.symmetric(vertical=15)
@@ -153,7 +151,7 @@ class MealReportView(View):
                                 Text(
                                     value=await self.client.session.gtv(key='Add_photos'),  # FIXME
                                     size=18,
-                                    color='#000000',
+                                    color='#000000',  # FIXME
                                     font_family=Fonts.REGULAR,
                                 ),
                                 AddButton(
@@ -163,7 +161,7 @@ class MealReportView(View):
                                     content=Text(
                                         value=await self.client.session.gtv(key='Send_a_Report'),
                                         size=14,
-                                        color='#ffffff',
+                                        color='#ffffff',  # FIXME
                                         font_family=Fonts.REGULAR,
                                     ),
                                     on_click=lambda _: None,

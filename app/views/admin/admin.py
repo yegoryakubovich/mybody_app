@@ -60,7 +60,6 @@ class AdminView(AdminBaseView):
 
     async def build(self):
         self.scroll = ScrollMode.AUTO
-        self.bgcolor = '#FFFFFF'
         parts = [
             Setting(
                 name='admin_account_get_list_view_title',
