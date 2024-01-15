@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
 import functools
 
 from flet_core import ScrollMode
@@ -58,13 +59,13 @@ class RoleView(AdminBaseView):
             ],
             sections=[
                 Section(
-                    title=await self.client.session.gtv(key='permission'),
+                    title=await self.client.session.gtv(key='permissions'),
                     on_create_click=self.create_permission,
                     controls=[
                         Card(
                             controls=[
                                 Text(
-                                    value=permission['permission'],
+                                    value=await self.client.session.gtv(key=permission['permission']),
                                     size=15,
                                     font_family=Fonts.REGULAR,
                                 ),
@@ -81,7 +82,7 @@ class RoleView(AdminBaseView):
         await self.client.session.api.admin.role.delete(
             id_=self.role_id,
         )
-        await self.client.change_view(go_back=True)
+        await self.client.change_view(go_back=True, with_restart=True)
 
     async def create_permission(self, _):
         await self.client.change_view(view=RolePermissionCreateView(role_id=self.role_id))

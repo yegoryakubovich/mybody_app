@@ -15,6 +15,8 @@
 #
 
 
+from mybody_api_client.utils.base_section import ApiException
+
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField
@@ -50,7 +52,11 @@ class ArticleCreateView(AdminBaseView):
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len, max_len):
                 return
-        article_id = await self.client.session.api.admin.article.create(
-            name=self.tf_name.value,
-        )
-        await self.client.change_view(view=ArticleView(article_id=article_id), delete_current=True)
+        try:
+            article_id = await self.client.session.api.admin.article.create(
+                name=self.tf_name.value,
+            )
+            await self.client.change_view(view=ArticleView(article_id=article_id), delete_current=True)
+        except ApiException:
+            await self.set_type(loading=False)
+            return await self.client.session.error(code=0)

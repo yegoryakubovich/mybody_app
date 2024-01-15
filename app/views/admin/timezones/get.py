@@ -51,4 +51,4 @@ class TimezoneView(AdminBaseView):
         await self.client.session.api.admin.timezone.delete(
             id_str=self.timezone_id_str,
         )
-        await self.client.change_view(go_back=True)
+        await self.client.change_view(go_back=True, with_restart=True)

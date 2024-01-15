@@ -33,7 +33,7 @@ class ArticleTranslationView(AdminBaseView):
 
     async def build(self):
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key=self.language['language']),
+            title=self.language['language'],
             main_section_controls=[
                 Row(
                     controls=[
@@ -77,4 +77,4 @@ class ArticleTranslationView(AdminBaseView):
             id_=self.article_id,
             language=self.language['language'],
         )
-        await self.client.change_view(go_back=True)
+        await self.client.change_view(go_back=True, with_restart=True)

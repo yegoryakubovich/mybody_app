@@ -17,9 +17,11 @@
 
 from flet_core import Row
 from flet_core.dropdown import Option, Dropdown
+from mybody_api_client.utils.base_section import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
+from app.controls.information.snackbar import SnackBar
 from app.controls.layout import AdminBaseView
 
 
@@ -27,6 +29,7 @@ class ExerciseView(AdminBaseView):
     route = '/admin/exercise/get'
     exercise = dict
     dd_exercise_type: Dropdown
+    snack_bar: SnackBar
 
     def __init__(self, exercise_id):
         super().__init__()
@@ -39,6 +42,11 @@ class ExerciseView(AdminBaseView):
         )
         await self.set_type(loading=False)
 
+        self.snack_bar = SnackBar(
+            content=Text(
+                value=await self.client.session.gtv(key='successful'),
+            ),
+        )
         exercise_type_dict = {
             await self.client.session.gtv(key='time'): 'time',
             await self.client.session.gtv(key='quantity'): 'quantity',
@@ -52,18 +60,19 @@ class ExerciseView(AdminBaseView):
 
         self.dd_exercise_type = Dropdown(
             label=await self.client.session.gtv(key='type'),
-            value=list(exercise_type_dict.values())[0],
+            value=self.exercise['type'],
             options=exercise_type_options,
         )
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key=self.exercise['name_text']),
             main_section_controls=[
                 self.dd_exercise_type,
+                self.snack_bar,
                 Row(
                     controls=[
                         FilledButton(
                             content=Text(
-                                value=await self.client.session.gtv(key='update'),
+                                value=await self.client.session.gtv(key='save'),
                             ),
                             on_click=self.update_exercise,
                         ),
@@ -76,17 +85,22 @@ class ExerciseView(AdminBaseView):
                     ],
                 ),
             ],
-         )
+        )
 
     async def delete_exercise(self, _):
         await self.client.session.api.admin.exercise.delete(
             id_=self.exercise_id,
         )
-        await self.client.change_view(go_back=True)
+        await self.client.change_view(go_back=True, with_restart=True)
 
     async def update_exercise(self, _):
-        await self.client.session.api.admin.exercise.update(
-            id_=self.exercise_id,
-            type_=self.dd_exercise_type.value,
-        )
-        await self.client.change_view(go_back=True)
+        try:
+            await self.client.session.api.admin.exercise.update(
+                id_=self.exercise_id,
+                type_=self.dd_exercise_type.value,
+            )
+            self.snack_bar.open = True
+            await self.update_async()
+        except ApiException:
+            await self.set_type(loading=False)
+            return await self.client.session.error(code=0)

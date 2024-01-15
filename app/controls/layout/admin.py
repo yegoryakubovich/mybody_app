@@ -18,11 +18,10 @@
 from typing import Any
 
 from flet_core import Row, Container, Image, MainAxisAlignment, Column
-from flet_manager.utils import get_svg
 
 from app.controls.information import Text
 from app.controls.layout.view import View
-from app.utils import Fonts
+from app.utils import Fonts, Icons
 
 
 class Section:
@@ -51,7 +50,7 @@ class Section:
                     content=Row(
                         controls=[
                             Image(
-                                src=get_svg(path='assets/icons/addition.svg'),
+                                src=Icons.CREATE,
                                 height=10,
                                 color='#FFFFFF',
                             ),
@@ -106,7 +105,7 @@ class AdminBaseView(View):
             main_section_controls: list,
             sections: list[Section] = None,
             on_create_click: Any = None,
-            back_with_restart: bool = False,
+            back_with_restart: bool = True,
     ) -> list:
 
         title_control = await self.get_title(

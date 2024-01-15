@@ -17,9 +17,11 @@
 
 from flet_core import Row
 from flet_core.dropdown import Option, Dropdown
+from mybody_api_client.utils.base_section import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
+from app.controls.information.snackbar import SnackBar
 from app.controls.layout import AdminBaseView
 
 
@@ -32,6 +34,7 @@ class CountryView(AdminBaseView):
     dd_language = Dropdown
     dd_timezone = Dropdown
     dd_currency = Dropdown
+    snack_bar = SnackBar
 
     def __init__(self, country_id_str):
         super().__init__()
@@ -40,7 +43,7 @@ class CountryView(AdminBaseView):
     async def build(self):
         await self.set_type(loading=True)
         self.country = await self.client.session.api.client.country.get(
-            id_str=self.country_id_str
+            id_str=self.country_id_str,
         )
         self.languages = await self.client.session.api.client.language.get_list()
         self.timezones = await self.client.session.api.client.timezone.get_list()
@@ -66,6 +69,11 @@ class CountryView(AdminBaseView):
             ) for currency in self.currencies
         ]
 
+        self.snack_bar = SnackBar(
+            content=Text(
+                value=await self.client.session.gtv(key='successful'),
+            ),
+        )
         self.dd_language = Dropdown(
             label=await self.client.session.gtv(key='language'),
             value=self.country['language'],
@@ -87,6 +95,7 @@ class CountryView(AdminBaseView):
                 self.dd_language,
                 self.dd_currency,
                 self.dd_timezone,
+                self.snack_bar,
                 Row(
                     controls=[
                         FilledButton(
@@ -110,13 +119,18 @@ class CountryView(AdminBaseView):
         await self.client.session.api.admin.country.delete(
             id_str=self.country_id_str,
         )
-        await self.client.change_view(go_back=True)
+        await self.client.change_view(go_back=True, with_restart=True)
 
     async def update_country(self, _):
-        await self.client.session.api.admin.country.update(
-            id_str=self.country_id_str,
-            language=self.dd_language.value,
-            currency=self.dd_currency.value,
-            timezone=self.dd_timezone.value,
-        )
-        await self.client.change_view(go_back=True)
+        try:
+            await self.client.session.api.admin.country.update(
+                id_str=self.country_id_str,
+                language=self.dd_language.value,
+                currency=self.dd_currency.value,
+                timezone=self.dd_timezone.value,
+            )
+            self.snack_bar.open = True
+            await self.update_async()
+        except ApiException:
+            await self.set_type(loading=False)
+            return await self.client.session.error(code=0)

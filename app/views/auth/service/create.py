@@ -124,7 +124,7 @@ class ServiceCreateView(ClientBaseView):
     async def send_form(self, _):
         questions = json.dumps(self.answers, ensure_ascii=False)
         services_id_str = await self.client.session.api.client.service.create(
-            id_str=self.tf_id_str.value,
+            id_str=self.tf_id_str,
             service=self.service_id_str,
             answers=questions,
         )

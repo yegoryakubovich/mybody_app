@@ -36,7 +36,7 @@ class CurrencyView(AdminBaseView):
         await self.set_type(loading=False)
 
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key=self.currency['id_str']),
+            title=self.currency['id_str'],
             main_section_controls=[
                 FilledButton(
                     content=Text(
@@ -51,4 +51,4 @@ class CurrencyView(AdminBaseView):
         await self.client.session.api.admin.currency.delete(
             id_str=self.currency_id_str,
         )
-        await self.client.change_view(go_back=True)
+        await self.client.change_view(go_back=True, with_restart=True)

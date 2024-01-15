@@ -16,17 +16,19 @@
 
 
 from flet_core.dropdown import Option
+from mybody_api_client.utils.base_section import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField, Dropdown
 from app.controls.layout import AdminBaseView
-from app.utils import Error
+from app.utils import Error, Fonts
 
 
 class TextTranslationCreateView(AdminBaseView):
     route = '/admin/text/translation/create'
-    dd_language_id_str: Dropdown
+    dd_language: Dropdown
+    tf_not_language: Text
     tf_text_key: TextField
     tf_value: TextField
     text = list[dict]
@@ -59,32 +61,36 @@ class TextTranslationCreateView(AdminBaseView):
             ) for language in available_languages
         ]
 
+        self.tf_value = TextField(
+            label=await self.client.session.gtv(key='name'),
+        )
         if languages_options:
-            self.dd_language_id_str = Dropdown(
+            self.dd_language = Dropdown(
                 label=await self.client.session.gtv(key='language'),
                 value=languages_options[0].key,
                 options=languages_options,
             )
-        else:
-            self.dd_language_id_str = Dropdown(
-                value=await self.client.session.gtv(key='not_language'),
-            )
-        self.tf_value = TextField(
-            label=await self.client.session.gtv(key='translation'),
-        )
-        self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='admin_translation_text_create_view_title'),
-            main_section_controls=[
-                self.tf_value,
-                self.dd_language_id_str,
-                FilledButton(
-                    content=Text(
-                        value=await self.client.session.gtv(key='create'),
-                        size=16,
-                    ),
-                    on_click=self.create_translation,
+            language_control = self.dd_language
+            button = FilledButton(
+                content=Text(
+                    value=await self.client.session.gtv(key='create'),
+                    size=16,
                 ),
-            ],
+                on_click=self.create_translation,
+            )
+            controls = [self.tf_value, language_control, button]
+        else:
+            self.tf_not_language = Text(
+                value=await self.client.session.gtv(key='not_language'),
+                size=20,
+                font_family=Fonts.MEDIUM,
+            )
+            language_control = self.tf_not_language
+            controls = [language_control]
+
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key='admin_text_translation_create_view_title'),
+            main_section_controls=controls,
         )
 
     async def create_translation(self, _):
@@ -92,9 +98,13 @@ class TextTranslationCreateView(AdminBaseView):
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len, max_len):
                 return
-        await self.client.session.api.admin.text.create_translation(
-            text_key=self.text['key'],
-            language=self.dd_language_id_str.value,
-            value=self.tf_value.value,
-        )
-        await self.client.change_view(go_back=True)
+        try:
+            await self.client.session.api.admin.text.create_translation(
+                text_key=self.text['key'],
+                language=self.dd_language.value,
+                value=self.tf_value.value,
+            )
+            await self.client.change_view(go_back=True, with_restart=True)
+        except ApiException:
+            await self.set_type(loading=False)
+            return await self.client.session.error(code=0)

@@ -18,6 +18,7 @@
 import functools
 
 from flet_core import Row, ScrollMode
+from mybody_api_client.utils.base_section import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.button.switch import StitchButton
@@ -46,10 +47,8 @@ class ArticleView(AdminBaseView):
             id_=self.article_id
         )
         await self.set_type(loading=False)
-
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
-            back_with_restart=True,
             title=await self.client.session.gtv(key=self.article['name_text']),
             main_section_controls=[
                 StitchButton(
@@ -98,9 +97,7 @@ class ArticleView(AdminBaseView):
                         Card(
                             controls=[
                                 Text(
-                                    value=await self.client.session.gtv(
-                                        key=translation.get('language')
-                                    ),
+                                    value=translation.get('language'),
                                     size=15,
                                     font_family=Fonts.REGULAR,
                                 ),
@@ -114,10 +111,14 @@ class ArticleView(AdminBaseView):
         )
 
     async def delete_article(self, _):
-        await self.client.session.api.admin.article.delete(
-            id_=self.article_id,
-        )
-        await self.client.change_view(go_back=True)
+        try:
+            await self.client.session.api.admin.article.delete(
+                id_=self.article_id,
+            )
+            await self.client.change_view(go_back=True, with_restart=True)
+        except ApiException:
+            await self.set_type(loading=False)
+            return await self.client.session.error(code=0)
 
     async def change_visibility(self, _):
         await self.client.session.api.admin.article.update(

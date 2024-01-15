@@ -18,10 +18,12 @@
 import functools
 
 from flet_core import Row, Column, ScrollMode
+from mybody_api_client.utils.base_section import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.information.card import Card
+from app.controls.information.snackbar import SnackBar
 from app.controls.input import TextField
 from app.controls.layout import Section, AdminBaseView
 from app.utils import Fonts
@@ -34,6 +36,7 @@ class TextView(AdminBaseView):
     text = dict
     tf_key = TextField
     tf_value_default = TextField
+    snack_bar: SnackBar
 
     def __init__(self, key):
         super().__init__()
@@ -46,13 +49,19 @@ class TextView(AdminBaseView):
         )
         await self.set_type(loading=False)
 
+        self.snack_bar = SnackBar(
+            content=Text(
+                value=await self.client.session.gtv(key='successful'),
+            ),
+        )
+
         self.tf_key = TextField(
             label=await self.client.session.gtv(key='key'),
-            value=await self.client.session.gtv(key=self.text['key'])
+            value=self.text['key'],
         )
         self.tf_value_default = TextField(
             label=await self.client.session.gtv(key='value_default'),
-            value=self.text['value_default']
+            value=self.text['value_default'],
         )
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
@@ -62,6 +71,7 @@ class TextView(AdminBaseView):
                     controls=[
                         self.tf_key,
                         self.tf_value_default,
+                        self.snack_bar,
                         Row(
                             controls=[
                                 FilledButton(
@@ -111,15 +121,20 @@ class TextView(AdminBaseView):
         await self.client.session.api.admin.text.delete(
             key=self.text['key'],
         )
-        await self.client.change_view(go_back=True)
+        await self.client.change_view(go_back=True, with_restart=True)
 
     async def update_text(self, _):
-        await self.client.session.api.admin.text.update(
-            key=self.text['key'],
-            value_default=self.tf_value_default.value,
-            new_key=self.tf_key.value
-        )
-        await self.update_async()
+        try:
+            await self.client.session.api.admin.text.update(
+                key=self.text['key'],
+                value_default=self.tf_value_default.value,
+                new_key=self.tf_key.value
+            )
+            self.snack_bar.open = True
+            await self.update_async()
+        except ApiException:
+            await self.set_type(loading=False)
+            return await self.client.session.error(code=0)
 
     async def create_translation(self, _):
         await self.client.change_view(view=TextTranslationCreateView(key=self.key))

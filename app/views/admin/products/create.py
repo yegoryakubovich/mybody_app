@@ -16,6 +16,7 @@
 
 
 from flet_core.dropdown import Option
+from mybody_api_client.utils.base_section import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -104,10 +105,14 @@ class ProductCreateView(AdminBaseView):
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len, max_len):
                 return
-        product_id = await self.client.session.api.admin.product.create(
-            name=self.tf_name.value,
-            type_=self.dd_type.value,
-            unit=self.dd_unit.value,
-            article_id=self.dd_articles.value or 0,
-        )
-        await self.client.change_view(view=ProductView(product_id=product_id), delete_current=True)
+        try:
+            product_id = await self.client.session.api.admin.product.create(
+                name=self.tf_name.value,
+                type_=self.dd_type.value,
+                unit=self.dd_unit.value,
+                article_id=self.dd_articles.value or 0,
+            )
+            await self.client.change_view(view=ProductView(product_id=product_id), delete_current=True)
+        except ApiException:
+            await self.set_type(loading=False)
+            return await self.client.session.error(code=0)

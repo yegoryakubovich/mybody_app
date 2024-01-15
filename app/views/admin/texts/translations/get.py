@@ -16,16 +16,20 @@
 
 
 from flet_core import Row
+from mybody_api_client.utils.base_section import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
+from app.controls.information.snackbar import SnackBar
 from app.controls.input import TextField
 from app.controls.layout import AdminBaseView
+from app.utils import Error
 
 
 class TextTranslationView(AdminBaseView):
     route = '/admin/text/translation/get'
     tf_value = TextField
+    snack_bar: SnackBar
 
     def __init__(self, language, text_key):
         super().__init__()
@@ -33,6 +37,11 @@ class TextTranslationView(AdminBaseView):
         self.language = language
 
     async def build(self):
+        self.snack_bar = SnackBar(
+            content=Text(
+                value=await self.client.session.gtv(key='successful'),
+            ),
+        )
         self.tf_value = TextField(
             label=await self.client.session.gtv(key='translation'),
             value=self.language['value']
@@ -41,6 +50,7 @@ class TextTranslationView(AdminBaseView):
             title=self.language['language'],
             main_section_controls=[
                 self.tf_value,
+                self.snack_bar,
                 Row(
                     controls=[
                         FilledButton(
@@ -65,12 +75,21 @@ class TextTranslationView(AdminBaseView):
             text_key=self.text_key,
             language=self.language['language'],
         )
-        await self.client.change_view(go_back=True)
+        await self.client.change_view(go_back=True, with_restart=True)
 
     async def update_translation(self, _):
-        await self.client.session.api.admin.text.update_translation(
-            text_key=self.text_key,
-            language=self.language['language'],
-            value=self.tf_value.value,
-        )
-        await self.client.change_view(go_back=True)
+        fields = [(self.tf_value, 1, 1024)]
+        for field, min_len, max_len in fields:
+            if not await Error.check_field(self, field, min_len, max_len):
+                return
+        try:
+            await self.client.session.api.admin.text.update_translation(
+                text_key=self.text_key,
+                language=self.language['language'],
+                value=self.tf_value.value,
+            )
+            self.snack_bar.open = True
+            await self.update_async()
+        except ApiException:
+            await self.set_type(loading=False)
+            return await self.client.session.error(code=0)

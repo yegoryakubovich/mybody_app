@@ -51,4 +51,4 @@ class PermissionView(AdminBaseView):
         await self.client.session.api.admin.permission.delete(
             id_str=self.permission_id_str,
         )
-        await self.client.change_view(go_back=True)
+        await self.client.change_view(go_back=True, with_restart=True)
