@@ -23,37 +23,38 @@ from app.controls.input import TextField, Dropdown
 from app.controls.layout import AdminBaseView
 
 
-class AccountRoleCreateView(AdminBaseView):
-    route = '/admin/account/role/create'
-    tf_name: TextField
-    dd_role: Dropdown
-    roles: list[dict]
+class AccountMealCreateView(AdminBaseView):
+    route = '/admin/account/meal/create'
+    date: TextField
+    dd_type: Dropdown
 
-    def __init__(self, account_id):
+    def __init__(self, account_service_id):
         super().__init__()
-        self.account_id = account_id
+        self.account_service_id = account_service_id
 
     async def build(self):
-        await self.set_type(loading=True)
-        self.roles = await self.client.session.api.client.role.get_list()
-        await self.set_type(loading=False)
-
-        role_options = [
+        meal_type_dict = {
+            await self.client.session.gtv(key='meal_1'): 'proteins',
+            await self.client.session.gtv(key='meal_2'): 'fats',
+            await self.client.session.gtv(key='meal_3'): 'carbohydrates',
+            await self.client.session.gtv(key='meal_4'): 'fats',
+            await self.client.session.gtv(key='meal_5'): 'carbohydrates',
+        }
+        meal_type_options = [
             Option(
-                text=role.get('name_text'),
-                key=role.get('id'),
-            ) for role in self.roles
+                text=meal_type,
+                key=meal_type_dict[meal_type],
+            ) for meal_type in meal_type_dict
         ]
-
-        self.dd_role = Dropdown(
-            label=await self.client.session.gtv(key='language'),
-            value=role_options[0].key,
-            options=role_options,
+        self.dd_type = Dropdown(
+            label=await self.client.session.gtv(key='type'),
+            value=meal_type_options[0].key,
+            options=meal_type_options,
         )
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='admin_account_role_create_view_title'),
             main_section_controls=[
-                self.dd_role,
+                self.dd_type,
                 FilledButton(
                     content=Text(
                         value=await self.client.session.gtv(key='create'),
@@ -65,8 +66,9 @@ class AccountRoleCreateView(AdminBaseView):
         )
 
     async def create_article(self, _):
-        await self.client.session.api.admin.account.create_role(
-            account_id=self.account_id,
-            role_id=self.dd_role.value,
+        await self.client.session.api.admin.meal.create(
+            account_service_id=self.account_service_id,
+            date=self.date,
+            type_=self.dd_type.value,
         )
         await self.client.change_view(go_back=True, with_restart=True)

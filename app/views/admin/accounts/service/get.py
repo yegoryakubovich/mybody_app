@@ -15,17 +15,12 @@
 #
 
 
-import functools
-
-from app.controls.button import FilledButton
-from app.controls.information import Text, Card
-from app.controls.layout import AdminBaseView, Section
-from app.utils import Fonts
+from app.controls.layout import AdminBaseView
 from app.views.admin.accounts.role import AccountRoleListView
 
 
 class AccountServiceView(AdminBaseView):
-    route = '/admin/accounts/get'
+    route = '/admin/accounts/service/get'
     account = list
     service = list
 

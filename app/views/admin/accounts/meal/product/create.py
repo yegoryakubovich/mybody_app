@@ -23,50 +23,56 @@ from app.controls.input import TextField, Dropdown
 from app.controls.layout import AdminBaseView
 
 
-class AccountRoleCreateView(AdminBaseView):
-    route = '/admin/account/role/create'
-    tf_name: TextField
-    dd_role: Dropdown
-    roles: list[dict]
 
-    def __init__(self, account_id):
+class AccountMealProductCreateView(AdminBaseView):
+    route = '/admin/account/meal/product/create'
+    products: list[dict]
+    tf_quantity: TextField
+    dd_product: Dropdown
+
+    def __init__(self, meal_id):
         super().__init__()
-        self.account_id = account_id
+        self.meal_id = meal_id
 
     async def build(self):
         await self.set_type(loading=True)
-        self.roles = await self.client.session.api.client.role.get_list()
+        self.products = await self.client.session.api.client.product.get_list()
         await self.set_type(loading=False)
 
-        role_options = [
+        product_options = [
             Option(
-                text=role.get('name_text'),
-                key=role.get('id'),
-            ) for role in self.roles
+                text=product['name_text'],
+                key=product['id']
+            ) for product in self.products
         ]
-
-        self.dd_role = Dropdown(
-            label=await self.client.session.gtv(key='language'),
-            value=role_options[0].key,
-            options=role_options,
+        self.tf_quantity = TextField(
+            label=await self.client.session.gtv(key='quantity'),
+        )
+        self.dd_product = Dropdown(
+            label=await self.client.session.gtv(key='type'),
+            value=product_options[0].key,
+            options=product_options,
         )
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='admin_account_role_create_view_title'),
             main_section_controls=[
-                self.dd_role,
+                self.dd_product,
+                self.tf_quantity,
                 FilledButton(
                     content=Text(
                         value=await self.client.session.gtv(key='create'),
                         size=16,
                     ),
-                    on_click=self.create_article,
+                    on_click=self.create_meal_product,
                 ),
             ]
         )
 
-    async def create_article(self, _):
-        await self.client.session.api.admin.account.create_role(
-            account_id=self.account_id,
-            role_id=self.dd_role.value,
+    async def create_meal_product(self, _):
+        from app.views.admin.accounts.meal.product import AccountMealProductView
+        await self.client.session.api.admin.meal.create(
+            meal_id=self.meal_id,
+            product_id=self.dd_product,
+            value=self.tf_quantity.value,
         )
-        await self.client.change_view(go_back=True, with_restart=True)
+        await self.client.change_view(AccountMealProductView(meal_id=self.meal_id), delete_current=True)

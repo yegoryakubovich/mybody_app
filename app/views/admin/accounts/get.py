@@ -19,6 +19,7 @@ from app.controls.button import FilledButton
 from app.controls.information import Text, Card
 from app.controls.layout import AdminBaseView, Section
 from app.utils import Fonts
+from app.views.admin.accounts.meal.get_list import AccountMealListView
 from app.views.admin.accounts.role import AccountRoleListView
 from app.views.admin.accounts.service.get import AccountServiceView
 
@@ -36,9 +37,6 @@ class AccountView(AdminBaseView):
     async def build(self):
         await self.set_type(loading=True)
         self.account = await self.client.session.api.admin.account.get(
-            id_=self.account_id
-        )
-        self.account_service = await self.client.session.api.admin.account.get_service(
             id_=self.account_id
         )
         await self.set_type(loading=False)
@@ -74,24 +72,12 @@ class AccountView(AdminBaseView):
                         value=await self.client.session.gtv(key='roles'),
                     ),
                     on_click=self.role_view,
-                )
-            ],
-            sections=[
-                Section(
-                    title=await self.client.session.gtv(key='service'),
-                    controls=[
-                        Card(
-                            controls=[
-                                Text(
-                                    value=language['language'],
-                                    size=15,
-                                    font_family=Fonts.REGULAR,
-                                ),
-                            ],
-                            on_click=functools.partial(self.translation_view, language),
-                        )
-                        for language in self.text['translations']
-                    ],
+                ),
+                FilledButton(
+                    content=Text(
+                        value=await self.client.session.gtv(key='meal'),
+                    ),
+                    on_click=self.meal_view,
                 ),
             ],
         )
@@ -104,3 +90,7 @@ class AccountView(AdminBaseView):
 
     async def service_view(self, _):
         await self.client.change_view(view=AccountServiceView(account_id=self.account_id))
+
+    async def meal_view(self, _):
+        account_service_id = 2
+        await self.client.change_view(view=AccountMealListView(account_service_id=account_service_id))

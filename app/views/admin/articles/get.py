@@ -106,7 +106,7 @@ class ArticleView(AdminBaseView):
                         )
                         for translation in self.article['translations']
                     ],
-                )
+                ),
             ],
         )
 
