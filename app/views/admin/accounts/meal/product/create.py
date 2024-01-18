@@ -23,7 +23,6 @@ from app.controls.input import TextField, Dropdown
 from app.controls.layout import AdminBaseView
 
 
-
 class AccountMealProductCreateView(AdminBaseView):
     route = '/admin/account/meal/product/create'
     products: list[dict]
@@ -41,7 +40,7 @@ class AccountMealProductCreateView(AdminBaseView):
 
         product_options = [
             Option(
-                text=product['name_text'],
+                text=await self.client.session.gtv(key=product['name_text']),
                 key=product['id']
             ) for product in self.products
         ]
@@ -54,7 +53,7 @@ class AccountMealProductCreateView(AdminBaseView):
             options=product_options,
         )
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='admin_account_role_create_view_title'),
+            title=await self.client.session.gtv(key='admin_account_meal_product_create_view_title'),
             main_section_controls=[
                 self.dd_product,
                 self.tf_quantity,
@@ -69,10 +68,10 @@ class AccountMealProductCreateView(AdminBaseView):
         )
 
     async def create_meal_product(self, _):
-        from app.views.admin.accounts.meal.product import AccountMealProductView
-        await self.client.session.api.admin.meal.create(
+        from app.views.admin.accounts.meal import AccountMealView
+        await self.client.session.api.admin.meal.create_product(
             meal_id=self.meal_id,
-            product_id=self.dd_product,
+            product_id=self.dd_product.value,
             value=self.tf_quantity.value,
         )
-        await self.client.change_view(AccountMealProductView(meal_id=self.meal_id), delete_current=True)
+        await self.client.change_view(AccountMealView(meal_id=self.meal_id), delete_current=True)

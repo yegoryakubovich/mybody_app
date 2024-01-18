@@ -16,6 +16,7 @@
 
 
 from flet_core.dropdown import Option
+from mybody_api_client.utils.base_section import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -25,7 +26,7 @@ from app.controls.layout import AdminBaseView
 
 class AccountMealCreateView(AdminBaseView):
     route = '/admin/account/meal/create'
-    date: TextField
+    tf_date: TextField
     dd_type: Dropdown
 
     def __init__(self, account_service_id):
@@ -34,11 +35,11 @@ class AccountMealCreateView(AdminBaseView):
 
     async def build(self):
         meal_type_dict = {
-            await self.client.session.gtv(key='meal_1'): 'proteins',
-            await self.client.session.gtv(key='meal_2'): 'fats',
-            await self.client.session.gtv(key='meal_3'): 'carbohydrates',
-            await self.client.session.gtv(key='meal_4'): 'fats',
-            await self.client.session.gtv(key='meal_5'): 'carbohydrates',
+            await self.client.session.gtv(key='meal_1'): 'meal_1',
+            await self.client.session.gtv(key='meal_2'): 'meal_2',
+            await self.client.session.gtv(key='meal_3'): 'meal_3',
+            await self.client.session.gtv(key='meal_4'): 'meal_4',
+            await self.client.session.gtv(key='meal_5'): 'meal_5',
         }
         meal_type_options = [
             Option(
@@ -51,24 +52,33 @@ class AccountMealCreateView(AdminBaseView):
             value=meal_type_options[0].key,
             options=meal_type_options,
         )
+        self.tf_date = TextField(
+            label=await self.client.session.gtv(key='date'),
+        )
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='admin_account_role_create_view_title'),
+            title=await self.client.session.gtv(key='admin_account_meal_create_view_title'),
             main_section_controls=[
+                self.tf_date,
                 self.dd_type,
                 FilledButton(
                     content=Text(
                         value=await self.client.session.gtv(key='create'),
                         size=16,
                     ),
-                    on_click=self.create_article,
+                    on_click=self.create_meal,
                 ),
             ]
         )
 
-    async def create_article(self, _):
-        await self.client.session.api.admin.meal.create(
-            account_service_id=self.account_service_id,
-            date=self.date,
-            type_=self.dd_type.value,
-        )
-        await self.client.change_view(go_back=True, with_restart=True)
+    async def create_meal(self, _):
+        from app.views.admin.accounts.meal import AccountMealView
+        try:
+            meal_id = await self.client.session.api.admin.meal.create(
+                account_service_id=self.account_service_id,
+                date=self.tf_date.value,
+                type_=self.dd_type.value,
+            )
+            await self.client.change_view(AccountMealView(meal_id=meal_id), delete_current=True)
+        except ApiException:
+            await self.set_type(loading=False)
+            return await self.client.session.error(code=0)
