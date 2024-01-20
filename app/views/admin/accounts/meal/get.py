@@ -23,7 +23,6 @@ from mybody_api_client.utils.base_section import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text, Card
-from app.controls.information.datepicker import DatePicker
 from app.controls.information.snackbar import SnackBar
 from app.controls.input import TextField
 from app.controls.layout import AdminBaseView, Section
@@ -36,7 +35,6 @@ class AccountMealView(AdminBaseView):
     meal: dict
     products: list
     snack_bar: SnackBar
-    date_picker: DatePicker
     dd_type: Dropdown
     tf_date: TextField
 
