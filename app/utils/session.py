@@ -65,8 +65,8 @@ class Session:
         from app.controls.information.bottomsheet import BottomSheet
         self.bs_error = BottomSheet(
             icon=Icons.BACK,
-            title=await self.client.session.gtv(key='error'),
-            description=await self.client.session.gtv(key='error'),
+            title='',
+            description='',
         )
         self.page.overlay.append(self.bs_error)
 
