@@ -13,15 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import functools
+
 
 from app.controls.button import FilledButton
-from app.controls.information import Text, Card
-from app.controls.layout import AdminBaseView, Section
-from app.utils import Fonts
+from app.controls.information import Text
+from app.controls.layout import AdminBaseView
 from app.views.admin.accounts.meal.get_list import AccountMealListView
 from app.views.admin.accounts.role import AccountRoleListView
 from app.views.admin.accounts.service.get import AccountServiceView
+from app.views.admin.accounts.training import AccountTrainingListView
 
 
 class AccountView(AdminBaseView):
@@ -79,6 +79,12 @@ class AccountView(AdminBaseView):
                     ),
                     on_click=self.meal_view,
                 ),
+                FilledButton(
+                    content=Text(
+                        value=await self.client.session.gtv(key='training'),
+                    ),
+                    on_click=self.training_view,
+                ),
             ],
         )
 
@@ -94,3 +100,7 @@ class AccountView(AdminBaseView):
     async def meal_view(self, _):
         account_service_id = 2
         await self.client.change_view(view=AccountMealListView(account_service_id=account_service_id))
+
+    async def training_view(self, _):
+        account_service_id = 2
+        await self.client.change_view(view=AccountTrainingListView(account_service_id=account_service_id))

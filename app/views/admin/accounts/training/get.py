@@ -1,0 +1,175 @@
+#
+# (c) 2024, Yegor Yakubovich, yegoryakubovich.com, personal@yegoryakybovich.com
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+
+import functools
+
+from flet_core import Row
+from flet_core.dropdown import Option, Dropdown
+from mybody_api_client.utils.base_section import ApiException
+
+from app.controls.button import FilledButton
+from app.controls.information import Text, Card
+from app.controls.information.snackbar import SnackBar
+from app.controls.input import TextField
+from app.controls.layout import AdminBaseView, Section
+from app.utils import Fonts
+from app.views.admin.accounts.meal.product import AccountMealProductCreateView, AccountMealProductView
+from app.views.admin.accounts.training.report import AccountTrainingReportCreateView
+
+
+class AccountTrainingView(AdminBaseView):
+    route = '/admin/account/training/get'
+    training: dict
+    products: list
+    snack_bar: SnackBar
+    dd_type: Dropdown
+    tf_date: TextField
+
+    def __init__(self, training_id):
+        super().__init__()
+        self.training_id = training_id
+
+    async def build(self):
+        await self.set_type(loading=True)
+        self.training = await self.client.session.api.client.training.get(
+            id_=self.training_id,
+        )
+        print(self.training)
+        self.products = []
+        for product in self.meal['products']:
+            product_info = await self.client.session.api.client.product.get(id_=product['exercise'])
+            # Находим соответствующий продукт в self.meal['products']
+            meal_product = next((p for p in self.meal['products'] if p['exercise'] == product_info['id']), None)
+            if meal_product is not None:
+                product_info['meal_product'] = meal_product
+            self.products.append(product_info)
+        await self.set_type(loading=False)
+
+        meal_type_dict = {
+            'meal_1': await self.client.session.gtv(key='meal_1'),
+            'meal_2': await self.client.session.gtv(key='meal_2'),
+            'meal_3': await self.client.session.gtv(key='meal_3'),
+            'meal_4': await self.client.session.gtv(key='meal_4'),
+            'meal_5': await self.client.session.gtv(key='meal_5'),
+        }
+        meal_type_options = [
+            Option(
+                text=meal_type_dict[meal_type],
+                key=meal_type,
+            ) for meal_type in meal_type_dict
+        ]
+        self.dd_type = Dropdown(
+            label=await self.client.session.gtv(key='type'),
+            value=self.meal['type'],
+            options=meal_type_options,
+        )
+
+        self.tf_date = TextField(
+            label=await self.client.session.gtv(key='date'),
+            value=self.meal['date'],
+        )
+        self.snack_bar = SnackBar(
+            content=Text(
+                value=await self.client.session.gtv(key='successful'),
+            ),
+        )
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key=self.meal['type']),
+            main_section_controls=[
+                self.dd_type,
+                self.tf_date,
+                self.snack_bar,
+                Row(
+                    controls=[
+                        FilledButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='save'),
+                            ),
+                            on_click=self.update_meal,
+                        ),
+                        FilledButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='delete'),
+                            ),
+                            on_click=self.delete_meal,
+                        ),
+                    ]
+                )
+            ],
+            sections=[
+                Section(
+                    title=await self.client.session.gtv(key='meals'),
+                    on_create_click=self.create_meal_product,
+                    controls=[
+                        Card(
+                            controls=[
+                                Text(
+                                    value=product['name_text'],
+                                    size=18,
+                                    font_family=Fonts.SEMIBOLD,
+                                ),
+                            ],
+                            on_click=functools.partial(
+                                self.exercise_view, product
+                            ),
+                        )
+                        for product in self.products
+                    ],
+                ),
+            ],
+        )
+
+    async def exercise_view(self, product, _):
+        await self.client.change_view(
+            AccountMealProductView(
+                product=product,
+                meal_id=self.training_id,
+            ),
+        )
+
+    async def delete_training(self, _):
+        await self.client.session.api.admin.meal.delete(
+            id_=self.training_id,
+        )
+        await self.client.change_view(go_back=True, with_restart=True)
+
+    async def create_training_exercise(self, _):
+        await self.client.change_view(
+            AccountMealProductCreateView(
+                training_id=self.training_id,
+            ),
+        )
+
+    async def create_report(self, _):
+        await self.client.change_view(
+            view=AccountTrainingReportCreateView(
+                training_id=self.training_id,
+            ),
+        )
+
+    async def update_training(self, _):
+        try:
+            await self.client.session.api.admin.meal.update(
+                id_=self.training_id,
+                date=self.tf_date.value,
+                type_=self.dd_type.value,
+            )
+            self.snack_bar.open = True
+            await self.update_async()
+        except ApiException:
+            await self.set_type(loading=False)
+            return await self.client.session.error(code=0)
