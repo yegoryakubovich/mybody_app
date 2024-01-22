@@ -22,6 +22,7 @@ from app.controls.information import Text
 from app.controls.information.snackbar import SnackBar
 from app.controls.input import TextField, Dropdown
 from app.controls.layout import AdminBaseView
+from app.utils import Error
 
 
 class AccountMealProductView(AdminBaseView):
@@ -93,6 +94,10 @@ class AccountMealProductView(AdminBaseView):
         await self.client.change_view(go_back=True, with_restart=True)
 
     async def update_meal_product(self, _):
+        fields = [(self.tf_quantity, 1, 5, True)]
+        for field, min_len, max_len, check_int in fields:
+            if not await Error.check_field(self, field, min_len, max_len, check_int):
+                return
         try:
             await self.client.session.api.admin.meal.update_product(
                 id_=self.product['meal_product']['id'],

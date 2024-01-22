@@ -26,7 +26,7 @@ from app.controls.information import Text, Card
 from app.controls.information.snackbar import SnackBar
 from app.controls.input import TextField
 from app.controls.layout import AdminBaseView, Section
-from app.utils import Fonts
+from app.utils import Fonts, Error
 from app.views.admin.accounts.meal.product import AccountMealProductCreateView, AccountMealProductView
 
 
@@ -47,12 +47,11 @@ class AccountMealView(AdminBaseView):
         self.meal = await self.client.session.api.client.meal.get(
             id_=self.meal_id,
         )
-        print(self.meal)
         self.products = []
-        for product in self.meal['products']:
+        for i, product in enumerate(self.meal['products']):
             product_info = await self.client.session.api.client.product.get(id_=product['product'])
             # Находим соответствующий продукт в self.meal['products']
-            meal_product = next((p for p in self.meal['products'] if p['product'] == product_info['id']), None)
+            meal_product = self.meal['products'][i]
             if meal_product is not None:
                 product_info['meal_product'] = meal_product
             self.products.append(product_info)
@@ -117,7 +116,7 @@ class AccountMealView(AdminBaseView):
                         Card(
                             controls=[
                                 Text(
-                                    value=product['name_text'],
+                                    value=await self.client.session.gtv(key=product['name_text']),
                                     size=18,
                                     font_family=Fonts.SEMIBOLD,
                                 ),
@@ -154,6 +153,10 @@ class AccountMealView(AdminBaseView):
         )
 
     async def update_meal(self, _):
+        fields = [self.tf_date]
+        for field in fields:
+            if not await Error.check_date_format(self, field):
+                return
         try:
             await self.client.session.api.admin.meal.update(
                 id_=self.meal_id,

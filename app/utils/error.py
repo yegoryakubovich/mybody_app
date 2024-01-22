@@ -15,13 +15,31 @@
 #
 
 
+from datetime import datetime
+
+
 class Error:
 
     @staticmethod
-    async def check_field(self, field, min_len, max_len):
+    async def check_field(self, field, min_len, max_len, check_int=False, error_text_key='error_count_letter'):
         field.error_text = None
         if len(field.value) < min_len or len(field.value) > max_len:
-            field.error_text = await self.client.session.gtv(key='error_count_letter')
+            field.error_text = await self.client.session.gtv(key=error_text_key)
+            await self.update_async()
+            return False
+        if check_int and not field.value.isdigit():
+            field.error_text = await self.client.session.gtv(key='error_not_int')
+            await self.update_async()
+            return False
+        return True
+
+    @staticmethod
+    async def check_date_format(self, field, date_format='%Y-%m-%d', error_text_key='error_invalid_date_format'):
+        field.error_text = None
+        try:
+            datetime.strptime(field.value, date_format)
+        except ValueError:
+            field.error_text = await self.client.session.gtv(key=error_text_key)
             await self.update_async()
             return False
         return True

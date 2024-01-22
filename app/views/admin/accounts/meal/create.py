@@ -22,6 +22,7 @@ from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField, Dropdown
 from app.controls.layout import AdminBaseView
+from app.utils import Error
 
 
 class AccountMealCreateView(AdminBaseView):
@@ -72,6 +73,10 @@ class AccountMealCreateView(AdminBaseView):
 
     async def create_meal(self, _):
         from app.views.admin.accounts.meal import AccountMealView
+        fields = [self.tf_date]
+        for field in fields:
+            if not await Error.check_date_format(self, field):
+                return
         try:
             meal_id = await self.client.session.api.admin.meal.create(
                 account_service_id=self.account_service_id,

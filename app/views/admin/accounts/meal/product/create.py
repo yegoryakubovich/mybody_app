@@ -16,11 +16,13 @@
 
 
 from flet_core.dropdown import Option
+from mybody_api_client.utils.base_section import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField, Dropdown
 from app.controls.layout import AdminBaseView
+from app.utils import Error
 
 
 class AccountMealProductCreateView(AdminBaseView):
@@ -69,9 +71,17 @@ class AccountMealProductCreateView(AdminBaseView):
 
     async def create_meal_product(self, _):
         from app.views.admin.accounts.meal import AccountMealView
-        await self.client.session.api.admin.meal.create_product(
-            meal_id=self.meal_id,
-            product_id=self.dd_product.value,
-            value=self.tf_quantity.value,
-        )
-        await self.client.change_view(AccountMealView(meal_id=self.meal_id), delete_current=True)
+        fields = [(self.tf_quantity, 1, 5, True)]
+        for field, min_len, max_len, check_int in fields:
+            if not await Error.check_field(self, field, min_len, max_len, check_int):
+                return
+        try:
+            await self.client.session.api.admin.meal.create_product(
+                meal_id=self.meal_id,
+                product_id=self.dd_product.value,
+                value=self.tf_quantity.value,
+            )
+            await self.client.change_view(AccountMealView(meal_id=self.meal_id), delete_current=True)
+        except ApiException:
+            await self.set_type(loading=False)
+            return await self.client.session.error(code=0)

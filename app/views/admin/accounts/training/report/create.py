@@ -28,9 +28,10 @@ class AccountTrainingReportCreateView(AdminBaseView):
     route = '/admin/account/training/report/create'
     tf_comment: TextField
 
-    def __init__(self, training_id):
+    def __init__(self, training_report_id, training_id):
         super().__init__()
         self.training_id = training_id
+        self.training_report_id = training_report_id
 
     async def build(self):
         self.tf_comment = TextField(
@@ -57,12 +58,17 @@ class AccountTrainingReportCreateView(AdminBaseView):
             if not await Error.check_field(self, field, min_len, max_len):
                 return
         try:
-            await self.client.session.api.admin.meal.create_product(
+            report_id = await self.client.session.api.admin.training.create_report(
                 training_id=self.training_id,
                 comment=self.tf_comment.value,
             )
             await self.client.change_view(AccountTrainingReportView(
-                training_id=self.training_id), delete_current=True)
+                training_id=self.training_id,
+                training_report_id=report_id,
+            ),
+                delete_current=True,
+                with_restart=True,
+            )
         except ApiException:
             await self.set_type(loading=False)
             return await self.client.session.error(code=0)

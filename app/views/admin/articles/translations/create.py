@@ -42,9 +42,7 @@ class ArticleTranslationCreateView(AdminBaseView):
         self.article = await self.client.session.api.client.article.get(
             id_=self.article_id,
         )
-        print(self.article)
         self.languages = await self.client.session.api.client.language.get_list()
-        print(self.languages)
         await self.set_type(loading=False)
 
         existing_translation_languages = [

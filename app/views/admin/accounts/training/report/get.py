@@ -13,54 +13,76 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-from flet_core import Row
-from flet_core.dropdown import Option
 from mybody_api_client.utils.base_section import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
-from app.controls.information.snackbar import SnackBar
-from app.controls.input import TextField, Dropdown
 from app.controls.layout import AdminBaseView
+from app.utils import Fonts
+from app.views.admin.accounts.training.report import AccountTrainingReportCreateView
 
 
 class AccountTrainingReportView(AdminBaseView):
     route = '/admin/account/training/report/get'
     tf_comment: Text
-    training: dict
+    tf_not_report: Text
+    report: dict
 
-    def __init__(self, report_id):
+    def __init__(self, training_report_id, training_id):
         super().__init__()
-        self.report_id = report_id
+        self.training_id = training_id
+        self.training_report_id = training_report_id
 
     async def build(self):
         await self.set_type(loading=True)
-        self.training = await self.client.session.api.admin.training.get()
+        try:
+            self.report = await self.client.session.api.admin.training.get_report(
+                id_=self.training_report_id,
+            )
+        except ApiException:
+            self.report = {}
         await self.set_type(loading=False)
+        print(self.report)
+        if self.report:
+            self.tf_comment = Text(
+                value=self.report['comment'],
+                size=20,
+                font_family=Fonts.MEDIUM,
+            )
+            button = FilledButton(
+                content=Text(
+                    value=await self.client.session.gtv(key='delete'),
+                ),
+                on_click=self.delete_training_report,
+            )
+            on_create_click = None
+            controls = [self.tf_comment, button]
+        else:
+            self.tf_not_report = Text(
+                value=await self.client.session.gtv(key='not_report'),
+                size=20,
+                font_family=Fonts.MEDIUM,
+            )
+            on_create_click = self.create_training_report
+            controls = [self.tf_not_report]
 
-        self.tf_comment = Text(
-            value=self.training['comment'],
-        )
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='report'),
-            main_section_controls=[
-                self.tf_comment,
-                Row(
-                    controls=[
-                        FilledButton(
-                            content=Text(
-                                value=await self.client.session.gtv(key='delete'),
-                            ),
-                            on_click=self.delete_training_report,
-                        ),
-                    ],
-                ),
-            ],
+            on_create_click=on_create_click,
+            main_section_controls=controls,
         )
 
     async def delete_training_report(self, _):
-        await self.client.session.api.admin.meal.delete_product(
-            id_=self.report_id,
+        await self.client.session.api.admin.training.delete_report(
+            id_=self.training_report_id,
         )
         await self.client.change_view(go_back=True, with_restart=True)
+
+    async def create_training_report(self, _):
+        await self.client.change_view(
+            AccountTrainingReportCreateView(
+                training_report_id=self.training_report_id,
+                training_id=self.training_id,
+            ),
+            delete_current=True,
+        )

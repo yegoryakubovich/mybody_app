@@ -22,6 +22,7 @@ from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField, Dropdown
 from app.controls.layout import AdminBaseView
+from app.utils import Error
 
 
 class AccountTrainingCreateView(AdminBaseView):
@@ -68,11 +69,15 @@ class AccountTrainingCreateView(AdminBaseView):
 
     async def create_training(self, _):
         from app.views.admin.accounts.training.get import AccountTrainingView
+        fields = [self.tf_date]
+        for field in fields:
+            if not await Error.check_date_format(self, field):
+                return
         try:
-            training_id = await self.client.session.api.admin.meal.create(
+            training_id = await self.client.session.api.admin.training.create(
                 account_service_id=self.account_service_id,
                 date=self.tf_date.value,
-                article_id=self.dd_articles.value,
+                article_id=self.dd_articles.value or 0,
             )
             await self.client.change_view(AccountTrainingView(training_id=training_id), delete_current=True)
         except ApiException:

@@ -27,45 +27,59 @@ from app.controls.layout import AdminBaseView
 
 class AccountTrainingExerciseView(AdminBaseView):
     route = '/admin/account/training/exercise/get'
-    tf_quantity: TextField
-    dd_product: Dropdown
-    products: list[dict]
+    exercises: list[dict]
+    dd_exercise: Dropdown
+    tf_priority: TextField
+    tf_value: TextField
+    tf_rest: TextField
     snack_bar: SnackBar
 
-    def __init__(self, training_id):
+    def __init__(self, training_id, exercise):
         super().__init__()
+        self.exercise = exercise
         self.training_id = training_id
 
     async def build(self):
+        print(self.exercise)
         await self.set_type(loading=True)
-        self.products = await self.client.session.api.client.product.get_list()
+        self.exercises = await self.client.session.api.client.exercise.get_list()
         await self.set_type(loading=False)
 
-        product_options = [
-            Option(
-                text=await self.client.session.gtv(key=product['name_text']),
-                key=product['id']
-            ) for product in self.products
-        ]
-        self.dd_product = Dropdown(
-            label=await self.client.session.gtv(key='name'),
-            value=self.product['id'],
-            options=product_options,
-        )
         self.snack_bar = SnackBar(
             content=Text(
                 value=await self.client.session.gtv(key='successful'),
             ),
         )
-        self.tf_quantity = TextField(
-            label=await self.client.session.gtv(key='quantity'),
-            value=self.product['meal_product']['value'],
+        exercise_options = [
+            Option(
+                text=await self.client.session.gtv(key=exercise['name_text']),
+                key=exercise['id']
+            ) for exercise in self.exercises
+        ]
+        self.dd_exercise = Dropdown(
+            label=await self.client.session.gtv(key='exercise'),
+            value=self.exercise['training_exercise']['exercise'],
+            options=exercise_options,
+        )
+        self.tf_priority = TextField(
+            label=await self.client.session.gtv(key='priority'),
+            value=self.exercise['training_exercise']['priority'],
+        )
+        self.tf_value = TextField(
+            label=await self.client.session.gtv(key='value'),
+            value=self.exercise['training_exercise']['value'],
+        )
+        self.tf_rest = TextField(
+            label=await self.client.session.gtv(key='rest'),
+            value=self.exercise['training_exercise']['rest'],
         )
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key=self.product['name_text']),
+            title=await self.client.session.gtv(key='admin_account_training_exercise_get_view_title'),
             main_section_controls=[
-                self.dd_product,
-                self.tf_quantity,
+                self.dd_exercise,
+                self.tf_priority,
+                self.tf_value,
+                self.tf_rest,
                 self.snack_bar,
                 Row(
                     controls=[
@@ -73,31 +87,33 @@ class AccountTrainingExerciseView(AdminBaseView):
                             content=Text(
                                 value=await self.client.session.gtv(key='save'),
                             ),
-                            on_click=self.update_meal_product,
+                            on_click=self.update_training_exercise,
                         ),
                         FilledButton(
                             content=Text(
                                 value=await self.client.session.gtv(key='delete'),
                             ),
-                            on_click=self.delete_meal_product,
+                            on_click=self.delete_training_exercise,
                         ),
                     ],
                 ),
             ],
         )
 
-    async def delete_meal_product(self, _):
-        await self.client.session.api.admin.meal.delete_product(
-            id_=self.product['meal_product']['id'],
+    async def delete_training_exercise(self, _):
+        await self.client.session.api.admin.training.delete_exercise(
+            id_=self.exercise['training_exercise']['id'],
         )
         await self.client.change_view(go_back=True, with_restart=True)
 
-    async def update_meal_product(self, _):
+    async def update_training_exercise(self, _):
         try:
-            await self.client.session.api.admin.meal.update_product(
-                id_=self.product['meal_product']['id'],
-                product_id=self.dd_product.value,
-                value=self.tf_quantity.value,
+            await self.client.session.api.admin.training.update_exercise(
+                id_=self.exercise['training_exercise']['id'],
+                exercise_id=self.dd_exercise.value,
+                priority=self.tf_priority.value,
+                value=self.tf_value.value,
+                rest=self.tf_rest.value,
             )
             self.snack_bar.open = True
             await self.update_async()

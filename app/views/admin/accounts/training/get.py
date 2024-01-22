@@ -26,18 +26,21 @@ from app.controls.information import Text, Card
 from app.controls.information.snackbar import SnackBar
 from app.controls.input import TextField
 from app.controls.layout import AdminBaseView, Section
-from app.utils import Fonts
-from app.views.admin.accounts.meal.product import AccountMealProductCreateView, AccountMealProductView
-from app.views.admin.accounts.training.report import AccountTrainingReportCreateView
+from app.utils import Fonts, Error
+from app.views.admin.accounts.training.exercise.create import AccountTrainingExerciseCreateView
+from app.views.admin.accounts.training.exercise.get import AccountTrainingExerciseView
+from app.views.admin.accounts.training.report import AccountTrainingReportView
 
 
 class AccountTrainingView(AdminBaseView):
     route = '/admin/account/training/get'
     training: dict
-    products: list
+    exercise: list
+    articles: list[dict]
     snack_bar: SnackBar
     dd_type: Dropdown
     tf_date: TextField
+    dd_articles: Dropdown
 
     def __init__(self, training_id):
         super().__init__()
@@ -48,50 +51,43 @@ class AccountTrainingView(AdminBaseView):
         self.training = await self.client.session.api.client.training.get(
             id_=self.training_id,
         )
-        print(self.training)
-        self.products = []
-        for product in self.meal['products']:
-            product_info = await self.client.session.api.client.product.get(id_=product['exercise'])
-            # Находим соответствующий продукт в self.meal['products']
-            meal_product = next((p for p in self.meal['products'] if p['exercise'] == product_info['id']), None)
-            if meal_product is not None:
-                product_info['meal_product'] = meal_product
-            self.products.append(product_info)
+        self.exercise = []
+        for i, training in enumerate(self.training['exercises']):
+            training_info = await self.client.session.api.client.exercise.get(id_=training['exercise'])
+            # Находим соответствующий продукт в self.exercise['exercise']
+            training_exercise = self.training['exercises'][i]
+            if training_exercise is not None:
+                training_info['training_exercise'] = training_exercise
+            self.exercise.append(training_info)
+
+        self.articles = await self.client.session.api.client.article.get_list()
         await self.set_type(loading=False)
-
-        meal_type_dict = {
-            'meal_1': await self.client.session.gtv(key='meal_1'),
-            'meal_2': await self.client.session.gtv(key='meal_2'),
-            'meal_3': await self.client.session.gtv(key='meal_3'),
-            'meal_4': await self.client.session.gtv(key='meal_4'),
-            'meal_5': await self.client.session.gtv(key='meal_5'),
-        }
-        meal_type_options = [
+        article_options = [
             Option(
-                text=meal_type_dict[meal_type],
-                key=meal_type,
-            ) for meal_type in meal_type_dict
+                text=article['name_text'],
+                key=article['id']
+            ) for article in self.articles
         ]
-        self.dd_type = Dropdown(
-            label=await self.client.session.gtv(key='type'),
-            value=self.meal['type'],
-            options=meal_type_options,
+        self.dd_articles = Dropdown(
+            label=await self.client.session.gtv(key='article'),
+            value=self.training['article_id'],
+            options=article_options,
         )
-
         self.tf_date = TextField(
             label=await self.client.session.gtv(key='date'),
-            value=self.meal['date'],
+            value=self.training['date'],
         )
         self.snack_bar = SnackBar(
             content=Text(
                 value=await self.client.session.gtv(key='successful'),
             ),
         )
+        self.exercise.sort(key=lambda x: x['training_exercise']['priority'])
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key=self.meal['type']),
+            title=self.training['date'],
             main_section_controls=[
-                self.dd_type,
                 self.tf_date,
+                self.dd_articles,
                 self.snack_bar,
                 Row(
                     controls=[
@@ -99,74 +95,84 @@ class AccountTrainingView(AdminBaseView):
                             content=Text(
                                 value=await self.client.session.gtv(key='save'),
                             ),
-                            on_click=self.update_meal,
+                            on_click=self.update_training,
                         ),
                         FilledButton(
                             content=Text(
                                 value=await self.client.session.gtv(key='delete'),
                             ),
-                            on_click=self.delete_meal,
+                            on_click=self.delete_training,
+                        ),
+                        FilledButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='report'),
+                            ),
+                            on_click=self.view_report,
                         ),
                     ]
                 )
             ],
             sections=[
                 Section(
-                    title=await self.client.session.gtv(key='meals'),
-                    on_create_click=self.create_meal_product,
+                    title=await self.client.session.gtv(key='exercises'),
+                    on_create_click=self.create_training_exercise,
                     controls=[
                         Card(
                             controls=[
                                 Text(
-                                    value=product['name_text'],
+                                    value=exercise['name_text'],
                                     size=18,
                                     font_family=Fonts.SEMIBOLD,
                                 ),
                             ],
-                            on_click=functools.partial(
-                                self.exercise_view, product
-                            ),
+                            on_click=functools.partial(self.exercise_view, exercise),
                         )
-                        for product in self.products
+                        for exercise in self.exercise
                     ],
                 ),
-            ],
+            ]
         )
 
-    async def exercise_view(self, product, _):
+    async def exercise_view(self, exercise, _):
         await self.client.change_view(
-            AccountMealProductView(
-                product=product,
-                meal_id=self.training_id,
+            AccountTrainingExerciseView(
+                exercise=exercise,
+                training_id=self.training_id,
+            ),
+        )
+
+    async def view_report(self, _):
+        await self.client.change_view(
+            view=AccountTrainingReportView(
+                training_report_id=self.training['training_report_id'],
+                training_id=self.training_id,
             ),
         )
 
     async def delete_training(self, _):
-        await self.client.session.api.admin.meal.delete(
+        await self.client.session.api.admin.training.delete(
             id_=self.training_id,
         )
         await self.client.change_view(go_back=True, with_restart=True)
 
     async def create_training_exercise(self, _):
         await self.client.change_view(
-            AccountMealProductCreateView(
+            AccountTrainingExerciseCreateView(
                 training_id=self.training_id,
-            ),
-        )
-
-    async def create_report(self, _):
-        await self.client.change_view(
-            view=AccountTrainingReportCreateView(
-                training_id=self.training_id,
+                exercise=self.exercise,
             ),
         )
 
     async def update_training(self, _):
+        fields = [self.tf_date]
+        for field in fields:
+            if not await Error.check_date_format(self, field):
+                return
         try:
-            await self.client.session.api.admin.meal.update(
+            await self.client.session.api.admin.training.update(
                 id_=self.training_id,
                 date=self.tf_date.value,
-                type_=self.dd_type.value,
+                article_id=self.dd_articles.value,
             )
             self.snack_bar.open = True
             await self.update_async()

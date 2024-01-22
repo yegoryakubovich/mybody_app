@@ -16,11 +16,13 @@
 
 
 from flet_core.dropdown import Option
+from mybody_api_client.utils.base_section import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField, Dropdown
 from app.controls.layout import AdminBaseView
+from app.utils import Error
 
 
 class AccountTrainingExerciseCreateView(AdminBaseView):
@@ -31,8 +33,9 @@ class AccountTrainingExerciseCreateView(AdminBaseView):
     tf_value: TextField
     tf_rest: TextField
 
-    def __init__(self, training_id):
+    def __init__(self, training_id, exercise):
         super().__init__()
+        self.exercise = exercise
         self.training_id = training_id
 
     async def build(self):
@@ -63,6 +66,7 @@ class AccountTrainingExerciseCreateView(AdminBaseView):
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='admin_account_training_exercise_create_view_title'),
             main_section_controls=[
+                self.dd_exercise,
                 self.tf_priority,
                 self.tf_value,
                 self.tf_rest,
@@ -77,12 +81,23 @@ class AccountTrainingExerciseCreateView(AdminBaseView):
         )
 
     async def create_training_exercise(self, _):
-        from app.views.admin.accounts.training import AccountTrainingView
-        await self.client.session.api.admin.meal.create_product(
-            training_id=self.training_id,
-            exercise_id=self.dd_exercise.value,
-            priority=self.tf_priority.value,
-            value=self.tf_value.value,
-            rest=self.tf_rest.value,
-        )
-        await self.client.change_view(AccountTrainingView(training_id=self.training_id), delete_current=True)
+        if int(self.tf_priority.value) in [exercise['training_exercise']['priority'] for exercise in self.exercise]:
+            self.tf_priority.error_text = await self.client.session.gtv(key='error_priority_exists')
+            await self.update_async()
+            return
+        fields = [(self.tf_priority, 1, 3, True), (self.tf_value, 1, 3, True), (self.tf_rest, 1, 3, True)]
+        for field, min_len, max_len, check_int in fields:
+            if not await Error.check_field(self, field, min_len, max_len, check_int):
+                return
+        try:
+            await self.client.session.api.admin.training.create_exercise(
+                training_id=self.training_id,
+                exercise_id=self.dd_exercise.value,
+                priority=self.tf_priority.value,
+                value=self.tf_value.value,
+                rest=self.tf_rest.value,
+            )
+            await self.client.change_view(go_back=True, delete_current=True, with_restart=True)
+        except ApiException:
+            await self.set_type(loading=False)
+            return await self.client.session.error(code=0)
