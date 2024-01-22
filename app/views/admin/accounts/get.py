@@ -18,6 +18,7 @@
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.layout import AdminBaseView
+from app.utils import Fonts
 from app.views.admin.accounts.meal.get_list import AccountMealListView
 from app.views.admin.accounts.role import AccountRoleListView
 from app.views.admin.accounts.service.get import AccountServiceView
@@ -42,30 +43,31 @@ class AccountView(AdminBaseView):
         await self.set_type(loading=False)
 
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='admin_account_get_list_view_title'),
+            title=await self.client.session.gtv(key='admin_account_get_view_title'),
             main_section_controls=[
                 Text(
-                    value=self.account['firstname'],
+                    value=await self.client.session.gtv(key='basic_information'),
+                    size=20,
+                    font_family=Fonts.SEMIBOLD,
                 ),
                 Text(
-                    value=self.account['lastname'],
+                    value=f"{await self.client.session.gtv(key='firstname')}: {self.account['firstname']}\n"
+                          f"{await self.client.session.gtv(key='lastname')}: {self.account['lastname']}\n"
+                          f"{await self.client.session.gtv(key='surname')}: "
+                          f"{self.account['surname'] if self.account['surname'] else await self.client.session.gtv(key='absent')}",
+                    size=15,
+                    font_family=Fonts.MEDIUM,
                 ),
                 Text(
-                    value=self.account['surname']
-                    if self.account['surname']
-                    else None,
+                    value=await self.client.session.gtv(key='contact_details'),
+                    size=20,
+                    font_family=Fonts.SEMIBOLD,
                 ),
                 Text(
-                    value=self.account['country'],
-                ),
-                Text(
-                    value=self.account['language'],
-                ),
-                Text(
-                    value=self.account['timezone'],
-                ),
-                Text(
-                    value=self.account['currency'],
+                    value=f"{await self.client.session.gtv(key='country')}: {self.account['country']}\n"
+                          f"{await self.client.session.gtv(key='language')}: {self.account['language']}\n",
+                    size=15,
+                    font_family=Fonts.MEDIUM,
                 ),
                 FilledButton(
                     content=Text(

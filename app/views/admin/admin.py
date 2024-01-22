@@ -121,11 +121,6 @@ class AdminView(AdminBaseView):
                 icon=Icons.ADMIN_SERVICES,
                 on_click=self.get_services,
             ),
-            Setting(
-                name='trainings',
-                icon=Icons.NOT_FOUNT,
-                on_click=self.get_trainings,
-            ),
         ]
 
         main_sections_controls = [
@@ -182,9 +177,6 @@ class AdminView(AdminBaseView):
 
     async def get_exercises(self, _):
         await self.client.change_view(view=ExerciseListView())
-
-    async def get_trainings(self, _):
-        await self.client.change_view(view=TrainingListView())
 
     async def get_permissions(self, _):
         await self.client.change_view(view=PermissionListView())

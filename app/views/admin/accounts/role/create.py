@@ -40,7 +40,7 @@ class AccountRoleCreateView(AdminBaseView):
 
         role_options = [
             Option(
-                text=role.get('name_text'),
+                text=await self.client.session.gtv(key=role.get('name_text')),
                 key=role.get('id'),
             ) for role in self.roles
         ]
