@@ -17,11 +17,14 @@
 
 from flet_core import Column
 from flet_manager.utils import Client
+from app.controls.information.loading import Loading
 
 from app.controls.layout import View
 
 
 class BaseTab(Column):
+    controls_last: list = []
+
     def __init__(self, client: Client, view: View, **kwargs):
         super().__init__(**kwargs)
         self.client = client
@@ -29,6 +32,19 @@ class BaseTab(Column):
 
     async def build(self):
         pass
+
+    async def set_type(self, loading: bool = False):
+        if loading:
+            self.controls_last = self.controls
+            self.controls = [
+                Loading(infinity=True, color='#008F12'),
+            ]
+            await self.update_async()
+        else:
+            loading_control = self.controls[0]
+            loading_control.infinity = False
+            self.controls = self.controls_last
+            await self.update_async()
 
     async def on_load(self):
         await self.view.client.page.update_async()

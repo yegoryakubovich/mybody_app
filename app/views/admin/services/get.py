@@ -81,7 +81,7 @@ class ServiceView(AdminBaseView):
                         Card(
                             controls=[
                                 Text(
-                                    value=question['title'],
+                                    value=question['title_text'],
                                     size=15,
                                     font_family=Fonts.REGULAR,
                                 ),

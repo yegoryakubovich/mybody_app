@@ -15,9 +15,12 @@
 #
 
 
-from app.views.admin.services.questions.get import ServiceQuestionView
+from flet_core import IconButton, icons
 
 
-__all__ = [
-    'ServiceQuestionView',
-]
+class IconTextButton(IconButton):
+    def __init__(self, key=None, **kwargs):
+        super().__init__(**kwargs)
+        self.icon = icons.TEXT_FIELDS,
+        self.key = key
+

@@ -48,6 +48,33 @@ class ServiceCreateView(AdminBaseView):
         self.tf_title = TextField(
             label=await self.client.session.gtv(key='title'),
         )
+        rows = []
+        for textfield in self.textfields:
+            if textfield[0] == 'title':
+                question_type, tf = textfield
+                row = Row(
+                    controls=[
+                        tf,
+                        IconButton(
+                            icon=icons.DELETE,
+                            on_click=functools.partial(self.remove_textfield, tf)
+                        ),
+                    ]
+                )
+            else:
+                question_type, tf, key_tf = textfield
+                row = Row(
+                    controls=[
+                        tf,
+                        key_tf,
+                        IconButton(
+                            icon=icons.DELETE,
+                            on_click=functools.partial(self.remove_textfield, tf)
+                        ),
+                    ]
+                )
+            rows.append(row)
+
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='admin_service_create_view_title'),
@@ -76,18 +103,7 @@ class ServiceCreateView(AdminBaseView):
                     ],
                     alignment=MainAxisAlignment.SPACE_BETWEEN,
                 ),
-            ] + [
-                Row(
-                    controls=[
-                        tf,
-                        IconButton(
-                            icon=icons.DELETE,
-                            on_click=functools.partial(self.remove_textfield, tf)
-                        ),
-                    ],
-                )
-                for _, tf in self.textfields
-            ] + (
+            ] + rows + (
                 [Row(
                     controls=[
                         dropdown,
@@ -138,6 +154,10 @@ class ServiceCreateView(AdminBaseView):
             label=await self.client.session.gtv(key='question'),
             expand=True,
         )
+        key_tf = TextField(
+            label=await self.client.session.gtv(key='key'),
+            expand=True,
+        )
         if question_type == 'title':
             self.tf_title = TextField(
                 label=await self.client.session.gtv(key='title'),
@@ -145,24 +165,25 @@ class ServiceCreateView(AdminBaseView):
             )
             self.textfields.append(('title', self.tf_title))
         else:
-            self.textfields.append((self.question_type, tf))
+            self.textfields.append((self.question_type, tf, key_tf))
         await self.build()
         await self.update_async()
 
     async def save_questions(self, _):
         questions_list = []
         title_value = ''
-        print(self.textfields)
-        for i, (question_type, tf) in enumerate(self.textfields):
-            if question_type == 'title':
+        for i, textfield in enumerate(self.textfields):
+            if textfield[0] == 'title':
                 # Если это не первый title, сохраняем предыдущий набор вопросов
                 if title_value:
                     entry = {'title': title_value, 'questions': questions_list}
                     self.questions.append(entry)
                     questions_list = []
+                question_type, tf = textfield
                 title_value = tf.value
             else:
-                question = {'name': tf.value, 'type': question_type}
+                question_type, tf, key_tf = textfield
+                question = {'name': tf.value, 'key': key_tf.value, 'type': question_type}
                 if question_type == 'dropdown':
                     question['values'] = [dv.value for dv in self.dropdown_values[i]]
                 questions_list.append(question)
@@ -192,13 +213,13 @@ class ServiceCreateView(AdminBaseView):
         await self.update_async()
 
     async def remove_textfield(self, tf, _):
-        for i, (question_type, existing_tf) in enumerate(self.textfields):
-            if existing_tf == tf:
+        for i, textfield in enumerate(self.textfields):
+            if textfield[1] == tf:
                 del self.textfields[i]
-                del self.dropdown_values[i]
+                if textfield[0] != 'title':
+                    del self.dropdown_values[i]
                 await self.build()
                 await self.update_async()
-                break
 
     async def create_service(self, _):
         from app.views.admin.services import ServiceView
@@ -208,9 +229,9 @@ class ServiceCreateView(AdminBaseView):
                 return
 
         questions = json.dumps(self.questions, ensure_ascii=False)
-        services_id_str = await self.client.session.api.admin.service.create(
+        service_id_str = await self.client.session.api.admin.service.create(
             id_str=self.tf_id_str.value,
             name=self.tf_name.value,
             questions=questions,
         )
-        await self.client.change_view(view=ServiceView(services_id_str))
+        await self.client.change_view(view=ServiceView(service_id_str=service_id_str), delete_current=True)
