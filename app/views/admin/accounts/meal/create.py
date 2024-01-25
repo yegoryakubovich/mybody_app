@@ -13,8 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-
+from flet_core import ScrollMode
 from flet_core.dropdown import Option
 from mybody_api_client.utils.base_section import ApiException
 
@@ -29,6 +28,9 @@ class AccountMealCreateView(AdminBaseView):
     route = '/admin/account/meal/create'
     tf_date: TextField
     dd_type: Dropdown
+    tf_fats = TextField
+    tf_proteins = TextField
+    tf_carbohydrates = TextField
 
     def __init__(self, account_service_id):
         super().__init__()
@@ -56,11 +58,24 @@ class AccountMealCreateView(AdminBaseView):
         self.tf_date = TextField(
             label=await self.client.session.gtv(key='date'),
         )
+        self.tf_fats = TextField(
+            label=await self.client.session.gtv(key='fats'),
+        )
+        self.tf_proteins = TextField(
+            label=await self.client.session.gtv(key='proteins'),
+        )
+        self.tf_carbohydrates = TextField(
+            label=await self.client.session.gtv(key='carbohydrates'),
+        )
+        self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='admin_account_meal_create_view_title'),
             main_section_controls=[
                 self.tf_date,
                 self.dd_type,
+                self.tf_fats,
+                self.tf_proteins,
+                self.tf_carbohydrates,
                 FilledButton(
                     content=Text(
                         value=await self.client.session.gtv(key='create'),
@@ -82,6 +97,9 @@ class AccountMealCreateView(AdminBaseView):
                 account_service_id=self.account_service_id,
                 date=self.tf_date.value,
                 type_=self.dd_type.value,
+                fats=self.tf_fats.value,
+                proteins=self.tf_proteins.value,
+                carbohydrates=self.tf_carbohydrates.value,
             )
             await self.client.change_view(AccountMealView(meal_id=meal_id), delete_current=True)
         except ApiException:

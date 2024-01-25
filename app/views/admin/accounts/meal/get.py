@@ -17,7 +17,7 @@
 
 import functools
 
-from flet_core import Row
+from flet_core import Row, ScrollMode
 from flet_core.dropdown import Option, Dropdown
 from mybody_api_client.utils.base_section import ApiException
 
@@ -37,6 +37,9 @@ class AccountMealView(AdminBaseView):
     snack_bar: SnackBar
     dd_type: Dropdown
     tf_date: TextField
+    tf_fats = TextField
+    tf_proteins = TextField
+    tf_carbohydrates = TextField
 
     def __init__(self, meal_id):
         super().__init__()
@@ -85,11 +88,27 @@ class AccountMealView(AdminBaseView):
                 value=await self.client.session.gtv(key='successful'),
             ),
         )
+        self.tf_fats = TextField(
+            label=await self.client.session.gtv(key='fats'),
+            value=self.meal['fats']
+        )
+        self.tf_proteins = TextField(
+            label=await self.client.session.gtv(key='proteins'),
+            value=self.meal['proteins']
+        )
+        self.tf_carbohydrates = TextField(
+            label=await self.client.session.gtv(key='carbohydrates'),
+            value=self.meal['carbohydrates']
+        )
+        self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key=self.meal['type']),
             main_section_controls=[
                 self.dd_type,
                 self.tf_date,
+                self.tf_fats,
+                self.tf_proteins,
+                self.tf_carbohydrates,
                 self.snack_bar,
                 Row(
                     controls=[
@@ -162,6 +181,9 @@ class AccountMealView(AdminBaseView):
                 id_=self.meal_id,
                 date=self.tf_date.value,
                 type_=self.dd_type.value,
+                fats=self.tf_fats.value,
+                proteins=self.tf_proteins.value,
+                carbohydrates=self.tf_carbohydrates.value,
             )
             self.snack_bar.open = True
             await self.update_async()

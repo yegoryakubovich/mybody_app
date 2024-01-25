@@ -13,8 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-
+from flet_core import ScrollMode
 from flet_core.dropdown import Option
 from mybody_api_client.utils.base_section import ApiException
 
@@ -32,6 +31,10 @@ class ProductCreateView(AdminBaseView):
     dd_type = Dropdown
     dd_articles = Dropdown
     dd_unit = Dropdown
+    tf_fats = TextField
+    tf_proteins = TextField
+    tf_carbohydrates = TextField
+    tf_calories = TextField
 
     async def build(self):
         await self.set_type(loading=True)
@@ -68,6 +71,18 @@ class ProductCreateView(AdminBaseView):
         self.tf_name = TextField(
             label=await self.client.session.gtv(key='name'),
         )
+        self.tf_fats = TextField(
+            label=await self.client.session.gtv(key='fats'),
+        )
+        self.tf_proteins = TextField(
+            label=await self.client.session.gtv(key='proteins'),
+        )
+        self.tf_carbohydrates = TextField(
+            label=await self.client.session.gtv(key='carbohydrates'),
+        )
+        self.tf_calories = TextField(
+            label=await self.client.session.gtv(key='calories'),
+        )
         self.dd_type = Dropdown(
             label=await self.client.session.gtv(key='type'),
             value=list(nutrients_type_dict.values())[0],
@@ -82,12 +97,17 @@ class ProductCreateView(AdminBaseView):
             label=await self.client.session.gtv(key='article'),
             options=article_options,
         )
+        self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='admin_product_create_view_title'),
             main_section_controls=[
                 self.tf_name,
                 self.dd_type,
                 self.dd_unit,
+                self.tf_fats,
+                self.tf_proteins,
+                self.tf_carbohydrates,
+                self.tf_calories,
                 self.dd_articles,
                 FilledButton(
                     content=Text(
@@ -110,6 +130,10 @@ class ProductCreateView(AdminBaseView):
                 name=self.tf_name.value,
                 type_=self.dd_type.value,
                 unit=self.dd_unit.value,
+                fats=self.tf_fats.value,
+                proteins=self.tf_proteins.value,
+                carbohydrates=self.tf_carbohydrates.value,
+                calories=self.tf_calories.value or 0,
                 article_id=self.dd_articles.value or 0,
             )
             await self.client.change_view(view=ProductView(product_id=product_id), delete_current=True)

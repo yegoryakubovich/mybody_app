@@ -15,14 +15,14 @@
 #
 
 
-from flet_core import Row
+from flet_core import Row, ScrollMode
 from flet_core.dropdown import Option
 from mybody_api_client.utils.base_section import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.information.snackbar import SnackBar
-from app.controls.input import Dropdown
+from app.controls.input import Dropdown, TextField
 from app.controls.layout import AdminBaseView
 
 
@@ -33,6 +33,10 @@ class ProductView(AdminBaseView):
     dd_type = Dropdown
     dd_articles = Dropdown
     dd_units = Dropdown
+    tf_fats = TextField
+    tf_proteins = TextField
+    tf_carbohydrates = TextField
+    tf_calories = TextField
     snack_bar = SnackBar
 
     def __init__(self, product_id):
@@ -95,11 +99,32 @@ class ProductView(AdminBaseView):
             value=self.product['article'],
             options=article_options,
         )
+        self.tf_fats = TextField(
+            label=await self.client.session.gtv(key='fats'),
+            value=self.product['fats']
+        )
+        self.tf_proteins = TextField(
+            label=await self.client.session.gtv(key='proteins'),
+            value=self.product['proteins']
+        )
+        self.tf_carbohydrates = TextField(
+            label=await self.client.session.gtv(key='carbohydrates'),
+            value=self.product['carbohydrates']
+        )
+        self.tf_calories = TextField(
+            label=await self.client.session.gtv(key='calories'),
+            value=self.product['calories']
+        )
+        self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key=self.product['name_text']),
             main_section_controls=[
                 self.dd_type,
                 self.dd_units,
+                self.tf_fats,
+                self.tf_proteins,
+                self.tf_carbohydrates,
+                self.tf_calories,
                 self.dd_articles,
                 self.snack_bar,
                 Row(
@@ -133,6 +158,10 @@ class ProductView(AdminBaseView):
                 id_=self.product_id,
                 type_=self.dd_type.value,
                 unit=self.dd_units.value,
+                fats=self.tf_fats.value,
+                proteins=self.tf_proteins.value,
+                carbohydrates=self.tf_carbohydrates.value,
+                calories=self.tf_calories.value or 0,
                 article_id=self.dd_articles.value or 0,
             )
             self.snack_bar.open = True
