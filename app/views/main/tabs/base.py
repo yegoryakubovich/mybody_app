@@ -35,7 +35,6 @@ class BaseTab(Column):
 
     async def build(self):
         self.controls = [
-            Text(value='404'),
         ]
 
     async def set_type(self, loading: bool = False):
