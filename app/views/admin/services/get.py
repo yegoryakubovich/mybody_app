@@ -98,7 +98,7 @@ class ServiceView(AdminBaseView):
         await self.client.session.api.admin.service.delete(
             id_str=self.service_id_str,
         )
-        await self.client.change_view(go_back=True)
+        await self.client.change_view(go_back=True, with_restart=True)
 
     async def question_view(self, question, _):
         await self.client.change_view(view=ServiceQuestionView(question))

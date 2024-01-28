@@ -23,6 +23,7 @@ from flet_core import Column, Row, Container, MainAxisAlignment, Image
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.utils import Fonts, Icons
+from app.views.auth.service import ServiceListView
 from app.views.main.meal.meal import MealView
 from app.views.main.tabs.base import BaseTab
 from app.views.main.training.training import TrainingView
@@ -45,12 +46,10 @@ class Meal:
 
 class Training:
     name: str
-    chill_time: str
     on_click: Any
 
-    def __init__(self, name: str, chill_time: str, on_click: Any):
+    def __init__(self, name: str, on_click: Any):
         self.name = name
-        self.chill_time = chill_time
         self.on_click = on_click
 
 
@@ -100,14 +99,14 @@ class MealButton(Container):
         end_datetime = datetime.strptime(end_time, '%H:%M').time()
 
         if start_datetime <= now <= end_datetime:
-            color = '#FFFFFF'  # FIXME
-            bgcolor = '#008F12'  # FIXME
+            color = '#FFFFFF'
+            bgcolor = '#008F12'
         elif now > end_datetime:
-            color = '#000000'  # FIXME
-            bgcolor = '#A0EAA0'  # FIXME
+            color = '#000000'
+            bgcolor = '#A0EAA0'
         else:
-            color = '#000000'  # FIXME
-            bgcolor = '#D2E9D2'  # FIXME
+            color = '#000000'
+            bgcolor = '#D2E9D2'
 
         self.bgcolor = bgcolor
         self.update_text_and_image_color(color)
@@ -122,53 +121,70 @@ class MealButton(Container):
 
 
 class HomeTab(BaseTab):
-    meals: list[dict]
+    meals: dict
+    trainings: dict
     date: str
 
     async def click(self, _):
         await self.client.change_view(view=MealView())
 
     async def build(self):
-        self.date = '2024-01-17'  # FIXME
-        account_service_id = 2  # FIXME
+        self.date = '2024-01-17'
+        account_service_id = 4
         self.meals = await self.client.session.api.admin.meal.get_list(
             account_service_id=account_service_id,
             date=self.date,
         )
-
-        api_response = {'state': 'suc', 'meals': [
-            {'name': 'meal_1', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '7:00', 'end_time': '10:00'},
-            {'name': 'meal_2', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '10:00', 'end_time': '13:00'},
-            {'name': 'meal_3', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '13:00', 'end_time': '16:00'},
-            {'name': 'meal_4', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '16:00', 'end_time': '19:00'},
-            {'name': 'meal_5', 'belki': 10, 'jiri': 30, 'ugl': 75, 'start_time': '19:00', 'end_time': '20:00'},
-        ]}
-
+        for meal in self.meals:
+            if meal['type'] == 'meal_1':
+                meal['start_time'] = '7:00'
+                meal['end_time'] = '10:00'
+            elif meal['type'] == 'meal_2':
+                meal['start_time'] = '10:00'
+                meal['end_time'] = '13:00'
+            elif meal['type'] == 'meal_3':
+                meal['start_time'] = '13:00'
+                meal['end_time'] = '16:00'
+            elif meal['type'] == 'meal_4':
+                meal['start_time'] = '16:00'
+                meal['end_time'] = '19:00'
+            elif meal['type'] == 'meal_5':
+                meal['start_time'] = '19:00'
+                meal['end_time'] = '20:00'
+        self.trainings = await self.client.session.api.client.training.get_list(
+            account_service_id=account_service_id,
+            date='2024-01-21',
+        )
+        self.training = await self.client.session.api.client.training.get(
+            id_=self.trainings[0]['id'],
+        )
+        self.exercise = []
+        for i, training in enumerate(self.training['exercises']):
+            training_info = await self.client.session.api.client.exercise.get(id_=training['exercise'])
+            # Находим соответствующий продукт в self.exercise['exercise']
+            training_exercise = self.training['exercises'][i]
+            if training_exercise is not None:
+                training_info['training_exercise'] = training_exercise
+            self.exercise.append(training_info)
         firstname = self.client.session.account.firstname
 
         meals = [
             Meal(
-                name=await self.client.session.gtv(key=meal.get('name')),
-                nutrients=[meal.get('belki'), meal.get('jiri'), meal.get('ugl')],
+                name=await self.client.session.gtv(key=meal['type']),
+                nutrients=[meal['proteins'], meal['fats'], meal['carbohydrates']],
+                start_time=meal['start_time'],
+                end_time=meal['end_time'],
                 on_click=self.click,
-                start_time=meal.get('start_time'),
-                end_time=meal.get('end_time'),
-            ) for meal in api_response['meals']
+            ) for meal in self.meals
         ]
 
-        api_response_training = {'state': 'suc', 'training': [
-            {'name': 'Exercise_Name'},
-            {'name': 'Exercise_Name'},
-            {'name': 'Exercise_Name'},
-            {'name': 'Exercise_Name'},
-        ], 'chill_time': 1}
-
+        self.exercise.sort(key=lambda x: x['training_exercise']['priority'])
         trainings = [
             Training(
-                name=await self.client.session.gtv(key=training.get('name')),
+                name=str(exercise['training_exercise']['priority']) + ' ' + await self.client.session.gtv(
+                    key=exercise['name_text']),
                 on_click=self.click,
-                chill_time=str(api_response_training['chill_time']),
-            ) for training in api_response_training['training']
+            ) for exercise in self.exercise
         ]
 
         self.controls = [
@@ -232,39 +248,22 @@ class HomeTab(BaseTab):
                         Container(
                             content=Column(
                                 controls=[
-                                             Row(
-                                                 controls=[
-                                                     Text(
-                                                         value=f"{i + 1}. {training.name}",
-                                                         color='#FFFFFF',
-                                                         font_family=Fonts.REGULAR,
-                                                     ),
-                                                 ],
-                                                 alignment=MainAxisAlignment.SPACE_BETWEEN,
-                                             )
-                                             for i, training in enumerate(trainings)
-                                         ] + [
-                                             Row(
-                                                 controls=[
-                                                     Image(
-                                                         src=Icons.CHILL,
-                                                         width=15,
-                                                         color='#FFFFFF'
-                                                     ),
-                                                     Text(
-                                                         value=f"{api_response_training['chill_time']} "
-                                                               + await self.client.session.gtv(key='min'),
-                                                         color='#FFFFFF',
-                                                         font_family=Fonts.REGULAR,
-                                                     ),
-                                                 ],
-                                             ),
-                                         ],
+                                    Row(
+                                        controls=[
+                                            Text(
+                                                value=training.name,
+                                                color='#FFFFFF',
+                                                font_family=Fonts.REGULAR,
+                                            ),
+                                        ],
+                                        alignment=MainAxisAlignment.SPACE_BETWEEN,
+                                    )
+                                    for training in trainings
+                                ]
                             ),
                             bgcolor='#008F12',
                             border_radius=10,
                             padding=10,
-                            on_click=self.training,
                         ),
                     ],
                     spacing=15,

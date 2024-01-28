@@ -18,7 +18,7 @@
 import json
 from typing import List
 
-from flet_core import Column, ScrollMode
+from flet_core import ScrollMode
 from flet_core.dropdown import Option
 
 from app.controls.button import FilledButton
@@ -30,47 +30,47 @@ from app.utils import Fonts
 
 
 class ServiceCreateView(ClientBaseView):
-    service = dict
+    service = dict[dict]
     page_account: int = 1
     total_pages: int = 1
-    tf_id_str: str
+    answers: dict = {}
     dd_answers: List[Dropdown] = []
     tf_answers: List[TextField] = []
 
     def __init__(self, service_id_str):
         super().__init__()
         self.service_id_str = service_id_str
-        self.answers = {}
-        self.page_answers = {}
-        self.order = []
 
     async def build(self):
         await self.set_type(loading=True)
         self.service = await self.client.session.api.client.service.get(
             id_=self.service_id_str,
         )
-        print(self.service)
         await self.set_type(loading=False)
 
-        questions_data = json.loads(self.service['questions'])
-        self.total_pages = len(questions_data)
+        self.scroll = ScrollMode.AUTO
 
-        current_title = questions_data[self.page_account - 1]['title']
-        current_questions = questions_data[self.page_account - 1]['questions']
+        titles = json.loads(self.service['questions'])
+        self.total_pages = len(titles)
 
-        main_section_controls = [
+        title = titles[self.page_account - 1]
+
+        controls = [
             Text(
-                value=current_title,
-                size=18,
-                font_family=Fonts.SEMIBOLD,
+                value=await self.client.session.gtv(key=title['title_text']),
+                size=20,
+                font_family=Fonts.BOLD,
             ),
         ]
-
-        for question in current_questions:
-            question_name = question['name']
-            question_type = question['type']
-
-            if question_type == 'dropdown':
+        for question in title['questions']:
+            controls.append(
+                Text(
+                    value=await self.client.session.gtv(key=question['name_text']),
+                    size=15,
+                    font_family=Fonts.REGULAR,
+                ),
+            )
+            if question['type'] == 'dropdown':
                 value_options = [
                     Option(
                         text=value,
@@ -79,47 +79,32 @@ class ServiceCreateView(ClientBaseView):
                 ]
                 dd_answer = Dropdown(
                     label=await self.client.session.gtv(key='answer'),
+                    on_change=self.save_answer(question['key'], question['type']),
+                    value=value_options[0],
                     options=value_options,
                 )
                 self.dd_answers.append(dd_answer)
-                row_controls = [
-                    Text(
-                        value=question_name,
-                        size=18,
-                        font_family=Fonts.SEMIBOLD,
-                    ),
-                    dd_answer,
-                ]
+                controls.append(dd_answer)
             else:
                 tf_answer = TextField(
                     label=await self.client.session.gtv(key='answer'),
+                    on_change=self.save_answer(question['key'], question['type']),
                 )
                 self.tf_answers.append(tf_answer)
-                row_controls = [
-                    Text(
-                        value=question_name,
-                        size=18,
-                        font_family=Fonts.SEMIBOLD,
-                    ),
-                    tf_answer,
-                ]
-
-            main_section_controls.append(Column(controls=row_controls))
+                controls.append(tf_answer)
 
         if self.page_account == self.total_pages:
-            main_section_controls.append(
+            controls.append(
                 FilledButton(
                     content=Text(
                         value=await self.client.session.gtv(key='send_form'),
                     ),
-                    on_click=self.send_form,
-                )
+                    on_click=self.send_form
+                ),
             )
-
-        self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key=self.service['name_text']),
-            main_section_controls=main_section_controls + [
+            main_section_controls=controls + [
                 PaginationWidget(
                     current_page=self.page_account,
                     total_pages=self.total_pages,
@@ -129,13 +114,24 @@ class ServiceCreateView(ClientBaseView):
             ]
         )
 
+    def save_current_answers(self):
+        for dd_answer in self.dd_answers:
+            dd_answer.on_change(dd_answer.value)
+        for tf_answer in self.tf_answers:
+            tf_answer.on_change(tf_answer.value)
+
+    def save_answer(self, key, q_type):
+        def inner(value):
+            if q_type == 'int':
+                self.answers[key] = int(value)
+            else:
+                self.answers[key] = value
+        return inner
+
     async def send_form(self, _):
         self.save_current_answers()
-        answers = self.page_answers[self.page_account]
-        new_answers = [answer for answer in answers if isinstance(answer, str)]
-        answers = json.dumps(new_answers, ensure_ascii=False)
-        await self.client.session.api.client.service.create(
-            id_str=self.tf_id_str,
+        answers = json.dumps(self.answers, ensure_ascii=False)
+        await self.client.session.api.client.account.create_service(
             service=self.service_id_str,
             answers=answers,
         )
@@ -149,12 +145,6 @@ class ServiceCreateView(ClientBaseView):
 
     async def previous_page(self, _):
         if self.page_account > 1:
-            self.save_current_answers()
             self.page_account -= 1
             await self.build()
             await self.update_async()
-
-    def save_current_answers(self):
-        new_answers = [dd.value for dd in self.dd_answers] + [tf.value for tf in self.tf_answers]
-        if self.page_account not in self.page_answers or new_answers != self.page_answers[self.page_account]:
-            self.page_answers[self.page_account] = new_answers
