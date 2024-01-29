@@ -13,23 +13,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+from functools import partial
 
 from app.controls.button import FilledButton
-from app.controls.information import Text
-from app.controls.layout import AdminBaseView
+from app.controls.information import Text, Card
+from app.controls.layout import AdminBaseView, Section
 from app.utils import Fonts
-from app.views.admin.accounts.meal.get_list import AccountMealListView
 from app.views.admin.accounts.role import AccountRoleListView
 from app.views.admin.accounts.service.get import AccountServiceView
-from app.views.admin.accounts.training import AccountTrainingListView
 
 
 class AccountView(AdminBaseView):
     route = '/admin/accounts/get'
-    account = list
-    service = list
-    account_service = list
+    account: dict
+    service: list[dict] = None
 
     def __init__(self, account_id):
         super().__init__()
@@ -39,6 +36,9 @@ class AccountView(AdminBaseView):
         await self.set_type(loading=True)
         self.account = await self.client.session.api.admin.account.get(
             id_=self.account_id
+        )
+        self.service = await self.client.session.api.admin.account.get_list_services(
+            account_id=self.account_id
         )
         await self.set_type(loading=False)
 
@@ -75,34 +75,29 @@ class AccountView(AdminBaseView):
                     ),
                     on_click=self.role_view,
                 ),
-                FilledButton(
-                    content=Text(
-                        value=await self.client.session.gtv(key='meal'),
-                    ),
-                    on_click=self.meal_view,
-                ),
-                FilledButton(
-                    content=Text(
-                        value=await self.client.session.gtv(key='training'),
-                    ),
-                    on_click=self.training_view,
+            ],
+            sections=[
+                Section(
+                    title=await self.client.session.gtv(key='services'),
+                    controls=[
+                        Card(
+                            controls=[
+                                Text(
+                                    value='похудение',
+                                    size=15,
+                                    font_family=Fonts.REGULAR,
+                                ),
+                            ],
+                            on_click=partial(self.service_view, service['id']),
+                        )
+                        for service in self.service
+                    ],
                 ),
             ],
         )
 
-    async def delete_article(self):
-        pass
-
     async def role_view(self, _):
         await self.client.change_view(view=AccountRoleListView(account_id=self.account_id))
 
-    async def service_view(self, _):
-        await self.client.change_view(view=AccountServiceView(account_id=self.account_id))
-
-    async def meal_view(self, _):
-        account_service_id = 4
-        await self.client.change_view(view=AccountMealListView(account_service_id=account_service_id))
-
-    async def training_view(self, _):
-        account_service_id = 4
-        await self.client.change_view(view=AccountTrainingListView(account_service_id=account_service_id))
+    async def service_view(self, service, _):
+        await self.client.change_view(view=AccountServiceView(account_service_id=service))

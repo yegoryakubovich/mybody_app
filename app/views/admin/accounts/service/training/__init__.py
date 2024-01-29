@@ -15,6 +15,6 @@
 #
 
 
-from app.views.admin.accounts.training.create import AccountTrainingCreateView
-from app.views.admin.accounts.training.get import AccountTrainingView
-from app.views.admin.accounts.training.get_list import AccountTrainingListView
+from .get import AccountTrainingView
+from .get_list import AccountTrainingListView
+from .create import AccountTrainingCreateView

@@ -52,7 +52,7 @@ class TimezoneCreateView(AdminBaseView):
     async def create_timezone(self, _):
         fields = [(self.tf_id_str, 1, 16)]
         for field, min_len, max_len in fields:
-            if not await Error.check_field(self, field, min_len, max_len):
+            if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
                 return
         if not self.tf_deviation.value.isdigit():
             self.tf_deviation.error_text = await self.client.session.gtv(key='deviation_type')

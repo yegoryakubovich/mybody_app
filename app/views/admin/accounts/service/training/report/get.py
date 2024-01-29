@@ -19,7 +19,7 @@ from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.layout import AdminBaseView
 from app.utils import Fonts
-from app.views.admin.accounts.training.report import AccountTrainingReportCreateView
+from app.views.admin.accounts.service.training.report.create import AccountTrainingReportCreateView
 
 
 class AccountTrainingReportView(AdminBaseView):

@@ -52,7 +52,7 @@ class LanguageCreateView(AdminBaseView):
     async def create_language(self, _):
         fields = [(self.tf_name, 1, 32), (self.tf_id_str, 1, 16)]
         for field, min_len, max_len in fields:
-            if not await Error.check_field(self, field, min_len, max_len):
+            if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
                 return
         try:
             await self.client.session.api.admin.language.create(

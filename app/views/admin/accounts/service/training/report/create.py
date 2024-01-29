@@ -52,10 +52,10 @@ class AccountTrainingReportCreateView(AdminBaseView):
         )
 
     async def create_training_report(self, _):
-        from app.views.admin.accounts.training.report import AccountTrainingReportView
+        from app.views.admin.accounts.service.training.report.get import AccountTrainingReportView
         fields = [(self.tf_comment, 2, 1024)]
         for field, min_len, max_len in fields:
-            if not await Error.check_field(self, field, min_len, max_len):
+            if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
                 return
         try:
             report_id = await self.client.session.api.admin.training.create_report(

@@ -105,8 +105,8 @@ class ServiceView(AdminBaseView):
 
     async def update_service(self, _):
         fields = [(self.tf_name, 1, 1024)]
-        for field, min_len, max_len, error_key in fields:
-            if not await Error.check_field(self, field, min_len, max_len):
+        for field, min_len, max_len in fields:
+            if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
                 return
         await self.client.session.api.admin.country.update(
             id_str=self.service_id_str,

@@ -25,61 +25,63 @@ from app.controls.layout import AdminBaseView
 from app.utils import Error
 
 
-class AccountTrainingCreateView(AdminBaseView):
-    route = '/admin/account/training/create'
-    tf_date: TextField
-    dd_articles: Dropdown
-    articles = list[dict]
+class AccountMealProductCreateView(AdminBaseView):
+    route = '/admin/account/meal/product/create'
+    products: list[dict]
+    tf_quantity: TextField
+    dd_product: Dropdown
 
-    def __init__(self, account_service_id):
+    def __init__(self, meal_id):
         super().__init__()
-        self.account_service_id = account_service_id
+        self.meal_id = meal_id
 
     async def build(self):
         await self.set_type(loading=True)
-        self.articles = await self.client.session.api.client.article.get_list()
+        self.products = await self.client.session.api.client.product.get_list()
         await self.set_type(loading=False)
-        article_options = [
+
+        product_options = [
             Option(
-                text=article['name_text'],
-                key=article['id']
-            ) for article in self.articles
+                text=await self.client.session.gtv(key=product['name_text']),
+                key=product['id']
+            ) for product in self.products
         ]
-        self.dd_articles = Dropdown(
-            label=await self.client.session.gtv(key='article'),
-            options=article_options,
+        self.tf_quantity = TextField(
+            label=await self.client.session.gtv(key='quantity'),
         )
-        self.tf_date = TextField(
-            label=await self.client.session.gtv(key='date'),
+        self.dd_product = Dropdown(
+            label=await self.client.session.gtv(key='type'),
+            value=product_options[0].key,
+            options=product_options,
         )
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='admin_account_training_create_view_title'),
+            title=await self.client.session.gtv(key='admin_account_meal_product_create_view_title'),
             main_section_controls=[
-                self.tf_date,
-                self.dd_articles,
+                self.dd_product,
+                self.tf_quantity,
                 FilledButton(
                     content=Text(
                         value=await self.client.session.gtv(key='create'),
                         size=16,
                     ),
-                    on_click=self.create_training,
+                    on_click=self.create_meal_product,
                 ),
             ]
         )
 
-    async def create_training(self, _):
-        from app.views.admin.accounts.training.get import AccountTrainingView
-        fields = [self.tf_date]
-        for field in fields:
-            if not await Error.check_date_format(self, field):
+    async def create_meal_product(self, _):
+        from app.views.admin.accounts.service.meal.get import AccountMealView
+        fields = [(self.tf_quantity, True)]
+        for field, check_int in fields:
+            if not await Error.check_field(self, field, check_int):
                 return
         try:
-            training_id = await self.client.session.api.admin.training.create(
-                account_service_id=self.account_service_id,
-                date=self.tf_date.value,
-                article_id=self.dd_articles.value or 0,
+            await self.client.session.api.admin.meal.create_product(
+                meal_id=self.meal_id,
+                product_id=self.dd_product.value,
+                value=self.tf_quantity.value,
             )
-            await self.client.change_view(AccountTrainingView(training_id=training_id), delete_current=True)
+            await self.client.change_view(AccountMealView(meal_id=self.meal_id), delete_current=True)
         except ApiException as e:
             await self.set_type(loading=False)
             return await self.client.session.error(error=e)

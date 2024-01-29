@@ -15,6 +15,5 @@
 #
 
 
-from app.views.admin.accounts.meal.create import AccountMealCreateView
-from app.views.admin.accounts.meal.get import AccountMealView
-from app.views.admin.accounts.meal.get_list import AccountMealListView
+from .get import AccountQuestionnaireGetView
+

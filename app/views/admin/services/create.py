@@ -225,7 +225,7 @@ class ServiceCreateView(AdminBaseView):
         from app.views.admin.services import ServiceView
         fields = [(self.tf_name, 1, 1024), (self.tf_id_str, 2, 64)]
         for field, min_len, max_len in fields:
-            if not await Error.check_field(self, field, min_len, max_len):
+            if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
                 return
 
         questions = json.dumps(self.questions, ensure_ascii=False)

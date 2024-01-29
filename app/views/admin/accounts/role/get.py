@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+from mybody_api_client.utils.base_section import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -44,7 +44,12 @@ class AccountRoleView(AdminBaseView):
         )
 
     async def delete_role(self, _):
-        await self.client.session.api.admin.account.delete_role(
-            id_=self.role_id,
-        )
-        await self.client.change_view(go_back=True, with_restart=True)
+        await self.set_type(loading=True)
+        try:
+            await self.client.session.api.admin.account.delete_role(
+                id_=self.role_id,
+            )
+            await self.client.change_view(go_back=True, with_restart=True)
+        except ApiException as e:
+            await self.set_type(loading=False)
+            return await self.client.session.error(error=e)

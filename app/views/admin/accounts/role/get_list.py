@@ -42,7 +42,7 @@ class AccountRoleListView(AdminBaseView):
         )
         self.role = []
         for item in self.roles:
-            role_id = item['role']
+            role_id = item['role_id']
             role = await self.client.session.api.client.role.get(
                 id_=role_id
             )

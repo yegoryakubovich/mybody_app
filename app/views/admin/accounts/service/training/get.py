@@ -27,9 +27,9 @@ from app.controls.information.snackbar import SnackBar
 from app.controls.input import TextField
 from app.controls.layout import AdminBaseView, Section
 from app.utils import Fonts, Error
-from app.views.admin.accounts.training.exercise.create import AccountTrainingExerciseCreateView
-from app.views.admin.accounts.training.exercise.get import AccountTrainingExerciseView
-from app.views.admin.accounts.training.report import AccountTrainingReportView
+from app.views.admin.accounts.service.training.exercise.create import AccountTrainingExerciseCreateView
+from app.views.admin.accounts.service.training.exercise.get import AccountTrainingExerciseView
+from app.views.admin.accounts.service.training.report.get import AccountTrainingReportView
 
 
 class AccountTrainingView(AdminBaseView):
@@ -48,7 +48,7 @@ class AccountTrainingView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.training = await self.client.session.api.client.training.get(
+        self.training = await self.client.session.api.admin.training.get(
             id_=self.training_id,
         )
         self.exercise = []
@@ -168,6 +168,7 @@ class AccountTrainingView(AdminBaseView):
         for field in fields:
             if not await Error.check_date_format(self, field):
                 return
+
         try:
             await self.client.session.api.admin.training.update(
                 id_=self.training_id,

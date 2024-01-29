@@ -15,5 +15,5 @@
 #
 
 
-from .get import AccountView
-from .get_list import AccountListView
+from .get import AccountTrainingReportView
+from .create import AccountTrainingReportCreateView

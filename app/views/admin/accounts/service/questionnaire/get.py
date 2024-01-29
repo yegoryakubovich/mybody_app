@@ -15,5 +15,17 @@
 #
 
 
-from .get import AccountView
-from .get_list import AccountListView
+from app.controls.layout import AdminBaseView
+
+
+class AccountQuestionnaireGetView(AdminBaseView):
+    route = '/admin/accounts/service/get'
+    account = list
+    service = list
+
+    def __init__(self, account_service_id):
+        super().__init__()
+        self.account_service_id = account_service_id
+
+    async def build(self):
+        pass

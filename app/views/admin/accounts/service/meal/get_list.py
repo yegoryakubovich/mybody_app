@@ -23,12 +23,13 @@ from app.controls.information import Text
 from app.controls.information.card import Card
 from app.controls.layout import AdminBaseView
 from app.utils import Fonts
-from app.views.admin.accounts.training import AccountTrainingView, AccountTrainingCreateView
+from app.views.admin.accounts.service.meal.create import AccountMealCreateView
+from app.views.admin.accounts.service.meal.get import AccountMealView
 
 
-class AccountTrainingListView(AdminBaseView):
-    route = '/admin/account/training/list/get'
-    trainings: list[dict]
+class AccountMealListView(AdminBaseView):
+    route = '/admin/account/meals/list/get'
+    meals: list[dict]
     role: list
     date: str = None
 
@@ -38,7 +39,7 @@ class AccountTrainingListView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.trainings = await self.client.session.api.client.training.get_list(
+        self.meals = await self.client.session.api.admin.meal.get_list(
             account_service_id=self.account_service_id,
             date=self.date,
         )
@@ -46,29 +47,34 @@ class AccountTrainingListView(AdminBaseView):
 
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='admin_account_training_get_list_view_title'),
-            on_create_click=self.create_training,
+            title=await self.client.session.gtv(key='admin_account_meal_get_list_view_title'),
+            on_create_click=self.create_meal,
             main_section_controls=[
                 Card(
                     controls=[
                         Text(
-                            value=training['date'],
+                            value=meal['date'],
                             size=18,
                             font_family=Fonts.SEMIBOLD,
                         ),
+                        Text(
+                            value=await self.client.session.gtv(key=meal['type']),
+                            size=10,
+                            font_family=Fonts.MEDIUM,
+                        ),
                     ],
-                    on_click=functools.partial(self.training_view, training['id']),
+                    on_click=functools.partial(self.meal_view, meal['id']),
                 )
-                for training in self.trainings
+                for meal in self.meals
             ],
         )
 
-    async def training_view(self, training, _):
-        await self.client.change_view(view=AccountTrainingView(training_id=training))
+    async def meal_view(self, meal, _):
+        await self.client.change_view(view=AccountMealView(meal_id=meal))
 
-    async def create_training(self, _):
+    async def create_meal(self, _):
         await self.client.change_view(
-            view=AccountTrainingCreateView(
+            view=AccountMealCreateView(
                 account_service_id=self.account_service_id,
             ),
         )

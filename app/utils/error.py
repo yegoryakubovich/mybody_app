@@ -21,16 +21,29 @@ from datetime import datetime
 class Error:
 
     @staticmethod
-    async def check_field(self, field, min_len, max_len, check_int=False, error_text_key='error_count_letter'):
+    async def check_field(self, field, check_int=False, min_len=None, max_len=None,
+                          error_text_key='error_count_letter'):
         field.error_text = None
-        if len(field.value) < min_len or len(field.value) > max_len:
-            field.error_text = await self.client.session.gtv(key=error_text_key)
-            await self.update_async()
-            return False
-        if check_int and not field.value.isdigit():
-            field.error_text = await self.client.session.gtv(key='error_not_int')
-            await self.update_async()
-            return False
+
+        if check_int:
+            try:
+                value = int(field.value)
+            except ValueError:
+                field.error_text = await self.client.session.gtv(key='error_not_int')
+                await self.update_async()
+                return False
+
+        if not check_int and (min_len is not None or max_len is not None):
+            if min_len is not None and len(field.value) < min_len:
+                field.error_text = await self.client.session.gtv(key=error_text_key)
+                await self.update_async()
+                return False
+
+            if max_len is not None and len(field.value) > max_len:
+                field.error_text = await self.client.session.gtv(key=error_text_key)
+                await self.update_async()
+                return False
+
         return True
 
     @staticmethod

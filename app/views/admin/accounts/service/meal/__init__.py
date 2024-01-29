@@ -15,5 +15,4 @@
 #
 
 
-from app.views.admin.accounts.training.report.create import AccountTrainingReportCreateView
-from app.views.admin.accounts.training.report.get import AccountTrainingReportView
+from app.views.admin.accounts.service.meal.get_list import AccountMealListView

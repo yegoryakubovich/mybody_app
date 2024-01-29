@@ -57,7 +57,6 @@ class AccountMealCreateView(AdminBaseView):
         )
         self.tf_date = TextField(
             label=await self.client.session.gtv(key='date'),
-            on_focus=self.client.session.date_picker.open_(),
         )
         self.tf_fats = TextField(
             label=await self.client.session.gtv(key='fats'),
@@ -88,10 +87,14 @@ class AccountMealCreateView(AdminBaseView):
         )
 
     async def create_meal(self, _):
-        from app.views.admin.accounts.meal import AccountMealView
+        from app.views.admin.accounts.service.meal.get import AccountMealView
         fields = [self.tf_date]
         for field in fields:
             if not await Error.check_date_format(self, field):
+                return
+        fields = [(self.tf_fats, True), (self.tf_proteins, True), (self.tf_carbohydrates, True)]
+        for field, check_int in fields:
+            if not await Error.check_field(self, field, check_int):
                 return
         try:
             meal_id = await self.client.session.api.admin.meal.create(

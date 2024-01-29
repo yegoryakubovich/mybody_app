@@ -27,7 +27,8 @@ from app.controls.information.snackbar import SnackBar
 from app.controls.input import TextField
 from app.controls.layout import AdminBaseView, Section
 from app.utils import Fonts, Error
-from app.views.admin.accounts.meal.product import AccountMealProductCreateView, AccountMealProductView
+from app.views.admin.accounts.service.meal.product import AccountMealProductView
+from app.views.admin.accounts.service.meal.product.create import AccountMealProductCreateView
 
 
 class AccountMealView(AdminBaseView):
@@ -47,7 +48,7 @@ class AccountMealView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.meal = await self.client.session.api.client.meal.get(
+        self.meal = await self.client.session.api.admin.meal.get(
             id_=self.meal_id,
         )
         self.products = []
@@ -169,12 +170,17 @@ class AccountMealView(AdminBaseView):
             AccountMealProductCreateView(
                 meal_id=self.meal_id,
             ),
+            delete_current=True,
         )
 
     async def update_meal(self, _):
         fields = [self.tf_date]
         for field in fields:
             if not await Error.check_date_format(self, field):
+                return
+        fields = [(self.tf_fats, True), (self.tf_proteins, True), (self.tf_carbohydrates, True)]
+        for field, check_int in fields:
+            if not await Error.check_field(self, field, check_int):
                 return
         try:
             await self.client.session.api.admin.meal.update(

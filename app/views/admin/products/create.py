@@ -123,7 +123,7 @@ class ProductCreateView(AdminBaseView):
         from app.views.admin.products.get import ProductView
         fields = [(self.tf_name, 1, 32)]
         for field, min_len, max_len in fields:
-            if not await Error.check_field(self, field, min_len, max_len):
+            if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
                 return
         try:
             product_id = await self.client.session.api.admin.product.create(

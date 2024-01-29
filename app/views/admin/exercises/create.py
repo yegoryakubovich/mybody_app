@@ -68,7 +68,7 @@ class ExerciseCreateView(AdminBaseView):
     async def create_exercise(self, _):
         fields = [(self.tf_name, 1, 1024)]
         for field, min_len, max_len in fields:
-            if not await Error.check_field(self, field, min_len, max_len):
+            if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
                 return
         try:
             await self.client.session.api.admin.exercise.create(

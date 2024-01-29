@@ -36,7 +36,7 @@ class RegistrationFirstView(AuthView):
 
         fields = [(self.tf_username, 1, 32), (self.tf_password, 1, 32)]
         for field, min_len, max_len in fields:
-            if not await Error.check_field(self, field, min_len, max_len):
+            if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
                 return
         try:
             await self.client.session.api.client.account.check_username(username=self.tf_username.value)

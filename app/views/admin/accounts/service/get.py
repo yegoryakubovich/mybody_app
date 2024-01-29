@@ -13,10 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from flet_core import Row
 
-
+from app.controls.button import FilledButton
+from app.controls.information import Text
 from app.controls.layout import AdminBaseView
-from app.views.admin.accounts.role import AccountRoleListView
 
 
 class AccountServiceView(AdminBaseView):
@@ -24,26 +25,48 @@ class AccountServiceView(AdminBaseView):
     account = list
     service = list
 
-    def __init__(self, account_id):
+    def __init__(self, account_service_id):
         super().__init__()
-        self.account_id = account_id
+        self.account_service_id = account_service_id
 
     async def build(self):
-        await self.set_type(loading=True)
-        self.account = await self.client.session.api.admin.account.get(
-            id_=self.account_id
-        )
-        await self.set_type(loading=False)
-
+        print(self.account_service_id)
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='admin_account_get_list_view_title')
+            title=await self.client.session.gtv(key='admin_account_service_get_view_title'),
+            main_section_controls=[
+                Row(
+                    controls=[
+                        FilledButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='meal'),
+                            ),
+                            on_click=self.meal_view,
+                        ),
+                        FilledButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='training'),
+                            ),
+                            on_click=self.training_view,
+                        ),
+                        FilledButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key=' questionnaire'),
+                            ),
+                            on_click=self.questionnaire_view,
+                        ),
+                    ]
+                )
+            ],
         )
 
-    async def delete_article(self):
-        pass
+    async def training_view(self, _):
+        from app.views.admin.accounts.service.training import AccountTrainingListView
+        await self.client.change_view(view=AccountTrainingListView(account_service_id=self.account_service_id))
 
-    async def role_view(self, _):
-        await self.client.change_view(view=AccountRoleListView(account_id=self.account_id))
+    async def meal_view(self, _):
+        from app.views.admin.accounts.service.meal import AccountMealListView
+        await self.client.change_view(view=AccountMealListView(account_service_id=self.account_service_id))
 
-    async def service_view(self, _):
-        await self.client.change_view(view=AccountRoleListView(account_id=self.account_id))
+    async def questionnaire_view(self, _):
+        from app.views.admin.accounts.service.questionnaire import AccountQuestionnaireGetView
+        await self.client.change_view(view=AccountQuestionnaireGetView(account_service_id=self.account_service_id))

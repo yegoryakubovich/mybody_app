@@ -13,26 +13,28 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-
+from flet_core import Row
 from flet_core.dropdown import Option
 from mybody_api_client.utils.base_section import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
+from app.controls.information.snackbar import SnackBar
 from app.controls.input import TextField, Dropdown
 from app.controls.layout import AdminBaseView
 from app.utils import Error
 
 
-class AccountMealProductCreateView(AdminBaseView):
-    route = '/admin/account/meal/product/create'
-    products: list[dict]
+class AccountMealProductView(AdminBaseView):
+    route = '/admin/account/meal/product/get'
     tf_quantity: TextField
     dd_product: Dropdown
+    products: list[dict]
+    snack_bar: SnackBar
 
-    def __init__(self, meal_id):
+    def __init__(self, product, meal_id):
         super().__init__()
+        self.product = product
         self.meal_id = meal_id
 
     async def build(self):
@@ -46,42 +48,64 @@ class AccountMealProductCreateView(AdminBaseView):
                 key=product['id']
             ) for product in self.products
         ]
-        self.tf_quantity = TextField(
-            label=await self.client.session.gtv(key='quantity'),
-        )
         self.dd_product = Dropdown(
-            label=await self.client.session.gtv(key='type'),
-            value=product_options[0].key,
+            label=await self.client.session.gtv(key='name'),
+            value=self.product['id'],
             options=product_options,
         )
+        self.snack_bar = SnackBar(
+            content=Text(
+                value=await self.client.session.gtv(key='successful'),
+            ),
+        )
+        self.tf_quantity = TextField(
+            label=await self.client.session.gtv(key='quantity'),
+            value=int(self.product['meal_product']['value']),
+        )
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='admin_account_meal_product_create_view_title'),
+            title=await self.client.session.gtv(key=self.product['name_text']),
             main_section_controls=[
                 self.dd_product,
                 self.tf_quantity,
-                FilledButton(
-                    content=Text(
-                        value=await self.client.session.gtv(key='create'),
-                        size=16,
-                    ),
-                    on_click=self.create_meal_product,
+                self.snack_bar,
+                Row(
+                    controls=[
+                        FilledButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='save'),
+                            ),
+                            on_click=self.update_meal_product,
+                        ),
+                        FilledButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='delete'),
+                            ),
+                            on_click=self.delete_meal_product,
+                        ),
+                    ],
                 ),
-            ]
+            ],
         )
 
-    async def create_meal_product(self, _):
-        from app.views.admin.accounts.meal import AccountMealView
+    async def delete_meal_product(self, _):
+        await self.client.session.api.admin.meal.delete_product(
+            id_=self.product['meal_product']['id'],
+        )
+        await self.client.change_view(go_back=True, with_restart=True)
+
+    async def update_meal_product(self, _):
         fields = [(self.tf_quantity, 1, 5, True)]
         for field, min_len, max_len, check_int in fields:
             if not await Error.check_field(self, field, min_len, max_len, check_int):
                 return
         try:
-            await self.client.session.api.admin.meal.create_product(
-                meal_id=self.meal_id,
+            await self.client.session.api.admin.meal.update_product(
+                id_=self.product['meal_product']['id'],
                 product_id=self.dd_product.value,
                 value=self.tf_quantity.value,
             )
-            await self.client.change_view(AccountMealView(meal_id=self.meal_id), delete_current=True)
+            self.snack_bar.open = True
+            await self.update_async()
         except ApiException as e:
             await self.set_type(loading=False)
             return await self.client.session.error(error=e)
