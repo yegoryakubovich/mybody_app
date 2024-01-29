@@ -100,9 +100,9 @@ class AccountView(AdminBaseView):
         await self.client.change_view(view=AccountServiceView(account_id=self.account_id))
 
     async def meal_view(self, _):
-        account_service_id = 2
+        account_service_id = 4
         await self.client.change_view(view=AccountMealListView(account_service_id=account_service_id))
 
     async def training_view(self, _):
-        account_service_id = 2
+        account_service_id = 4
         await self.client.change_view(view=AccountTrainingListView(account_service_id=account_service_id))

@@ -18,13 +18,12 @@
 from typing import Any
 
 from flet_core import Column, Container, Image, Row, ScrollMode, Text, padding, colors
-from flet_manager.utils import get_svg
 
-from .report import MealReportView
 from app.controls.button import FilledButton
 from app.controls.button.product_chip import ProductChipButton
 from app.controls.layout import View
-from app.utils import Fonts
+from app.utils import Fonts, Icons
+from .report import MealReportView
 
 
 class Meal:
@@ -65,22 +64,22 @@ class MealView(View):
 
         sections_list = [
             {
-                'name': await self.client.session.gtv(key='Carbohydrates'),
-                'icon': 'carbohydrates',
+                'name': await self.client.session.gtv(key='carbohydrates'),
+                'icon': Icons.CARBOHYDRATES,
             },
             {
-                'name': await self.client.session.gtv(key='Proteins'),
-                'icon': 'protein',
+                'name': await self.client.session.gtv(key='proteins'),
+                'icon': Icons.PROTEIN,
             },
             {
-                'name': await self.client.session.gtv(key='Fats'),
-                'icon': 'fats',
+                'name': await self.client.session.gtv(key='fats'),
+                'icon': Icons.FATS,
             },
-        ]  # FIXME
+        ]
 
         sections = [
             Section(
-                name=section['name'],  # FIXME
+                name=section['name'],
                 icon=section['icon'],
                 meals=[
                     Meal(
@@ -108,12 +107,10 @@ class MealView(View):
                                                 color='#000000',  # FIXME
                                             ),
                                             Image(
-                                                src=get_svg(
-                                                    path=f'assets/icons/{section.icon}.svg',
-                                                ),
-                                                color='#1d1d1d',  # FIXME
+                                                src=section.icon,
+                                                color='#1d1d1d',
                                                 height=25,
-                                            ),
+                                            )
                                         ]
                                     ),
                                     Row(
@@ -149,9 +146,7 @@ class MealView(View):
                                 controls=[
                                     Container(
                                         Image(
-                                            src=get_svg(
-                                                path=f'assets/icons/arrow_back.svg',
-                                            ),
+                                            src=Icons.BACK,
                                             color=colors.TERTIARY,  # FIXME
                                             height=20,
                                         ),

@@ -13,8 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-
+import functools
 from datetime import datetime
 from typing import Any
 
@@ -23,7 +22,6 @@ from flet_core import Column, Row, Container, MainAxisAlignment, Image
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.utils import Fonts, Icons
-from app.views.auth.service import ServiceListView
 from app.views.main.meal.meal import MealView
 from app.views.main.tabs.base import BaseTab
 from app.views.main.training.training import TrainingView
@@ -121,51 +119,50 @@ class MealButton(Container):
 
 
 class HomeTab(BaseTab):
-    meals: dict
-    trainings: dict
+    meals: dict = None
+    trainings: dict = None
+    exercise: list[dict] = None
+    training: dict = None
     date: str
 
-    async def click(self, _):
-        await self.client.change_view(view=MealView())
-
     async def build(self):
-        self.date = '2024-01-17'
+        now = datetime.now()
+        self.date = now.strftime('%Y-%m-%d')
         account_service_id = 4
         self.meals = await self.client.session.api.admin.meal.get_list(
             account_service_id=account_service_id,
             date=self.date,
         )
+        meal_times = {
+            'meal_1': ('7:00', '10:00'),
+            'meal_2': ('10:00', '13:00'),
+            'meal_3': ('13:00', '16:00'),
+            'meal_4': ('16:00', '19:00'),
+            'meal_5': ('19:00', '20:00'),
+        }
+
         for meal in self.meals:
-            if meal['type'] == 'meal_1':
-                meal['start_time'] = '7:00'
-                meal['end_time'] = '10:00'
-            elif meal['type'] == 'meal_2':
-                meal['start_time'] = '10:00'
-                meal['end_time'] = '13:00'
-            elif meal['type'] == 'meal_3':
-                meal['start_time'] = '13:00'
-                meal['end_time'] = '16:00'
-            elif meal['type'] == 'meal_4':
-                meal['start_time'] = '16:00'
-                meal['end_time'] = '19:00'
-            elif meal['type'] == 'meal_5':
-                meal['start_time'] = '19:00'
-                meal['end_time'] = '20:00'
+            if meal['type'] in meal_times:
+                meal['start_time'], meal['end_time'] = meal_times[meal['type']]
+
         self.trainings = await self.client.session.api.client.training.get_list(
             account_service_id=account_service_id,
-            date='2024-01-21',
-        )
-        self.training = await self.client.session.api.client.training.get(
-            id_=self.trainings[0]['id'],
+            date=self.date,
         )
         self.exercise = []
-        for i, training in enumerate(self.training['exercises']):
-            training_info = await self.client.session.api.client.exercise.get(id_=training['exercise'])
-            # Находим соответствующий продукт в self.exercise['exercise']
-            training_exercise = self.training['exercises'][i]
-            if training_exercise is not None:
-                training_info['training_exercise'] = training_exercise
-            self.exercise.append(training_info)
+        if self.trainings:
+            self.training = await self.client.session.api.client.training.get(
+                id_=self.trainings[0]['id'],
+            )
+            for i, training in enumerate(self.training['exercises']):
+                training_info = await self.client.session.api.client.exercise.get(id_=training['exercise'])
+                # Находим соответствующий продукт в self.exercise['exercise']
+                training_exercise = self.training['exercises'][i]
+                if training_exercise is not None:
+                    training_info['training_exercise'] = training_exercise
+                self.exercise.append(training_info)
+                self.exercise.sort(key=lambda x: x['training_exercise']['priority'])
+
         firstname = self.client.session.account.firstname
 
         meals = [
@@ -174,16 +171,15 @@ class HomeTab(BaseTab):
                 nutrients=[meal['proteins'], meal['fats'], meal['carbohydrates']],
                 start_time=meal['start_time'],
                 end_time=meal['end_time'],
-                on_click=self.click,
+                on_click=functools.partial(self.meal_view, meal['key']),
             ) for meal in self.meals
         ]
 
-        self.exercise.sort(key=lambda x: x['training_exercise']['priority'])
         trainings = [
             Training(
                 name=str(exercise['training_exercise']['priority']) + ' ' + await self.client.session.gtv(
                     key=exercise['name_text']),
-                on_click=self.click,
+                on_click=self.training_view,
             ) for exercise in self.exercise
         ]
 
@@ -229,7 +225,7 @@ class HomeTab(BaseTab):
                             size=20,
                             font_family=Fonts.SEMIBOLD,
                         ),
-                        Column(
+                        any(meals) and Column(
                             controls=[
                                 MealButton(
                                     name=meal.name,
@@ -239,13 +235,17 @@ class HomeTab(BaseTab):
                                     end_time=meal.end_time,
                                 ) for meal in meals
                             ],
+                        ) or Text(
+                            value=await self.client.session.gtv(key='meal_planning_stage'),
+                            size=15,
+                            font_family=Fonts.MEDIUM,
                         ),
                         Text(
                             value=await self.client.session.gtv(key='trainings'),
                             size=20,
                             font_family=Fonts.SEMIBOLD,
                         ),
-                        Container(
+                        any(trainings) and Container(
                             content=Column(
                                 controls=[
                                     Row(
@@ -264,6 +264,10 @@ class HomeTab(BaseTab):
                             bgcolor='#008F12',
                             border_radius=10,
                             padding=10,
+                        ) or Text(
+                            value=await self.client.session.gtv(key='training_planning_stage'),
+                            size=15,
+                            font_family=Fonts.MEDIUM,
                         ),
                     ],
                     spacing=15,
@@ -275,8 +279,11 @@ class HomeTab(BaseTab):
     async def current_meal(self, _):
         pass
 
-    async def training(self, _):
+    async def training_view(self, _):
         await self.client.change_view(view=TrainingView())
 
     async def support(self, _):
         pass
+
+    async def meal_view(self, _):
+        await self.client.change_view(view=MealView())
