@@ -42,20 +42,20 @@ class RegistrationSecondView(AuthView):
     async def build(self):
         country_options = [
             Option(
-                text=i.get('name'),
-                key=i.get('id_str'),
+                text=await self.client.session.gtv(key=i.name_text),
+                key=i.id_str,
             ) for i in self.countries
         ]
         currency_options = [
             Option(
-                text=i.get('name'),
-                key=i.get('id_str'),
+                text=i.id_str.upper(),
+                key=i.id_str,
             ) for i in self.currencies
         ]
         timezone_options = [
             Option(
-                text=i.get('name'),
-                key=i.get('id_str'),
+                text=f'{i.id_str.title()} ({int(i.deviation/60):+} UTC)' if i.id_str != 'utc' else 'UTC',
+                key=i.id_str,
             ) for i in self.timezones
         ]
 
@@ -71,14 +71,17 @@ class RegistrationSecondView(AuthView):
         self.dd_country = Dropdown(
             label=await self.client.session.gtv(key='country'),
             options=country_options,
+            value=country_options[0].key,
         )
         self.dd_currency = Dropdown(
             label=await self.client.session.gtv(key='currency'),
             options=currency_options,
+            value=currency_options[0].key,
         )
         self.dd_timezone = Dropdown(
             label=await self.client.session.gtv(key='timezone'),
             options=timezone_options,
+            value=timezone_options[0].key,
         )
 
         self.controls = await self.get_controls(

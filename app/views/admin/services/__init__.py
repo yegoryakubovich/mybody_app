@@ -18,10 +18,3 @@
 from app.views.admin.services.create import ServiceCreateView
 from app.views.admin.services.get import ServiceView
 from app.views.admin.services.get_list import ServiceListView
-
-
-__all__ = [
-    'ServiceListView',
-    'ServiceCreateView',
-    'ServiceView',
-]

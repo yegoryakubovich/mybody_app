@@ -18,10 +18,3 @@
 from app.views.admin.timezones.create import TimezoneCreateView
 from app.views.admin.timezones.get import TimezoneView
 from app.views.admin.timezones.get_list import TimezoneListView
-
-
-__all__ = [
-    'TimezoneListView',
-    'TimezoneCreateView',
-    'TimezoneView',
-]

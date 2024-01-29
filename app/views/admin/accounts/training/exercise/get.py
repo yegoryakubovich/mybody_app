@@ -40,7 +40,6 @@ class AccountTrainingExerciseView(AdminBaseView):
         self.training_id = training_id
 
     async def build(self):
-        print(self.exercise)
         await self.set_type(loading=True)
         self.exercises = await self.client.session.api.client.exercise.get_list()
         await self.set_type(loading=False)
@@ -117,6 +116,6 @@ class AccountTrainingExerciseView(AdminBaseView):
             )
             self.snack_bar.open = True
             await self.update_async()
-        except ApiException:
+        except ApiException as e:
             await self.set_type(loading=False)
-            return await self.client.session.error(code=0)
+            return await self.client.session.error(error=e)

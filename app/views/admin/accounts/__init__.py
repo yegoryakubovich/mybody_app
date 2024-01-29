@@ -17,9 +17,3 @@
 
 from app.views.admin.accounts.get import AccountView
 from app.views.admin.accounts.get_list import AccountListView
-
-
-__all__ = [
-    'AccountListView',
-    'AccountView',
-]

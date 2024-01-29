@@ -18,10 +18,3 @@
 from app.views.admin.countries.create import CountryCreateView
 from app.views.admin.countries.get import CountryView
 from app.views.admin.countries.get_list import CountryListView
-
-
-__all__ = [
-    'CountryListView',
-    'CountryCreateView',
-    'CountryView',
-]

@@ -17,9 +17,3 @@
 
 from app.views.admin.accounts.training.report.create import AccountTrainingReportCreateView
 from app.views.admin.accounts.training.report.get import AccountTrainingReportView
-
-
-__all__ = [
-    'AccountTrainingReportCreateView',
-    'AccountTrainingReportView',
-]

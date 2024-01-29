@@ -128,7 +128,7 @@ class HomeTab(BaseTab):
     async def build(self):
         now = datetime.now()
         self.date = now.strftime('%Y-%m-%d')
-        account_service_id = 4
+        account_service_id = self.client.session.account_service.id
         self.meals = await self.client.session.api.admin.meal.get_list(
             account_service_id=account_service_id,
             date=self.date,

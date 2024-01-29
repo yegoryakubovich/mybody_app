@@ -18,10 +18,3 @@
 from app.views.admin.accounts.training.create import AccountTrainingCreateView
 from app.views.admin.accounts.training.get import AccountTrainingView
 from app.views.admin.accounts.training.get_list import AccountTrainingListView
-
-
-__all__ = [
-    'AccountTrainingCreateView',
-    'AccountTrainingView',
-    'AccountTrainingListView',
-]

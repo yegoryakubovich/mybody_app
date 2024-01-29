@@ -39,10 +39,9 @@ class AccountTrainingReportView(AdminBaseView):
             self.report = await self.client.session.api.admin.training.get_report(
                 id_=self.training_report_id,
             )
-        except ApiException:
+        except ApiException as e:
             self.report = {}
         await self.set_type(loading=False)
-        print(self.report)
         if self.report:
             self.tf_comment = Text(
                 value=self.report['comment'],

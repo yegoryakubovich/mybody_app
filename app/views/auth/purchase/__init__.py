@@ -15,5 +15,4 @@
 #
 
 
-from app.views.admin.roles.permissions.create import RolePermissionCreateView
-from app.views.admin.roles.permissions.get import RolePermissionView
+from .first import PurchaseFirstView

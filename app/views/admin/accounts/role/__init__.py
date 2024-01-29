@@ -18,10 +18,3 @@
 from app.views.admin.accounts.role.create import AccountRoleCreateView
 from app.views.admin.accounts.role.get import AccountRoleView
 from app.views.admin.accounts.role.get_list import AccountRoleListView
-
-
-__all__ = [
-    'AccountRoleCreateView',
-    'AccountRoleView',
-    'AccountRoleListView',
-]

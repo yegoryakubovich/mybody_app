@@ -19,13 +19,3 @@ from .admin import AdminBaseView, Section
 from .auth import AuthView
 from .client import ClientBaseView, ClientSection
 from .view import View
-
-
-__all__ = [
-    'View',
-    'AuthView',
-    'AdminBaseView',
-    'ClientBaseView',
-    'Section',
-    'ClientSection',
-]

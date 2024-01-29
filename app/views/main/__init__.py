@@ -16,8 +16,3 @@
 
 
 from .main import MainView
-
-
-__all__ = [
-    'MainView',
-]

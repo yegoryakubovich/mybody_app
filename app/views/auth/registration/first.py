@@ -16,6 +16,7 @@
 
 
 from flet_core import Row, Column, Container, padding
+from mybody_api_client.utils.base_section import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -30,10 +31,6 @@ class RegistrationFirstView(AuthView):
     tf_username: TextField
     tf_password: TextField
 
-    async def check_username(self, tf_username):
-        response = await self.client.session.api.client.account.check_username(username=tf_username)
-        return response.state == 'error'
-
     async def change_view(self, _):
         check_username_error = await self.client.session.gtv(key='error_check_username')
 
@@ -41,7 +38,9 @@ class RegistrationFirstView(AuthView):
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len, max_len):
                 return
-        if await self.check_username(self.tf_username.value):
+        try:
+            await self.client.session.api.client.account.check_username(username=self.tf_username.value)
+        except ApiException:
             self.tf_username.error_text = check_username_error
             await self.update_async()
         else:

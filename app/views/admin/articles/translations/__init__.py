@@ -17,9 +17,3 @@
 
 from app.views.admin.articles.translations.create import ArticleTranslationCreateView
 from app.views.admin.articles.translations.get import ArticleTranslationView
-
-
-__all__ = [
-    'ArticleTranslationCreateView',
-    'ArticleTranslationView',
-]

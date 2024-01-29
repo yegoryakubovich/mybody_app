@@ -64,6 +64,6 @@ class TimezoneCreateView(AdminBaseView):
                     deviation=self.tf_deviation.value,
                 )
                 await self.client.change_view(go_back=True, with_restart=True)
-            except ApiException:
+            except ApiException as e:
                 await self.set_type(loading=False)
-                return await self.client.session.error(code=0)
+                return await self.client.session.error(error=e)

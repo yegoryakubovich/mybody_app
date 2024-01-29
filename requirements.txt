@@ -1,3 +1,4 @@
-uvicorn==0.27.0
+uvicorn==0.27.0.post1
 flet_manager==0.3.9
-mybody_api_client==0.3.25
+mybody_api_client==0.3.27
+pydantic_settings==2.1.0

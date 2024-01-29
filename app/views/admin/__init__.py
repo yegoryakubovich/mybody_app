@@ -16,8 +16,3 @@
 
 
 from .admin import AdminView
-
-
-__all__ = [
-    'AdminView',
-]

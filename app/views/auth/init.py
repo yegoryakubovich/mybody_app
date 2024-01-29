@@ -21,6 +21,7 @@ from app.utils import Session
 from app.views.main import MainView
 from app.views.auth.language import LanguageView
 from app.views.auth.authentication import AuthenticationView
+from config import settings
 
 
 class InitView(AuthView):
@@ -30,9 +31,6 @@ class InitView(AuthView):
     async def get_text_pack(self, language: str):
         text_pack = await self.client.session.api.client.text.get_pack(language=language)
         await self.client.session.set_cs(key='text_pack', value=text_pack)
-
-    async def build(self):
-        self.controls = []
 
     async def on_load(self):
         await self.set_type(loading=True)
@@ -52,5 +50,18 @@ class InitView(AuthView):
             await self.client.change_view(view=AuthenticationView())
             return
 
-        await self.client.change_view(view=MainView())
+        # Get account service
+        account_services = await self.client.session.api.client.account.get_list_services()
+        account_service = None
+        for as_ in account_services:
+            if as_.service_id == settings.service_id:
+                account_service = as_
 
+        if account_service:
+            self.client.session.account_service = account_service
+        else:
+            # Переход на покупку
+            # await self.client.session.error(0)
+            pass
+
+        await self.client.change_view(view=MainView())

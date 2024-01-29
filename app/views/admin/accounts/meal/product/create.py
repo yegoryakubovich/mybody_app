@@ -82,6 +82,6 @@ class AccountMealProductCreateView(AdminBaseView):
                 value=self.tf_quantity.value,
             )
             await self.client.change_view(AccountMealView(meal_id=self.meal_id), delete_current=True)
-        except ApiException:
+        except ApiException as e:
             await self.set_type(loading=False)
-            return await self.client.session.error(code=0)
+            return await self.client.session.error(error=e)

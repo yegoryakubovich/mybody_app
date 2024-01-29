@@ -16,8 +16,3 @@
 
 
 from app.views.admin.services.questions.get import ServiceQuestionView
-
-
-__all__ = [
-    'ServiceQuestionView',
-]

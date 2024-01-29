@@ -137,6 +137,6 @@ class ProductCreateView(AdminBaseView):
                 article_id=self.dd_articles.value or 0,
             )
             await self.client.change_view(view=ProductView(product_id=product_id), delete_current=True)
-        except ApiException:
+        except ApiException as e:
             await self.set_type(loading=False)
-            return await self.client.session.error(code=0)
+            return await self.client.session.error(error=e)

@@ -40,12 +40,12 @@ class AuthenticationView(AuthView):
                 username=username,
                 password=password,
             )
-        except ApiException:
+        except ApiException as e:
             await self.set_type(loading=False)
-            return await self.client.session.error(code=0)
+            return await self.client.session.error(error=e)
         
         # Get result, set in CS
-        token = session
+        token = session.token
         await self.client.session.set_cs(key='token', value=token)
 
         # Change view

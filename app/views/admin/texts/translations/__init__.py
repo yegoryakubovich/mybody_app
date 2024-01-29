@@ -16,10 +16,3 @@
 
 from app.views.admin.texts.translations.create import TextTranslationCreateView
 from app.views.admin.texts.translations.get import TextTranslationView
-
-
-__all__ = [
-    'TextTranslationCreateView',
-    'TextTranslationView',
-]
-

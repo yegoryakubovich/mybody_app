@@ -27,13 +27,3 @@ views = [
     InitView,
     MainView,
 ]
-
-
-__all__ = [
-    'views',
-    'InitView',
-    'MealView',
-    'MainView',
-    'admin',
-    'TrainingView',
-]

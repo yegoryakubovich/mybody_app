@@ -20,7 +20,7 @@ from flet_core.dropdown import Option
 from app.controls.button import FilledButton
 from app.controls.input import Dropdown
 from app.controls.layout import AuthView
-from config import LANGUAGE_DEFAULT
+from config import settings
 
 
 class LanguageView(AuthView):
@@ -47,7 +47,7 @@ class LanguageView(AuthView):
 
     async def build(self):
         self.languages = await self.client.session.api.client.language.get_list()
-        await self.get_text_pack(language=LANGUAGE_DEFAULT)
+        await self.get_text_pack(language=settings.language_default)
 
         options = [
             Option(

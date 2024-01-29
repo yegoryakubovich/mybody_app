@@ -62,6 +62,6 @@ class TextCreateView(AdminBaseView):
                 key=self.tf_key.value,
             )
             await self.client.change_view(view=TextView(key=key), delete_current=True)
-        except ApiException:
+        except ApiException as e:
             await self.set_type(loading=False)
-            return await self.client.session.error(code=0)
+            return await self.client.session.error(error=e)

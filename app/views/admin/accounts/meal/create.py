@@ -57,6 +57,7 @@ class AccountMealCreateView(AdminBaseView):
         )
         self.tf_date = TextField(
             label=await self.client.session.gtv(key='date'),
+            on_focus=self.client.session.date_picker.open_(),
         )
         self.tf_fats = TextField(
             label=await self.client.session.gtv(key='fats'),
@@ -102,6 +103,6 @@ class AccountMealCreateView(AdminBaseView):
                 carbohydrates=self.tf_carbohydrates.value,
             )
             await self.client.change_view(AccountMealView(meal_id=meal_id), delete_current=True)
-        except ApiException:
+        except ApiException as e:
             await self.set_type(loading=False)
-            return await self.client.session.error(code=0)
+            return await self.client.session.error(error=e)

@@ -18,10 +18,3 @@
 from app.views.admin.permissions.create import PermissionCreateView
 from app.views.admin.permissions.get import PermissionView
 from app.views.admin.permissions.get_list import PermissionListView
-
-
-__all__ = [
-    'PermissionListView',
-    'PermissionCreateView',
-    'PermissionView',
-]

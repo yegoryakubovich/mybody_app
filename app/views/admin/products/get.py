@@ -166,6 +166,6 @@ class ProductView(AdminBaseView):
             )
             self.snack_bar.open = True
             await self.update_async()
-        except ApiException:
+        except ApiException as e:
             await self.set_type(loading=False)
-            return await self.client.session.error(code=0)
+            return await self.client.session.error(error=e)

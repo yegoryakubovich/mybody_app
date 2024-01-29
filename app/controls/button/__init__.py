@@ -18,10 +18,3 @@
 from .filled import FilledButton
 from .list_item import ListItemButton
 from .product_chip import ProductChipButton
-
-
-__all__ = [
-    'FilledButton',
-    'ListItemButton',
-    'ProductChipButton',
-]

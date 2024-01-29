@@ -13,8 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-
+from functools import partial
 from typing import Any
 
 from flet_core import Container, alignment, padding, Column, CrossAxisAlignment, CircleAvatar, Image, colors
@@ -25,7 +24,7 @@ from app.utils import Fonts, Icons
 from app.views.admin.admin import AdminView
 from app.views.auth.service.get_list import ServiceListView
 from app.views.main.tabs.base import BaseTab
-from config import VERSION
+from config import settings
 
 
 class Setting:
@@ -43,14 +42,12 @@ class Section:
     name: str
     settings: list[Setting]
 
-    def __init__(self, name: str, settings: list[Setting]):
+    def __init__(self, name: str, settings_: list[Setting]):
         self.name = name
-        self.settings = settings
+        self.settings = settings_
 
 
 class AccountTab(BaseTab):
-    bs_coming_soon: BottomSheet
-    bs_logout = BottomSheet
     go_admin_counter: int
 
     async def go_admin(self, _):
@@ -59,7 +56,7 @@ class AccountTab(BaseTab):
             return
         self.go_admin_counter = 0
         if 'admin' not in self.client.session.account.permissions:
-            print('ERROR')  # FIXME
+            pass  # FIXME
         await self.client.change_view(view=AdminView())
 
     async def update_language(self, _):
@@ -73,20 +70,20 @@ class AccountTab(BaseTab):
 
     async def build(self):
         # Bottom Sheets
-        self.bs_coming_soon = BottomSheet(
+        on_click_coming_soon = partial(
+            self.client.session.bs_info.open_,
             icon=Icons.CHILL,
             title=await self.client.session.gtv(key='coming_soon'),
             description=await self.client.session.gtv(key='coming_soon_description'),
         )
-        self.bs_logout = BottomSheet(
+        on_click_logout = partial(
+            self.client.session.bs_info.open_,
             icon=Icons.LOGOUT,
             title=await self.client.session.gtv(key='logout_title'),
             description=await self.client.session.gtv(key='logout_description'),
             button_title=await self.client.session.gtv(key='confirm'),
             button_on_click=self.logout,
         )
-        self.view.client.page.overlay.append(self.bs_coming_soon)
-        self.view.client.page.overlay.append(self.bs_logout)
 
         # Go Admin
         self.go_admin_counter = 0
@@ -98,16 +95,16 @@ class AccountTab(BaseTab):
         sections = [
             Section(
                 name='my_account',
-                settings=[
+                settings_=[
                     Setting(
                         name='notifications',
                         icon=Icons.NOTIFICATIONS,
-                        on_click=self.bs_coming_soon.open_,
+                        on_click=on_click_coming_soon,
                     ),
                     Setting(
                         name='security',
                         icon=Icons.SECURITY,
-                        on_click=self.bs_coming_soon.open_,
+                        on_click=on_click_coming_soon,
                     ),
                     Setting(
                         name='language',
@@ -117,42 +114,42 @@ class AccountTab(BaseTab):
                     Setting(
                         name='logout',
                         icon=Icons.LOGOUT,
-                        on_click=self.bs_logout.open_,
+                        on_click=on_click_logout,
                     ),
                 ],
             ),
             Section(
                 name='info',
-                settings=[
+                settings_=[
                     Setting(
                         name='articles',
                         icon=Icons.ARTICLES,
-                        on_click=self.bs_coming_soon.open_,
+                        on_click=on_click_coming_soon,
                     ),
                 ],
             ),
             Section(
                 name='help',
-                settings=[
+                settings_=[
                     Setting(
                         name='about',
                         icon=Icons.ABOUT,
-                        on_click=self.bs_coming_soon.open_,
+                        on_click=on_click_coming_soon,
                     ),
                     Setting(
                         name='support',
                         icon=Icons.SUPPORT,
-                        on_click=self.bs_coming_soon.open_,
+                        on_click=on_click_coming_soon,
                     ),
                     Setting(
                         name='faq',
                         icon=Icons.FAQ,
-                        on_click=self.bs_coming_soon.open_,
+                        on_click=on_click_coming_soon,
                     ),
                     Setting(
                         name='privacy_policy',
                         icon=Icons.PRIVACY_POLICY,
-                        on_click=self.bs_coming_soon.open_,
+                        on_click=on_click_coming_soon,
                     ),
                 ],
             ),
@@ -218,7 +215,7 @@ class AccountTab(BaseTab):
         ] + sections_controls + [
             Container(
                 content=Text(
-                    value=f'{await self.client.session.gtv(key="version")} {VERSION}',
+                    value=f'{await self.client.session.gtv(key="version")} {settings.version}',
                     font_family=Fonts.REGULAR,
                     size=16,
                 ),

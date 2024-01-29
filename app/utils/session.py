@@ -22,9 +22,8 @@ from flet_manager.utils import Client
 from mybody_api_client import MyBodyApiClient
 from mybody_api_client.utils.base_section import ApiException
 
-from app.utils import Icons
 from app.utils.registration import Registration
-from config import IS_TEST
+from config import settings
 
 
 class Session:
@@ -38,37 +37,46 @@ class Session:
     api: MyBodyApiClient
     registration: Registration
     bs_error: Any
+    bs_info: Any
+    date_picker: Any
+    account_service: Any
 
     def __init__(self, client: Client):
         self.client = client
         self.page = client.page
         self.account = None
 
-    async def error(self, code=0):
-        await self.bs_error.open_()
+    async def error(self, error: ApiException):
+        await self.bs_error.open_(
+            title=error.message,
+        )
+
+    async def init_bs(self):
+        from app.controls.information.bottomsheet import BottomSheet
+
+        self.bs_error = BottomSheet()
+        self.bs_info = BottomSheet()
+
+        self.page.overlay.append(self.bs_error)
+        self.page.overlay.append(self.bs_info)
+        await self.page.update_async()
 
     async def init(self):
         self.token = await self.get_cs(key='token')
         self.language = await self.get_cs(key='language')
         self.text_pack = await self.get_cs(key='text_pack')
 
-        self.api = MyBodyApiClient(token=self.token, is_test=IS_TEST)
+        self.api = MyBodyApiClient(token=self.token, is_test=settings.is_test)
 
         try:
             self.account = await self.api.client.account.get()
             self.language = self.account.language
             if self.language != self.account.language:
                 await self.set_cs(key='language', value=self.language)
-        except ApiException:
+        except ApiException as e:
             await self.set_cs(key='token', value=None)
 
-        from app.controls.information.bottomsheet import BottomSheet
-        self.bs_error = BottomSheet(
-            icon=Icons.BACK,
-            title='',
-            description='',
-        )
-        self.page.overlay.append(self.bs_error)
+        await self.init_bs()
 
     # Client storage
     async def get_cs(self, key: str) -> Any:

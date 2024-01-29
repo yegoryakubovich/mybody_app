@@ -17,9 +17,3 @@
 
 from app.views.admin.accounts.meal.product.create import AccountMealProductCreateView
 from app.views.admin.accounts.meal.product.get import AccountMealProductView
-
-
-__all__ = [
-    'AccountMealProductCreateView',
-    'AccountMealProductView',
-]

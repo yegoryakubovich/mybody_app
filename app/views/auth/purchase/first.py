@@ -15,5 +15,14 @@
 #
 
 
-from app.views.admin.roles.permissions.create import RolePermissionCreateView
-from app.views.admin.roles.permissions.get import RolePermissionView
+from app.controls.information import Text
+from app.controls.layout import View
+
+
+class PurchaseFirstView(View):
+    async def build(self):
+        self.controls = [
+            Text(
+                value='Purchase'
+            ),
+        ]

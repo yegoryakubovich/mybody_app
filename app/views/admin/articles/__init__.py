@@ -18,11 +18,3 @@
 from .get import ArticleView
 from .get_list import ArticleListView
 from .create import ArticleCreateView
-
-
-__all__ = [
-    'ArticleListView',
-    'ArticleCreateView',
-    'ArticleView',
-    'translations',
-]

@@ -15,6 +15,18 @@
 #
 
 
-VERSION = '0.1'
-IS_TEST = True
-LANGUAGE_DEFAULT = 'eng'
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Settings(BaseSettings):
+    app_port: int
+
+    version: str = '0.1'
+    is_test: bool = True
+    language_default: str = 'eng'
+    service_id: int = 1
+
+    model_config = SettingsConfigDict(env_file='.env')
+
+
+settings = Settings()

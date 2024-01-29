@@ -37,7 +37,6 @@ class ServiceQuestionView(AdminBaseView):
         self.question = question
 
     async def build(self):
-        print(self.question)
         self.tf_title = TextField(
             label=await self.client.session.gtv(key='title'),
             value=self.question['title'],
