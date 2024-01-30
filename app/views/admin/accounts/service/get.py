@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
 from flet_core import Row
 
 from app.controls.button import FilledButton
@@ -30,7 +31,6 @@ class AccountServiceView(AdminBaseView):
         self.account_service_id = account_service_id
 
     async def build(self):
-        print(self.account_service_id)
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='admin_account_service_get_view_title'),
             main_section_controls=[
@@ -64,8 +64,8 @@ class AccountServiceView(AdminBaseView):
         await self.client.change_view(view=AccountTrainingListView(account_service_id=self.account_service_id))
 
     async def meal_view(self, _):
-        from app.views.admin.accounts.service.meal import AccountMealListView
-        await self.client.change_view(view=AccountMealListView(account_service_id=self.account_service_id))
+        from app.views.admin.accounts.service.meal import AccountMealListAllView
+        await self.client.change_view(view=AccountMealListAllView(account_service_id=self.account_service_id))
 
     async def questionnaire_view(self, _):
         from app.views.admin.accounts.service.questionnaire import AccountQuestionnaireGetView

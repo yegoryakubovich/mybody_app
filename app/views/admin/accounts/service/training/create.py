@@ -15,7 +15,6 @@
 #
 
 
-from flet_core.dropdown import Option
 from mybody_api_client.utils.base_section import ApiException
 
 from app.controls.button import FilledButton
@@ -36,19 +35,6 @@ class AccountTrainingCreateView(AdminBaseView):
         self.account_service_id = account_service_id
 
     async def build(self):
-        await self.set_type(loading=True)
-        self.articles = await self.client.session.api.client.article.get_list()
-        await self.set_type(loading=False)
-        article_options = [
-            Option(
-                text=article['name_text'],
-                key=article['id']
-            ) for article in self.articles
-        ]
-        self.dd_articles = Dropdown(
-            label=await self.client.session.gtv(key='article'),
-            options=article_options,
-        )
         self.tf_date = TextField(
             label=await self.client.session.gtv(key='date'),
         )
@@ -56,7 +42,6 @@ class AccountTrainingCreateView(AdminBaseView):
             title=await self.client.session.gtv(key='admin_account_training_create_view_title'),
             main_section_controls=[
                 self.tf_date,
-                self.dd_articles,
                 FilledButton(
                     content=Text(
                         value=await self.client.session.gtv(key='create'),

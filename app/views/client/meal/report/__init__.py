@@ -15,5 +15,4 @@
 #
 
 
-from .meal import MealView
-from .report import MealReportView
+from .create import MealReportView

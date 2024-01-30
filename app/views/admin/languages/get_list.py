@@ -15,7 +15,7 @@
 #
 
 
-import functools
+from functools import partial
 
 from flet_core import Text, ScrollMode
 
@@ -48,7 +48,7 @@ class LanguageListView(AdminBaseView):
                             font_family=Fonts.SEMIBOLD,
                         ),
                     ],
-                    on_click=functools.partial(self.language_view, language['id_str']),
+                    on_click=partial(self.language_view, language['id_str']),
                 )
                 for language in self.languages
             ],

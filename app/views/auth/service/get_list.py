@@ -15,7 +15,7 @@
 #
 
 
-import functools
+from functools import partial
 
 from flet_core import ScrollMode
 
@@ -51,7 +51,7 @@ class ServiceListView(ClientBaseView):
                             font_family=Fonts.SEMIBOLD,
                         ),
                     ],
-                    on_click=functools.partial(self.service_view, service['id_str']),
+                    on_click=partial(self.service_view, service['id_str']),
                 )
                     for service in self.services]
             ]

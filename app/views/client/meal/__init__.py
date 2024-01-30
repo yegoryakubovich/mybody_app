@@ -15,7 +15,5 @@
 #
 
 
-from .create import AccountMealCreateView
-from .get import AccountMealView
-from .get_list import AccountMealListView
-from .get_list_all import AccountMealListAllView
+from .get import MealView
+from .get_week import MealWeekView

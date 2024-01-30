@@ -15,7 +15,7 @@
 #
 
 
-import functools
+from functools import partial
 
 from flet_core import Row, Column, ScrollMode
 from mybody_api_client.utils.base_section import ApiException
@@ -109,7 +109,7 @@ class TextView(AdminBaseView):
                                     font_family=Fonts.MEDIUM,
                                 ),
                             ],
-                            on_click=functools.partial(self.translation_view, language),
+                            on_click=partial(self.translation_view, language),
                         )
                         for language in self.text['translations']
                     ],

@@ -15,6 +15,4 @@
 #
 
 
-from app.views.admin.trainings.create import CreateTrainingView
-from app.views.admin.trainings.get import TrainingView
-from app.views.admin.trainings.get_list import TrainingListView
+from .get import TrainingView

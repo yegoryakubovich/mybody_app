@@ -52,7 +52,14 @@ class View(BaseView):
             ),
         )
 
-    async def get_title(self, title: str, go_back_button=True, on_create_click=None, back_with_restart=False):
+    async def get_title(
+            self,
+            title: str,
+            go_back_button=True,
+            on_create_click=None,
+            on_create_duplicate_click=None,
+            back_with_restart=False
+    ):
 
         async def go_back(_):
             await self.client.change_view(go_back=True, with_restart=back_with_restart)
@@ -106,6 +113,33 @@ class View(BaseView):
                     bgcolor='#008F12',
                     on_click=on_create_click,
                 ),
+            )
+
+        if on_create_duplicate_click:
+            right_controls.append(
+                Container(
+                    content=Row(
+                        controls=[
+                            Image(
+                                src=Icons.CREATE,
+                                height=10,
+                                color='#FFFFFF',
+                            ),
+                            Text(
+                                value='create_duplicate',
+                                size=13,
+                                font_family=Fonts.SEMIBOLD,
+                                color='#FFFFFF',
+                            ),
+                        ],
+                        spacing=4,
+                    ),
+                    padding=7,
+                    border_radius=24,
+                    bgcolor='#008F12',
+                    on_click=on_create_duplicate_click,
+                ),
+
             )
 
         return Row(

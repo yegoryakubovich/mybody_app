@@ -15,7 +15,7 @@
 #
 
 
-import functools
+from functools import partial
 
 from flet_core import Text, ScrollMode
 
@@ -48,7 +48,7 @@ class CurrencyListView(AdminBaseView):
                             font_family=Fonts.SEMIBOLD,
                         ),
                     ],
-                    on_click=functools.partial(self.currency_view, currency['id_str']),
+                    on_click=partial(self.currency_view, currency['id_str']),
                 )
                 for currency in self.currencies
             ],

@@ -15,7 +15,7 @@
 #
 
 
-import functools
+from functools import partial
 import json
 
 from flet_core import PopupMenuButton, PopupMenuItem, ScrollMode, Row, IconButton, icons, \
@@ -57,7 +57,7 @@ class ServiceCreateView(AdminBaseView):
                         tf,
                         IconButton(
                             icon=icons.DELETE,
-                            on_click=functools.partial(self.remove_textfield, tf)
+                            on_click=partial(self.remove_textfield, tf)
                         ),
                     ]
                 )
@@ -69,7 +69,7 @@ class ServiceCreateView(AdminBaseView):
                         key_tf,
                         IconButton(
                             icon=icons.DELETE,
-                            on_click=functools.partial(self.remove_textfield, tf)
+                            on_click=partial(self.remove_textfield, tf)
                         ),
                     ]
                 )
@@ -114,7 +114,7 @@ class ServiceCreateView(AdminBaseView):
                         ] + (
                             [IconButton(
                                 icon=icons.DELETE,
-                                on_click=functools.partial(self.remove_dropdown_field, dropdown),
+                                on_click=partial(self.remove_dropdown_field, dropdown),
                                 )] if len(self.dropdown_values[-1]) > 1 else []
                             ),
                 ) for dropdown in self.dropdown_values[-1]]
@@ -124,13 +124,13 @@ class ServiceCreateView(AdminBaseView):
                     controls=[
                         PopupMenuButton(
                             items=[
-                                PopupMenuItem(text='title', on_click=functools.partial(
+                                PopupMenuItem(text='title', on_click=partial(
                                     self.set_question_type, 'title')),
-                                PopupMenuItem(text='str', on_click=functools.partial(
+                                PopupMenuItem(text='str', on_click=partial(
                                     self.set_question_type, 'str')),
-                                PopupMenuItem(text='int', on_click=functools.partial(
+                                PopupMenuItem(text='int', on_click=partial(
                                     self.set_question_type, 'int')),
-                                PopupMenuItem(text='dropdown', on_click=functools.partial(
+                                PopupMenuItem(text='dropdown', on_click=partial(
                                     self.set_question_type, 'dropdown')),
                             ],
                         ),

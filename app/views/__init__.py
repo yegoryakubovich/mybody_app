@@ -19,9 +19,7 @@ from .admin import AdminView
 from .admin.articles import ArticleCreateView
 from .auth import InitView
 from .main import MainView
-from app.views.main.meal.meal import MealView
-from app.views.main.training.training import TrainingView
-
+from app.views.client.meal import MealView
 
 views = [
     InitView,

@@ -15,7 +15,7 @@
 #
 
 
-import functools
+from functools import partial
 
 from flet_core import Row, ScrollMode
 from flet_core.dropdown import Option, Dropdown
@@ -130,7 +130,7 @@ class AccountMealView(AdminBaseView):
             ],
             sections=[
                 Section(
-                    title=await self.client.session.gtv(key='meals'),
+                    title=await self.client.session.gtv(key='products'),
                     on_create_click=self.create_meal_product,
                     controls=[
                         Card(
@@ -141,7 +141,7 @@ class AccountMealView(AdminBaseView):
                                     font_family=Fonts.SEMIBOLD,
                                 ),
                             ],
-                            on_click=functools.partial(
+                            on_click=partial(
                                 self.product_view, product
                             ),
                         )
@@ -182,6 +182,7 @@ class AccountMealView(AdminBaseView):
         for field, check_int in fields:
             if not await Error.check_field(self, field, check_int):
                 return
+            await self.set_type(loading=True)
         try:
             await self.client.session.api.admin.meal.update(
                 id_=self.meal_id,

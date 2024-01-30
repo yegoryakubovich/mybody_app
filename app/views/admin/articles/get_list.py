@@ -15,7 +15,7 @@
 #
 
 
-import functools
+from functools import partial
 
 from flet_core import Text, ScrollMode
 
@@ -48,7 +48,7 @@ class ArticleListView(AdminBaseView):
                             font_family=Fonts.SEMIBOLD,
                         ),
                     ],
-                    on_click=functools.partial(self.article_view, article['id']),
+                    on_click=partial(self.article_view, article['id']),
                 )
                 for article in self.articles
             ],

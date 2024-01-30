@@ -32,7 +32,6 @@ from .roles import RoleListView
 from .services import ServiceListView
 from .texts.get_list import TextListView
 from .timezones.get_list import TimezoneListView
-from .trainings.get_list import TrainingListView
 from ...controls.button import ListItemButton
 from ...utils import Icons
 

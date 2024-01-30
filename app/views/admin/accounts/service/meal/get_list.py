@@ -15,7 +15,7 @@
 #
 
 
-import functools
+from functools import partial
 
 from flet_core import ScrollMode
 
@@ -31,39 +31,34 @@ class AccountMealListView(AdminBaseView):
     route = '/admin/account/meals/list/get'
     meals: list[dict]
     role: list
-    date: str = None
 
-    def __init__(self, account_service_id):
+    def __init__(self, account_service_id, meal_date):
         super().__init__()
+        self.meal_date = meal_date
         self.account_service_id = account_service_id
 
     async def build(self):
         await self.set_type(loading=True)
         self.meals = await self.client.session.api.admin.meal.get_list(
             account_service_id=self.account_service_id,
-            date=self.date,
+            date=self.meal_date,
         )
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='admin_account_meal_get_list_view_title'),
+            title=self.meal_date,
             on_create_click=self.create_meal,
             main_section_controls=[
                 Card(
                     controls=[
                         Text(
-                            value=meal['date'],
+                            value=await self.client.session.gtv(key=meal['type']),
                             size=18,
                             font_family=Fonts.SEMIBOLD,
                         ),
-                        Text(
-                            value=await self.client.session.gtv(key=meal['type']),
-                            size=10,
-                            font_family=Fonts.MEDIUM,
-                        ),
                     ],
-                    on_click=functools.partial(self.meal_view, meal['id']),
+                    on_click=partial(self.meal_view, meal['id']),
                 )
                 for meal in self.meals
             ],
@@ -76,5 +71,6 @@ class AccountMealListView(AdminBaseView):
         await self.client.change_view(
             view=AccountMealCreateView(
                 account_service_id=self.account_service_id,
+                meal_date=self.meal_date,
             ),
         )

@@ -15,7 +15,7 @@
 #
 
 
-import functools
+from functools import partial
 
 from flet_core import ScrollMode
 
@@ -62,7 +62,7 @@ class AccountRoleListView(AdminBaseView):
                             font_family=Fonts.SEMIBOLD,
                         ),
                     ],
-                    on_click=functools.partial(self.role_view, role),
+                    on_click=partial(self.role_view, role),
                 )
                 for role in self.role
             ],

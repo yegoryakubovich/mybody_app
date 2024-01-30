@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import functools
+from functools import partial
 
 from flet_core import Row, ScrollMode, PopupMenuButton, PopupMenuItem, IconButton, icons
 
@@ -75,7 +75,7 @@ class ServiceQuestionView(AdminBaseView):
                                 ),
                                 IconButton(
                                     icon=icons.DELETE,
-                                    on_click=functools.partial(self.remove_textfield, question)
+                                    on_click=partial(self.remove_textfield, question)
                                 ),
                             ],
                         )
@@ -86,7 +86,7 @@ class ServiceQuestionView(AdminBaseView):
                                      tf,
                                      IconButton(
                                          icon=icons.DELETE,
-                                         on_click=functools.partial(self.remove_textfield, tf)
+                                         on_click=partial(self.remove_textfield, tf)
                                      ),
                                  ],
                              )
@@ -102,7 +102,7 @@ class ServiceQuestionView(AdminBaseView):
                                           ] + (
                                               [IconButton(
                                                   icon=icons.DELETE,
-                                                  on_click=functools.partial(self.remove_dropdown_field, dropdown),
+                                                  on_click=partial(self.remove_dropdown_field, dropdown),
                                               )] if len(self.dropdown_values[-1]) > 1 else []
                                           ),
                              ) for dropdown in self.dropdown_values[-1]]
@@ -112,13 +112,13 @@ class ServiceQuestionView(AdminBaseView):
                                  controls=[
                                      PopupMenuButton(
                                          items=[
-                                             PopupMenuItem(text='title', on_click=functools.partial(
+                                             PopupMenuItem(text='title', on_click=partial(
                                                  self.set_question_type, 'title')),
-                                             PopupMenuItem(text='str', on_click=functools.partial(
+                                             PopupMenuItem(text='str', on_click=partial(
                                                  self.set_question_type, 'str')),
-                                             PopupMenuItem(text='int', on_click=functools.partial(
+                                             PopupMenuItem(text='int', on_click=partial(
                                                  self.set_question_type, 'int')),
-                                             PopupMenuItem(text='dropdown', on_click=functools.partial(
+                                             PopupMenuItem(text='dropdown', on_click=partial(
                                                  self.set_question_type, 'dropdown')),
                                          ],
                                      ),

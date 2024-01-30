@@ -15,7 +15,7 @@
 #
 
 
-import functools
+from functools import partial
 
 from flet_core import Row, ScrollMode
 
@@ -36,7 +36,7 @@ class ProductListView(AdminBaseView):
     async def build(self):
         await self.set_type(loading=True)
         self.products = await self.client.session.api.client.product.get_list(
-            type_=self.nutrient_type or None,
+            type_=self.nutrient_type,
         )
         await self.set_type(loading=False)
 
@@ -82,7 +82,7 @@ class ProductListView(AdminBaseView):
                             font_family=Fonts.SEMIBOLD,
                         ),
                     ],
-                    on_click=functools.partial(self.product_view, product['id']),
+                    on_click=partial(self.product_view, product['id']),
                 )
                 for product in self.products
             ],

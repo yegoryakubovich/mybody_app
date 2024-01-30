@@ -13,17 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-
+from collections import defaultdict
 from typing import Any
 
-from flet_core import Column, Container, Image, Row, ScrollMode, Text, padding, colors
+from flet_core import Column, Container, Image, Row, ScrollMode, Text, padding
 
 from app.controls.button import FilledButton
 from app.controls.button.product_chip import ProductChipButton
-from app.controls.layout import View
+from app.controls.layout import ClientBaseView
 from app.utils import Fonts, Icons
-from .report import MealReportView
 
 
 class Meal:
@@ -50,45 +48,59 @@ class Section:
         self.meals = meals
 
 
-class MealView(View):
-    async def go_back(self, _):
-        await self.client.change_view(go_back=True)
+class MealView(ClientBaseView):
+    meal: dict
+    products: list
 
-    async def go_meal_report(self, _):
-        await self.client.change_view(view=MealReportView())
+    def __init__(self, meal_id):
+        super().__init__()
+        self.meal_id = meal_id
 
     async def build(self):
-        self.scroll = ScrollMode.ALWAYS
+        self.meal = await self.client.session.api.client.meal.get(
+            id_=self.meal_id,
+        )
+        self.products = []
+        for i, product in enumerate(self.meal['products']):
+            product_info = await self.client.session.api.client.product.get(id_=product['product'])
+            # Находим соответствующий продукт в self.meal['products']
+            meal_product = self.meal['products'][i]
+            if meal_product is not None:
+                product_info['meal_product'] = meal_product
+            self.products.append(product_info)
 
-        products = ['Rise', 'Buckwheat', 'Oatmeal', 'Barley']  # FIXME
+        products_by_type = defaultdict(list)
+        for product in self.products:
+            meal = Meal(
+                name=await self.client.session.gtv(key=product['name_text']),
+                weight=product['meal_product']['value'],
+                on_click=None,  # FIXME
+                is_active=False,
+            )
+            products_by_type[product['type']].append(meal)
 
         sections_list = [
             {
                 'name': await self.client.session.gtv(key='carbohydrates'),
                 'icon': Icons.CARBOHYDRATES,
+                'type': 'carbohydrates',
             },
             {
                 'name': await self.client.session.gtv(key='proteins'),
                 'icon': Icons.PROTEIN,
+                'type': 'proteins',
             },
             {
                 'name': await self.client.session.gtv(key='fats'),
                 'icon': Icons.FATS,
+                'type': 'fats',
             },
         ]
-
         sections = [
             Section(
                 name=section['name'],
                 icon=section['icon'],
-                meals=[
-                    Meal(
-                        name=product,
-                        weight='120',
-                        on_click=None,  # FIXME
-                        is_active=False,
-                    ) for product in products
-                ],
+                meals=products_by_type[section['type']],
             ) for section in sections_list
         ]
         sections_controls = [
@@ -104,7 +116,6 @@ class MealView(View):
                                                 value=section.name,
                                                 size=25,
                                                 font_family=Fonts.BOLD,
-                                                color='#000000',  # FIXME
                                             ),
                                             Image(
                                                 src=section.icon,
@@ -118,7 +129,7 @@ class MealView(View):
                                             ProductChipButton(
                                                 text=f'{meal.name} '
                                                      f'{meal.weight}'
-                                                     f'{await self.client.session.gtv(key="g")}',
+                                                     f' {await self.client.session.gtv(key="gr")}',
                                                 on_click=None,
                                             )
                                             for meal in section.meals
@@ -136,65 +147,32 @@ class MealView(View):
             )
         ]
 
-        self.controls = self.controls = [
-            await self.get_header(),
-            Container(
-                content=Column(
-                    controls=[
-                        Container(
-                            Row(
-                                controls=[
-                                    Container(
-                                        Image(
-                                            src=Icons.BACK,
-                                            color=colors.TERTIARY,  # FIXME
-                                            height=20,
-                                        ),
-                                        on_click=self.go_back,  # FIXME
-                                    ),
-                                    Text(
-                                        value=await self.client.session.gtv(key='Mealtime'),  # FIXME
-                                        size=30,
-                                        font_family=Fonts.BOLD,
-                                        color='#000000',  # FIXME
-                                    ),
-                                ],
-                            ),
-                            padding=padding.only(bottom=15)
-                        ),
-                        Container(
-                            Text(
-                                value=await self.client.session.gtv(key='Dont_Forget_To_Make_a_Report'),  # FIXME
-                                size=18,
-                                color='#000000',  # FIXME
-                                font_family=Fonts.REGULAR,
-                            ),
-                            padding=padding.only(bottom=15),
-                        ),
-                    ] + sections_controls + [
-                        Container(
-                            Text(
-                                value=await self.client.session.gtv(key='Indicated_Finish_Weight'),  # FIXME
-                                size=18,
-                                color='#000000',  # FIXME
-                                font_family=Fonts.REGULAR,
-                            ),
-                            padding=padding.only(bottom=15),  # FIXME
-                        ),
-                        Container(
-                            FilledButton(
-                                content=Text(
-                                    value=await self.client.session.gtv(key='Make_a_Report'),
-                                    size=14,
-                                    color='#ffffff',  # FIXME
-                                    font_family=Fonts.REGULAR,
-                                ),
-                                on_click=self.go_meal_report,
-                            ),
-                        )
-                    ],
-                    spacing=0,
+        self.scroll = ScrollMode.AUTO
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key=self.meal['type']),
+            main_section_controls=[
+                Text(
+                    value=await self.client.session.gtv(key='client_meal_get_guide_text_info'),
+                    size=18,
+                    font_family=Fonts.REGULAR,
                 ),
-                padding=15,
-            )
-        ]
+            ] + sections_controls + [
+                Text(
+                    value=await self.client.session.gtv(key='client_meal_get_second_text_info'),
+                    size=18,
+                    font_family=Fonts.REGULAR,
+                ),
+                FilledButton(
+                    content=Text(
+                        value=await self.client.session.gtv(key='create_report'),
+                        size=14,
+                        font_family=Fonts.REGULAR,
+                    ),
+                    on_click=self.go_meal_report,
+                ),
+            ],
+        )
+
+    async def go_meal_report(self, _):
+        from app.views.client.meal.report.create import MealReportView
+        await self.client.change_view(view=MealReportView())

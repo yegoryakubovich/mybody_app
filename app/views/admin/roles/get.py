@@ -14,7 +14,7 @@
 # limitations under the License.
 #
 
-import functools
+from functools import partial
 
 from flet_core import ScrollMode
 
@@ -70,7 +70,7 @@ class RoleView(AdminBaseView):
                                     font_family=Fonts.REGULAR,
                                 ),
                             ],
-                            on_click=functools.partial(self.permission_view, permission['id']),
+                            on_click=partial(self.permission_view, permission['id']),
                         )
                         for permission in self.permissions
                     ],

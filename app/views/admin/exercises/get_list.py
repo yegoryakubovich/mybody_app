@@ -15,7 +15,7 @@
 #
 
 
-import functools
+from functools import partial
 
 from flet_core import Text, ScrollMode
 
@@ -53,7 +53,7 @@ class ExerciseListView(AdminBaseView):
                             font_family=Fonts.MEDIUM,
                         ),
                     ],
-                    on_click=functools.partial(self.exercise_view, exercise['id']),
+                    on_click=partial(self.exercise_view, exercise['id']),
                 )
                 for exercise in self.exercises
             ],

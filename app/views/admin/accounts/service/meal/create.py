@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+
 from flet_core import ScrollMode
 from flet_core.dropdown import Option
 from mybody_api_client.utils.base_section import ApiException
@@ -32,8 +34,9 @@ class AccountMealCreateView(AdminBaseView):
     tf_proteins = TextField
     tf_carbohydrates = TextField
 
-    def __init__(self, account_service_id):
+    def __init__(self, account_service_id, meal_date=None):
         super().__init__()
+        self.meal_date = meal_date
         self.account_service_id = account_service_id
 
     async def build(self):
@@ -57,6 +60,7 @@ class AccountMealCreateView(AdminBaseView):
         )
         self.tf_date = TextField(
             label=await self.client.session.gtv(key='date'),
+            value=self.meal_date or None,
         )
         self.tf_fats = TextField(
             label=await self.client.session.gtv(key='fats'),

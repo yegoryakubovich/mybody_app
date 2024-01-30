@@ -15,7 +15,7 @@
 #
 
 
-import functools
+from functools import partial
 
 from flet_core import Row, Text, ScrollMode
 
@@ -73,7 +73,7 @@ class AccountListView(AdminBaseView):
                             ],
                         ),
                     ],
-                    on_click=functools.partial(self.account_view, account['id']),
+                    on_click=partial(self.account_view, account['id']),
                 )
                 for account in self.accounts
             ] + [

@@ -15,7 +15,7 @@
 #
 
 
-import functools
+from functools import partial
 
 from flet_core import Text, ScrollMode
 
@@ -48,7 +48,7 @@ class PermissionListView(AdminBaseView):
                             font_family=Fonts.SEMIBOLD,
                         ),
                     ],
-                    on_click=functools.partial(self.permission_view, permission['id_str']),
+                    on_click=partial(self.permission_view, permission['id_str']),
                 )
                 for permission in self.permissions
 

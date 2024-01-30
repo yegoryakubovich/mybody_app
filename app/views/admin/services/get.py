@@ -15,7 +15,7 @@
 #
 
 
-import functools
+from functools import partial
 import json
 
 from flet_core import Row, ScrollMode
@@ -86,7 +86,7 @@ class ServiceView(AdminBaseView):
                                     font_family=Fonts.REGULAR,
                                 ),
                             ],
-                            on_click=functools.partial(self.question_view, question),
+                            on_click=partial(self.question_view, question),
                         )
                         for question in questions
                     ],

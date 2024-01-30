@@ -15,9 +15,9 @@
 #
 
 
-from collections import defaultdict
-from datetime import datetime, timedelta
 from functools import partial
+from collections import defaultdict
+from datetime import timedelta, datetime
 
 from flet_core import ScrollMode
 from mybody_api_client.utils.base_section import ApiException
@@ -26,13 +26,13 @@ from app.controls.information import Text
 from app.controls.information.card import Card
 from app.controls.layout import AdminBaseView
 from app.utils import Fonts
-from app.views.admin.accounts.service.training.get import AccountTrainingView
-from app.views.admin.accounts.service.training.create import AccountTrainingCreateView
+from app.views.admin.accounts.service.meal import AccountMealListView
+from app.views.admin.accounts.service.meal.create import AccountMealCreateView
 
 
-class AccountTrainingListView(AdminBaseView):
-    route = '/admin/account/training/list/get'
-    trainings: list[dict]
+class AccountMealListAllView(AdminBaseView):
+    route = '/admin/account/meals/list/get'
+    meals: list[dict]
     role: list
     duplicate: list[dict]
     date: str = None
@@ -43,68 +43,74 @@ class AccountTrainingListView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.trainings = await self.client.session.api.admin.training.get_list(
+        self.meals = await self.client.session.api.admin.meal.get_list(
             account_service_id=self.account_service_id,
             date=self.date,
         )
-        training_by_date = defaultdict(list)
-        for training in self. trainings:
-            training_by_date[training['date']].append(training)
+        meals_by_date = defaultdict(list)
+        for meal in self.meals:
+            meals_by_date[meal['date']].append(meal)
 
-        sorted_dates = sorted(training_by_date.keys(), reverse=True)
-        self.duplicate = training_by_date[sorted_dates[0]]
+        sorted_dates = sorted(meals_by_date.keys(), reverse=True)
+        self.duplicate = meals_by_date[sorted_dates[0]]
         await self.set_type(loading=False)
-        
+
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='admin_account_training_get_list_view_title'),
-            on_create_click=self.create_training,
-            on_create_duplicate_click=self.create_duplicate_training,
+            title=await self.client.session.gtv(key='admin_account_meal_get_list_view_title'),
+            on_create_click=self.create_meal,
+            on_create_duplicate_click=self.create_duplicate_meal,
             main_section_controls=[
                 Card(
                     controls=[
                         Text(
-                            value=training['date'],
+                            value=date,
                             size=18,
                             font_family=Fonts.SEMIBOLD,
                         ),
                     ],
-                    on_click=partial(self.training_view, training['id']),
+                    on_click=partial(self.meal_view, date),
                 )
-                for training in sorted(self.trainings, key=lambda x: x['date'], reverse=True)
+                for date in sorted_dates
             ],
         )
 
-    async def training_view(self, training, _):
-        await self.client.change_view(view=AccountTrainingView(training_id=training))
-
-    async def create_training(self, _):
+    async def meal_view(self, meal_date, _):
         await self.client.change_view(
-            view=AccountTrainingCreateView(
+            view=AccountMealListView(
+                meal_date=meal_date,
                 account_service_id=self.account_service_id,
             ),
         )
-    
-    async def create_duplicate_training(self, _):
+
+    async def create_meal(self, _):
+        await self.client.change_view(
+            view=AccountMealCreateView(
+                account_service_id=self.account_service_id,
+            ),
+        )
+
+    async def create_duplicate_meal(self, _):
         await self.set_type(loading=True)
         try:
-            for training in self.duplicate:
-                original_date = datetime.strptime(training['date'], '%Y-%m-%d')
+            for meal in self.duplicate:
+                original_date = datetime.strptime(meal['date'], '%Y-%m-%d')
                 new_date = original_date + timedelta(days=1)
                 new_date_str = new_date.strftime('%Y-%m-%d')
 
-                training_id = await self.client.session.api.admin.training.create(
+                meal_response = await self.client.session.api.admin.meal.create(
                     account_service_id=self.account_service_id,
                     date=new_date_str,
-                    article_id=0,
+                    type_=meal['type'],
+                    fats=meal['fats'],
+                    proteins=meal['proteins'],
+                    carbohydrates=meal['carbohydrates'],
                 )
-                for exercise in training['exercises']:
-                    await self.client.session.api.admin.training.create_exercise(
-                        training_id=training_id,
-                        exercise_id=exercise['exercise'],
-                        priority=exercise['priority'],
-                        value=exercise['value'],
-                        rest=exercise['rest'],
+                for product in meal['products']:
+                    await self.client.session.api.admin.meal.create_product(
+                        meal_id=meal_response,
+                        product_id=product['product'],
+                        value=product['value'],
                     )
             await self.build()
             await self.update_async()

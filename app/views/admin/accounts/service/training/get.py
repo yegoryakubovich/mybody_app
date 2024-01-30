@@ -15,10 +15,10 @@
 #
 
 
-import functools
+from functools import partial
 
 from flet_core import Row
-from flet_core.dropdown import Option, Dropdown
+from flet_core.dropdown import Dropdown
 from mybody_api_client.utils.base_section import ApiException
 
 from app.controls.button import FilledButton
@@ -60,19 +60,7 @@ class AccountTrainingView(AdminBaseView):
                 training_info['training_exercise'] = training_exercise
             self.exercise.append(training_info)
 
-        self.articles = await self.client.session.api.client.article.get_list()
         await self.set_type(loading=False)
-        article_options = [
-            Option(
-                text=article['name_text'],
-                key=article['id']
-            ) for article in self.articles
-        ]
-        self.dd_articles = Dropdown(
-            label=await self.client.session.gtv(key='article'),
-            value=self.training['article_id'],
-            options=article_options,
-        )
         self.tf_date = TextField(
             label=await self.client.session.gtv(key='date'),
             value=self.training['date'],
@@ -87,7 +75,6 @@ class AccountTrainingView(AdminBaseView):
             title=self.training['date'],
             main_section_controls=[
                 self.tf_date,
-                self.dd_articles,
                 self.snack_bar,
                 Row(
                     controls=[
@@ -120,12 +107,12 @@ class AccountTrainingView(AdminBaseView):
                         Card(
                             controls=[
                                 Text(
-                                    value=exercise['name_text'],
+                                    value=await self.client.session.gtv(key=exercise['name_text']),
                                     size=18,
                                     font_family=Fonts.SEMIBOLD,
                                 ),
                             ],
-                            on_click=functools.partial(self.exercise_view, exercise),
+                            on_click=partial(self.exercise_view, exercise),
                         )
                         for exercise in self.exercise
                     ],

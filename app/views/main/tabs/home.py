@@ -13,7 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import functools
+
+
+from functools import partial
 from datetime import datetime
 from typing import Any
 
@@ -22,23 +24,22 @@ from flet_core import Column, Row, Container, MainAxisAlignment, Image
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.utils import Fonts, Icons
-from app.views.main.meal.meal import MealView
+from app.views.client.meal import MealView
+from app.views.client.meal.get_week import MealWeekView
 from app.views.main.tabs.base import BaseTab
-from app.views.main.training.training import TrainingView
+from app.views.client.training.get import TrainingView
 
 
 class Meal:
     name: str
     nutrients: list[int]
-    start_time: str
-    end_time: str
+    meal_report_id: int = None
     on_click: Any
 
-    def __init__(self, name: str, nutrients: list[int], end_time: str, start_time: str, on_click: Any):
+    def __init__(self, name: str, nutrients: list[int], on_click: Any, meal_report_id: int = None):
         self.name = name
         self.nutrition = nutrients
-        self.start_time = start_time
-        self.end_time = end_time
+        self.meal_report_id = meal_report_id
         self.on_click = on_click
 
 
@@ -52,8 +53,9 @@ class Training:
 
 
 class MealButton(Container):
-    def __init__(self, name, nutrients: list[int], start_time, end_time, on_click):
+    def __init__(self, name: str, nutrients: list[int], on_click: Any, meal_report_id: int = None, prev_meal_had_report: bool = False):
         super().__init__()
+        self.meal_report_id = meal_report_id
         self.on_click = on_click
         self.height = 50
         self.border_radius = 10
@@ -89,22 +91,18 @@ class MealButton(Container):
             expand=True,
             alignment=MainAxisAlignment.SPACE_BETWEEN,
         )
-        self.update_color(start_time, end_time)
+        self.update_color(meal_report_id, prev_meal_had_report)
 
-    def update_color(self, start_time, end_time):
-        now = datetime.now().time()
-        start_datetime = datetime.strptime(start_time, '%H:%M').time()
-        end_datetime = datetime.strptime(end_time, '%H:%M').time()
-
-        if start_datetime <= now <= end_datetime:
+    def update_color(self, meal_report_id, prev_meal_had_report):
+        if prev_meal_had_report:
+            color = '#000000'
+            bgcolor = '#005B0C'
+        elif not meal_report_id:
+            color = '#000000'
+            bgcolor = '#B3E5B9'
+        else:
             color = '#FFFFFF'
             bgcolor = '#008F12'
-        elif now > end_datetime:
-            color = '#000000'
-            bgcolor = '#A0EAA0'
-        else:
-            color = '#000000'
-            bgcolor = '#D2E9D2'
 
         self.bgcolor = bgcolor
         self.update_text_and_image_color(color)
@@ -123,30 +121,19 @@ class HomeTab(BaseTab):
     trainings: dict = None
     exercise: list[dict] = None
     training: dict = None
+    account_service_id: int
     date: str
 
     async def build(self):
         now = datetime.now()
         self.date = now.strftime('%Y-%m-%d')
-        account_service_id = self.client.session.account_service.id
-        self.meals = await self.client.session.api.admin.meal.get_list(
-            account_service_id=account_service_id,
+        self.account_service_id = self.client.session.account_service.id
+        self.meals = await self.client.session.api.client.meal.get_list(
+            account_service_id=self.account_service_id,
             date=self.date,
         )
-        meal_times = {
-            'meal_1': ('7:00', '10:00'),
-            'meal_2': ('10:00', '13:00'),
-            'meal_3': ('13:00', '16:00'),
-            'meal_4': ('16:00', '19:00'),
-            'meal_5': ('19:00', '20:00'),
-        }
-
-        for meal in self.meals:
-            if meal['type'] in meal_times:
-                meal['start_time'], meal['end_time'] = meal_times[meal['type']]
-
         self.trainings = await self.client.session.api.client.training.get_list(
-            account_service_id=account_service_id,
+            account_service_id=self.account_service_id,
             date=self.date,
         )
         self.exercise = []
@@ -169,9 +156,8 @@ class HomeTab(BaseTab):
             Meal(
                 name=await self.client.session.gtv(key=meal['type']),
                 nutrients=[meal['proteins'], meal['fats'], meal['carbohydrates']],
-                start_time=meal['start_time'],
-                end_time=meal['end_time'],
-                on_click=functools.partial(self.meal_view, meal['key']),
+                meal_report_id=meal['meal_report_id'],
+                on_click=partial(self.meal_view, meal['id']),
             ) for meal in self.meals
         ]
 
@@ -196,11 +182,11 @@ class HomeTab(BaseTab):
                             controls=[
                                 FilledButton(
                                     content=Text(
-                                        value=await self.client.session.gtv(key='main_tabs_home_view_current_meal'),
+                                        value=await self.client.session.gtv(key='meal_week'),
                                         size=16,
                                         font_family=Fonts.MEDIUM,
                                     ),
-                                    on_click=self.current_meal,
+                                    on_click=self.meal_week_view,
                                 ),
                                 FilledButton(
                                     content=Text(
@@ -231,8 +217,7 @@ class HomeTab(BaseTab):
                                     name=meal.name,
                                     nutrients=meal.nutrition,
                                     on_click=meal.on_click,
-                                    start_time=meal.start_time,
-                                    end_time=meal.end_time,
+                                    meal_report_id=meal.meal_report_id,
                                 ) for meal in meals
                             ],
                         ) or Text(
@@ -285,5 +270,8 @@ class HomeTab(BaseTab):
     async def support(self, _):
         pass
 
-    async def meal_view(self, _):
-        await self.client.change_view(view=MealView())
+    async def meal_week_view(self, _):
+        await self.client.change_view(view=MealWeekView(account_service_id=self.account_service_id))
+
+    async def meal_view(self, meal_id, _):
+        await self.client.change_view(view=MealView(meal_id=meal_id))
