@@ -17,11 +17,12 @@
 
 from functools import partial
 
-from flet_core import Row, ScrollMode
+from flet_core import Row, ScrollMode, ListTile
 
-from app.controls.button import ProductChipButton
+from app.controls.button import ProductChipButton, FilledButton
 from app.controls.information import Text
 from app.controls.information.card import Card
+from app.controls.information.searchbar import SearchBar
 from app.controls.layout import AdminBaseView
 from app.utils import Fonts
 from app.views.admin.products.create import ProductCreateView
@@ -32,6 +33,7 @@ class ProductListView(AdminBaseView):
     route = '/admin/product/list/get'
     products: list[dict]
     nutrient_type = None
+    anchor: SearchBar
 
     async def build(self):
         await self.set_type(loading=True)
@@ -39,12 +41,24 @@ class ProductListView(AdminBaseView):
             type_=self.nutrient_type,
         )
         await self.set_type(loading=False)
-
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='admin_product_get_list_view_title'),
             on_create_click=self.create_product,
             main_section_controls=[
+              SearchBar(
+                  bar_hint_text=await self.client.session.gtv(key='search'),
+                  controls=[
+                      ListTile(
+                          title=Text(
+                              value=await self.client.session.gtv(key=product['name_text']),
+                          ),
+                          data=product,
+                          on_click=self.handle_product_click
+                      )
+                      for product in self.products
+                  ],
+              ),
                 Row(
                     controls=[
                         ProductChipButton(
@@ -87,6 +101,9 @@ class ProductListView(AdminBaseView):
                 for product in self.products
             ],
          )
+
+    def handle_product_click(self, event):
+        self.text = event.control.data
 
     async def create_product(self, _):
         await self.client.change_view(view=ProductCreateView())

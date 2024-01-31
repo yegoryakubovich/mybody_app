@@ -15,9 +15,14 @@
 #
 
 
-from .text import Text
-from .card import Card
-from .bottomsheet import BottomSheet
-from .loading import Loading
-from .snackbar import SnackBar
+from flet_core import SearchBar as FletSearchBar, TextCapitalization, RoundedRectangleBorder
 
+
+class SearchBar(FletSearchBar):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.capitalization = TextCapitalization.WORDS
+        self.width = 80
+        self.height = 30
+        self.view_shape = RoundedRectangleBorder(radius=6)
+        

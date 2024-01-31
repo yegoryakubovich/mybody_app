@@ -15,7 +15,7 @@
 #
 
 
-from flet_core import Column, Row, Container, padding
+from flet_core import Column, Row, Container, padding, SearchBar, ListTile
 from mybody_api_client.utils.base_section import ApiException
 
 from app.controls.button import FilledButton
