@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+
 from mybody_api_client.utils.base_section import ApiException
 
 from app.controls.button import FilledButton
@@ -50,7 +52,7 @@ class PermissionCreateView(AdminBaseView):
          )
 
     async def create_permission(self, _):
-        fields = [(self.tf_name, 1, 32), (self.tf_id_str, 1, 16)]
+        fields = [(self.tf_id_str, 2, 32), (self.tf_name, 2, 1024)]
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
                 return

@@ -17,9 +17,9 @@
 
 from functools import partial
 
-from flet_core import Row, ScrollMode, ListTile
+from flet_core import Row, ScrollMode
 
-from app.controls.button import ProductChipButton, FilledButton
+from app.controls.button import ProductChipButton
 from app.controls.information import Text
 from app.controls.information.card import Card
 from app.controls.information.searchbar import SearchBar
@@ -46,19 +46,6 @@ class ProductListView(AdminBaseView):
             title=await self.client.session.gtv(key='admin_product_get_list_view_title'),
             on_create_click=self.create_product,
             main_section_controls=[
-              SearchBar(
-                  bar_hint_text=await self.client.session.gtv(key='search'),
-                  controls=[
-                      ListTile(
-                          title=Text(
-                              value=await self.client.session.gtv(key=product['name_text']),
-                          ),
-                          data=product,
-                          on_click=self.handle_product_click
-                      )
-                      for product in self.products
-                  ],
-              ),
                 Row(
                     controls=[
                         ProductChipButton(

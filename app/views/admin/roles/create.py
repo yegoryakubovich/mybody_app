@@ -48,7 +48,7 @@ class RoleCreateView(AdminBaseView):
 
     async def create_role(self, _):
         from app.views.admin.roles import RoleView
-        fields = [(self.tf_name, 1, 32)]
+        fields = [(self.tf_name, 2, 1024)]
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
                 return

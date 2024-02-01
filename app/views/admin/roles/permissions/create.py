@@ -26,7 +26,7 @@ from app.utils import Fonts
 
 
 class RolePermissionCreateView(AdminBaseView):
-    route = '/admin/role/permissions/create'
+    route = '/admin/role/permission/create'
     dd_permission: Dropdown
     permissions = dict
     role = dict
@@ -38,7 +38,7 @@ class RolePermissionCreateView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.role = await self.client.session.api.client.role.get(
+        self.role = await self.client.session.api.admin.role.get(
             id_=self.role_id
         )
         self.permissions = await self.client.session.api.client.permission.get_list()

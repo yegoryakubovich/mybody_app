@@ -15,6 +15,6 @@
 #
 
 
-from app.views.admin.permissions.create import PermissionCreateView
-from app.views.admin.permissions.get import PermissionView
-from app.views.admin.permissions.get_list import PermissionListView
+from .create import PermissionCreateView
+from .get import PermissionView
+from .get_list import PermissionListView

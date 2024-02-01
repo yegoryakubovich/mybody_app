@@ -15,6 +15,6 @@
 #
 
 
-from app.views.admin.currencies.create import CurrencyCreateView
-from app.views.admin.currencies.get import CurrencyView
-from app.views.admin.currencies.get_list import CurrencyListView
+from .get_list import CurrencyListView
+from .get import CurrencyView
+from .create import CurrencyCreateView

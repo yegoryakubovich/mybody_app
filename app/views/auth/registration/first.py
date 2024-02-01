@@ -34,7 +34,7 @@ class RegistrationFirstView(AuthView):
     async def change_view(self, _):
         check_username_error = await self.client.session.gtv(key='error_check_username')
 
-        fields = [(self.tf_username, 1, 32), (self.tf_password, 1, 32)]
+        fields = [(self.tf_username, 6, 32), (self.tf_password, 6, 32)]
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
                 return

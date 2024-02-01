@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+
 from mybody_api_client.utils.base_section import ApiException
 
 from app.controls.button import FilledButton
@@ -23,7 +25,7 @@ from app.utils import Error
 
 
 class TimezoneCreateView(AdminBaseView):
-    route = '/admin'
+    route = '/admin/timezone/create'
     tf_deviation: TextField
     tf_id_str: TextField
 
@@ -50,13 +52,10 @@ class TimezoneCreateView(AdminBaseView):
          )
 
     async def create_timezone(self, _):
-        fields = [(self.tf_id_str, 1, 16)]
-        for field, min_len, max_len in fields:
-            if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
+        fields = [(self.tf_id_str, 1, 16, False), (self.tf_deviation, 1, 16, True)]
+        for field, min_len, max_len, check_int in fields:
+            if not await Error.check_field(self, field, check_int=check_int, min_len=min_len, max_len=max_len):
                 return
-        if not self.tf_deviation.value.isdigit():
-            self.tf_deviation.error_text = await self.client.session.gtv(key='deviation_type')
-            await self.update_async()
         else:
             try:
                 await self.client.session.api.admin.timezone.create(

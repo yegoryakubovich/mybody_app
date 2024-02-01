@@ -20,7 +20,6 @@ from typing import List
 
 from flet_core import ScrollMode
 from flet_core.dropdown import Option
-from mybody_api_client.utils.base_section import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -28,7 +27,6 @@ from app.controls.input import TextField, Dropdown
 from app.controls.layout import ClientBaseView
 from app.controls.navigation.pagination import PaginationWidget
 from app.utils import Fonts, Error
-from app.views.auth.purchase.about import PurchaseFirstView
 
 
 class QuestionnaireView(ClientBaseView):
@@ -123,22 +121,19 @@ class QuestionnaireView(ClientBaseView):
         return True
 
     async def send_form(self, _):
+        from app import InitView
         if not await self.check_errors(self.tf_answers, 1, 1024):
             return
         answers = {tf.key.split('_')[0]: int(tf.value) if tf.key.split('_')[1] == 'int' else tf.value for tf in
                    self.tf_answers}
         answers.update({dd.key: dd.value for dd in self.dd_answers})
         print(answers)
-        try:
-            answers_json = json.dumps(answers, ensure_ascii=False)
-            await self.client.session.api.client.account.create_service(
-                service=self.services[0]['id_str'],
-                answers=answers_json,
-            )
-            await self.client.change_view(view=PurchaseFirstView())
-        except ApiException as e:
-            await self.set_type(loading=False)
-            return await self.client.session.error(error=e)
+        answers_json = json.dumps(answers, ensure_ascii=False)
+        await self.client.session.api.client.account.create_service(
+            service=self.services[0]['id_str'],
+            answers=answers_json,
+        )
+        await self.client.change_view(view=InitView())
 
     async def next_page(self, _):
         if not await self.check_errors(self.tf_answers, 1, 1024):

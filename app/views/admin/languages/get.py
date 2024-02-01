@@ -31,12 +31,13 @@ class LanguageView(AdminBaseView):
     async def build(self):
         await self.set_type(loading=True)
         self.language = await self.client.session.api.client.language.get(
-            id_str=self.language_id_str
+            id_str=self.language_id_str,
         )
+        print(self.language)
         await self.set_type(loading=False)
 
         self.controls = await self.get_controls(
-            title=self.language['name_text'],
+            title=self.language['name'],
             main_section_controls=[
                 FilledButton(
                     content=Text(

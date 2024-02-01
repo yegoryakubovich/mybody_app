@@ -21,7 +21,7 @@ from app.controls.layout import AdminBaseView
 
 
 class RolePermissionView(AdminBaseView):
-    route = '/admin/role/permissions/get'
+    route = '/admin/role/permission/get'
     permission = dict
 
     def __init__(self, permission_id):
@@ -30,7 +30,7 @@ class RolePermissionView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.permission = await self.client.session.api.client.role.get_permission(
+        self.permission = await self.client.session.api.admin.role.get_permission(
             id_=self.permission_id
         )
         await self.set_type(loading=False)

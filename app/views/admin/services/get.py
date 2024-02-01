@@ -108,9 +108,9 @@ class ServiceView(AdminBaseView):
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
                 return
-        await self.client.session.api.admin.country.update(
-            id_str=self.service_id_str,
-            name=self.tf_name.value,
-            questions=self.tf_questions.value,
-        )
-        await self.client.change_view(go_back=True)
+        # await self.client.session.api.admin.country.update(
+        #     id_str=self.service_id_str,
+        #     name=self.tf_name.value,
+        #     questions=self.tf_questions.value,
+        # )
+        # await self.client.change_view(go_back=True)

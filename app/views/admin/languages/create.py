@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+
 from mybody_api_client.utils.base_section import ApiException
 
 from app.controls.button import FilledButton
@@ -50,9 +52,11 @@ class LanguageCreateView(AdminBaseView):
          )
 
     async def create_language(self, _):
-        fields = [(self.tf_name, 1, 32), (self.tf_id_str, 1, 16)]
+        await self.set_type(loading=True)
+        fields = [(self.tf_id_str, 1, 16), (self.tf_name, 1, 32)]
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
+                await self.set_type(loading=False)
                 return
         try:
             await self.client.session.api.admin.language.create(
@@ -63,4 +67,3 @@ class LanguageCreateView(AdminBaseView):
         except ApiException as e:
             await self.set_type(loading=False)
             return await self.client.session.error(error=e)
-
