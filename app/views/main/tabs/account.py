@@ -24,7 +24,6 @@ from app.controls.button import ListItemButton
 from app.controls.information import Text
 from app.utils import Fonts, Icons
 from app.views.admin.admin import AdminView
-from app.views.auth.service.get_list import ServiceListView
 from app.views.main.tabs.base import BaseTab
 from config import settings
 

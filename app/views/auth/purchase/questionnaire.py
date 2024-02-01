@@ -20,34 +20,34 @@ from typing import List
 
 from flet_core import ScrollMode
 from flet_core.dropdown import Option
+from mybody_api_client.utils.base_section import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField, Dropdown
 from app.controls.layout import ClientBaseView
 from app.controls.navigation.pagination import PaginationWidget
-from app.utils import Fonts
+from app.utils import Fonts, Error
+from app.views.auth.purchase.about import PurchaseFirstView
 
 
-class ServiceCreateView(ClientBaseView):
-    service = dict[dict]
+class QuestionnaireView(ClientBaseView):
+    services = list[dict]
+    service = list[dict]
     page_account: int = 1
     total_pages: int = 1
     answers: dict = {}
     dd_answers: List[Dropdown] = []
     tf_answers: List[TextField] = []
-
-    def __init__(self, service_id_str):
-        super().__init__()
-        self.service_id_str = service_id_str
+    service_id_str: str
 
     async def build(self):
         await self.set_type(loading=True)
+        self.services = await self.client.session.api.client.service.get_list()
         self.service = await self.client.session.api.client.service.get(
-            id_=self.service_id_str,
+            id_=self.services[0]['id_str'],
         )
         await self.set_type(loading=False)
-
         self.scroll = ScrollMode.AUTO
 
         titles = json.loads(self.service['questions'])
@@ -79,16 +79,16 @@ class ServiceCreateView(ClientBaseView):
                 ]
                 dd_answer = Dropdown(
                     label=await self.client.session.gtv(key='answer'),
-                    on_change=self.save_answer(question['key'], question['type']),
-                    value=value_options[0],
+                    value=value_options[0].key,
                     options=value_options,
+                    key=question['key'],
                 )
                 self.dd_answers.append(dd_answer)
                 controls.append(dd_answer)
             else:
                 tf_answer = TextField(
                     label=await self.client.session.gtv(key='answer'),
-                    on_change=self.save_answer(question['key'], question['type']),
+                    key=f"{question['key']}_{question['type']}",
                 )
                 self.tf_answers.append(tf_answer)
                 controls.append(tf_answer)
@@ -114,31 +114,36 @@ class ServiceCreateView(ClientBaseView):
             ]
         )
 
-    def save_current_answers(self):
-        for dd_answer in self.dd_answers:
-            dd_answer.on_change(dd_answer.value)
-        for tf_answer in self.tf_answers:
-            tf_answer.on_change(tf_answer.value)
-
-    def save_answer(self, key, q_type):
-        def inner(value):
-            if q_type == 'int':
-                self.answers[key] = int(value)
-            else:
-                self.answers[key] = value
-        return inner
+    async def check_errors(self, field_list, min_len, max_len):
+        for field in field_list:
+            key, type_ = field.key.split('_')
+            check_int = (type_ == 'int')
+            if not await Error.check_field(self, field, check_int=check_int, min_len=min_len, max_len=max_len):
+                return False
+        return True
 
     async def send_form(self, _):
-        self.save_current_answers()
-        answers = json.dumps(self.answers, ensure_ascii=False)
-        await self.client.session.api.client.account.create_service(
-            service=self.service_id_str,
-            answers=answers,
-        )
+        if not await self.check_errors(self.tf_answers, 1, 1024):
+            return
+        answers = {tf.key.split('_')[0]: int(tf.value) if tf.key.split('_')[1] == 'int' else tf.value for tf in
+                   self.tf_answers}
+        answers.update({dd.key: dd.value for dd in self.dd_answers})
+        print(answers)
+        try:
+            answers_json = json.dumps(answers, ensure_ascii=False)
+            await self.client.session.api.client.account.create_service(
+                service=self.services[0]['id_str'],
+                answers=answers_json,
+            )
+            await self.client.change_view(view=PurchaseFirstView())
+        except ApiException as e:
+            await self.set_type(loading=False)
+            return await self.client.session.error(error=e)
 
     async def next_page(self, _):
+        if not await self.check_errors(self.tf_answers, 1, 1024):
+            return
         if self.page_account < self.total_pages:
-            self.save_current_answers()
             self.page_account += 1
             await self.build()
             await self.update_async()

@@ -20,6 +20,7 @@ import json
 
 from flet_core import PopupMenuButton, PopupMenuItem, ScrollMode, Row, IconButton, icons, \
     MainAxisAlignment
+from mybody_api_client.utils.base_section import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -229,9 +230,13 @@ class ServiceCreateView(AdminBaseView):
                 return
 
         questions = json.dumps(self.questions, ensure_ascii=False)
-        service_id_str = await self.client.session.api.admin.service.create(
-            id_str=self.tf_id_str.value,
-            name=self.tf_name.value,
-            questions=questions,
-        )
-        await self.client.change_view(view=ServiceView(service_id_str=service_id_str), delete_current=True)
+        try:
+            service_id_str = await self.client.session.api.admin.service.create(
+                id_str=self.tf_id_str.value,
+                name=self.tf_name.value,
+                questions=questions,
+            )
+            await self.client.change_view(view=ServiceView(service_id_str=service_id_str), delete_current=True)
+        except ApiException as e:
+            await self.set_type(loading=False)
+            return await self.client.session.error(error=e)

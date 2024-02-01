@@ -15,4 +15,4 @@
 #
 
 
-from .first import PurchaseFirstView
+from .questionnaire import QuestionnaireView

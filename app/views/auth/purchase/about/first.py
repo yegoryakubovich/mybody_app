@@ -15,6 +15,14 @@
 #
 
 
-from app.views.auth.service.create import ServiceCreateView
-from app.views.auth.service.get import ServiceView
-from app.views.auth.service.get_list import ServiceListView
+from app.controls.information import Text
+from app.controls.layout import View
+
+
+class PurchaseFirstView(View):
+    async def build(self):
+        self.controls = [
+            Text(
+                value='about',
+            ),
+        ]

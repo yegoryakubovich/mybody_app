@@ -24,6 +24,7 @@ from flet_core import Column, Row, Container, MainAxisAlignment, Image, Responsi
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.utils import Fonts, Icons
+from app.views.auth.purchase import QuestionnaireView
 from app.views.client.meal import MealView
 from app.views.client.meal.get_week import MealWeekView
 from app.views.client.training.get import TrainingView
@@ -277,7 +278,7 @@ class HomeTab(BaseTab):
         await self.client.change_view(view=TrainingView())
 
     async def support(self, _):
-        pass
+        await self.client.change_view(view=QuestionnaireView())
 
     async def meal_week_view(self, _):
         await self.client.change_view(view=MealWeekView(account_service_id=self.account_service_id))
