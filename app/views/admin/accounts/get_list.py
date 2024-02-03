@@ -43,10 +43,6 @@ class AccountListView(AdminBaseView):
         self.total_pages = response.pages
         await self.set_type(loading=False)
 
-        self.tf_search = TextField(
-            label=await self.client.session.gtv(key='search'),
-            on_change=self.search,
-        )
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='admin_account_get_list_view_title'),

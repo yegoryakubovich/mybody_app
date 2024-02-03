@@ -105,14 +105,12 @@ class AdminBaseView(View):
             main_section_controls: list,
             sections: list[Section] = None,
             on_create_click: Any = None,
-            on_create_duplicate_click: Any = None,
             back_with_restart: bool = True,
     ) -> list:
 
         title_control = await self.get_title(
             title=title,
             on_create_click=on_create_click,
-            on_create_duplicate_click=on_create_duplicate_click,
             back_with_restart=back_with_restart,
         )
 

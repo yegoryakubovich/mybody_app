@@ -57,7 +57,6 @@ class View(BaseView):
             title: str,
             go_back_button=True,
             on_create_click=None,
-            on_create_duplicate_click=None,
             back_with_restart=False
     ):
 
@@ -115,33 +114,6 @@ class View(BaseView):
                 ),
             )
 
-        if on_create_duplicate_click:
-            right_controls.append(
-                Container(
-                    content=Row(
-                        controls=[
-                            Image(
-                                src=Icons.CREATE,
-                                height=10,
-                                color='#FFFFFF',
-                            ),
-                            Text(
-                                value='create_duplicate',
-                                size=13,
-                                font_family=Fonts.SEMIBOLD,
-                                color='#FFFFFF',
-                            ),
-                        ],
-                        spacing=4,
-                    ),
-                    padding=7,
-                    border_radius=24,
-                    bgcolor='#008F12',
-                    on_click=on_create_duplicate_click,
-                ),
-
-            )
-
         return Row(
             controls=[
                 Container(
@@ -162,7 +134,6 @@ class View(BaseView):
             ]
             await self.update_async()
         else:
-            print(self.controls, self.controls_last)
             loading_control = self.controls[0]
             loading_control.infinity = False
             self.controls = self.controls_last

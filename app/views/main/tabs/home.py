@@ -19,7 +19,7 @@ from datetime import datetime
 from functools import partial
 from typing import Any
 
-from flet_core import Column, Row, Container, MainAxisAlignment, Image, ResponsiveRow
+from flet_core import Column, Row, Container, MainAxisAlignment, Image
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -186,40 +186,31 @@ class HomeTab(BaseTab):
                             size=25,
                             font_family=Fonts.SEMIBOLD,
                         ),
-                        ResponsiveRow(
+                        Row(
                             controls=[
-                                Container(
-                                    FilledButton(
-                                        content=Text(
-                                            value=await self.client.session.gtv(key='meal_week'),
-                                            size=16,
-                                            font_family=Fonts.MEDIUM,
-                                        ),
-                                        on_click=self.meal_week_view,
+                                FilledButton(
+                                    content=Text(
+                                        value=await self.client.session.gtv(key='meal_week'),
+                                        size=16,
+                                        font_family=Fonts.MEDIUM,
                                     ),
-                                    col={"xs": 4, "sm": 4, "md": 4, "lg": 4},
+                                    on_click=self.meal_week_view,
                                 ),
-                                Container(
-                                    FilledButton(
-                                        content=Text(
-                                            value=await self.client.session.gtv(key='training'),
-                                            size=16,
-                                            font_family=Fonts.MEDIUM,
-                                        ),
-                                        on_click=self.training,
+                                FilledButton(
+                                    content=Text(
+                                        value=await self.client.session.gtv(key='training'),
+                                        size=16,
+                                        font_family=Fonts.MEDIUM,
                                     ),
-                                    col={"xs": 4, "sm": 4, "md": 4, "lg": 4},
+                                    on_click=self.training,
                                 ),
-                                Container(
-                                    FilledButton(
-                                        content=Text(
-                                            value=await self.client.session.gtv(key='support'),
-                                            size=16,
-                                            font_family=Fonts.MEDIUM,
-                                        ),
-                                        on_click=self.support,
+                                FilledButton(
+                                    content=Text(
+                                        value=await self.client.session.gtv(key='support'),
+                                        size=16,
+                                        font_family=Fonts.MEDIUM,
                                     ),
-                                    col={"xs": 4, "sm": 4, "md": 4, "lg": 4},
+                                    on_click=self.support,
                                 ),
                             ],
                         ),

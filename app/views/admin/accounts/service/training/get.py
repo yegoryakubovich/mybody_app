@@ -160,7 +160,7 @@ class AccountTrainingView(AdminBaseView):
             await self.client.session.api.admin.training.update(
                 id_=self.training_id,
                 date=self.tf_date.value,
-                article_id=self.dd_articles.value,
+                article_id=0,
             )
             self.snack_bar.open = True
             await self.update_async()

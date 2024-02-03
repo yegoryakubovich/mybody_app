@@ -26,7 +26,7 @@ class Error:
         field.error_text = None
 
         if check_int:
-            if not field.value.isdigit():
+            if not str(field.value).isdigit():
                 field.error_text = await self.client.session.gtv(key='error_not_int')
                 await self.update_async()
                 return False

@@ -32,7 +32,7 @@ class AccountServiceView(AdminBaseView):
 
     async def build(self):
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='admin_account_service_get_view_title'),
+            title=await self.client.session.gtv(key='individual_nutrition_plan'),
             main_section_controls=[
                 Row(
                     controls=[
@@ -44,13 +44,13 @@ class AccountServiceView(AdminBaseView):
                         ),
                         FilledButton(
                             content=Text(
-                                value=await self.client.session.gtv(key='training'),
+                                value=await self.client.session.gtv(key='trainings'),
                             ),
                             on_click=self.training_view,
                         ),
                         FilledButton(
                             content=Text(
-                                value=await self.client.session.gtv(key=' questionnaire'),
+                                value=await self.client.session.gtv(key='go_questionnaire'),
                             ),
                             on_click=self.questionnaire_view,
                         ),

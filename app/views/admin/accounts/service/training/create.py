@@ -62,7 +62,7 @@ class AccountTrainingCreateView(AdminBaseView):
             training_id = await self.client.session.api.admin.training.create(
                 account_service_id=self.account_service_id,
                 date=self.tf_date.value,
-                article_id=self.dd_articles.value or 0,
+                article_id=0,
             )
             await self.client.change_view(AccountTrainingView(training_id=training_id), delete_current=True)
         except ApiException as e:

@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+
 from flet_core import Row
 from flet_core.dropdown import Option
 from mybody_api_client.utils.base_section import ApiException
@@ -94,9 +96,11 @@ class AccountMealProductView(AdminBaseView):
         await self.client.change_view(go_back=True, with_restart=True)
 
     async def update_meal_product(self, _):
+        await self.set_type(loading=True)
         fields = [(self.tf_quantity, 1, 5, True)]
         for field, min_len, max_len, check_int in fields:
             if not await Error.check_field(self, field, min_len, max_len, check_int):
+                await self.set_type(loading=False)
                 return
         try:
             await self.client.session.api.admin.meal.update_product(
@@ -104,6 +108,7 @@ class AccountMealProductView(AdminBaseView):
                 product_id=self.dd_product.value,
                 value=self.tf_quantity.value,
             )
+            await self.set_type(loading=False)
             self.snack_bar.open = True
             await self.update_async()
         except ApiException as e:

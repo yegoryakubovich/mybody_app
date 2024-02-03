@@ -83,12 +83,12 @@ class AccountView(AdminBaseView):
             ],
             sections=[
                 Section(
-                    title=await self.client.session.gtv(key='services'),
+                    title=await self.client.session.gtv(key='admin_service_get_list_view_title'),
                     controls=[
                         Card(
                             controls=[
                                 Text(
-                                    value='похудение',
+                                    value=await self.client.session.gtv(key='individual_nutrition_plan'),
                                     size=15,
                                     font_family=Fonts.REGULAR,
                                 ),

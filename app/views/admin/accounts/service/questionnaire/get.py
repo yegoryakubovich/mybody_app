@@ -13,14 +13,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+import json
 
+from flet_core import ScrollMode
 
+from app.controls.information import Text
 from app.controls.layout import AdminBaseView
+from app.utils import Fonts
 
 
 class AccountQuestionnaireGetView(AdminBaseView):
-    route = '/admin/accounts/service/get'
-    account = list
+    route = '/admin/account/service/questionnaire/get'
     service = list
 
     def __init__(self, account_service_id):
@@ -28,4 +31,33 @@ class AccountQuestionnaireGetView(AdminBaseView):
         self.account_service_id = account_service_id
 
     async def build(self):
-        pass
+        await self.set_type(loading=True)
+        self.service = await self.client.session.api.admin.account.get_service(
+            id_=self.account_service_id,
+        )
+        await self.set_type(loading=True)
+        self.scroll = ScrollMode.AUTO
+        questions = json.loads(self.service['questions'])
+        answers = json.loads(self.service['answers'])
+
+        main_section_controls = []
+        for section in questions:
+            for question in section['questions']:
+                key = question['key']
+                answer = answers.get(key, '')
+                question_text = Text(
+                    value=await self.client.session.gtv(key=question['name_text']),
+                    size=16,
+                    font_family=Fonts.SEMIBOLD,
+                )
+                answer_text = Text(
+                    value=str(answer),
+                    size=14,
+                    font_family=Fonts.REGULAR,
+                )
+                main_section_controls.extend([question_text, answer_text])
+
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key='questionnaire'),
+            main_section_controls=main_section_controls,
+        )

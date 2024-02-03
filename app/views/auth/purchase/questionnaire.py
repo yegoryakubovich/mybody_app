@@ -127,7 +127,6 @@ class QuestionnaireView(ClientBaseView):
         answers = {tf.key.split('_')[0]: int(tf.value) if tf.key.split('_')[1] == 'int' else tf.value for tf in
                    self.tf_answers}
         answers.update({dd.key: dd.value for dd in self.dd_answers})
-        print(answers)
         answers_json = json.dumps(answers, ensure_ascii=False)
         await self.client.session.api.client.account.create_service(
             service=self.services[0]['id_str'],

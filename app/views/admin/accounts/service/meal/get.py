@@ -38,9 +38,9 @@ class AccountMealView(AdminBaseView):
     snack_bar: SnackBar
     dd_type: Dropdown
     tf_date: TextField
-    tf_fats = TextField
-    tf_proteins = TextField
-    tf_carbohydrates = TextField
+    tf_fats: TextField
+    tf_proteins: TextField
+    tf_carbohydrates: TextField
 
     def __init__(self, meal_id):
         super().__init__()
@@ -89,18 +89,13 @@ class AccountMealView(AdminBaseView):
                 value=await self.client.session.gtv(key='successful'),
             ),
         )
-        self.tf_fats = TextField(
-            label=await self.client.session.gtv(key='fats'),
-            value=self.meal['fats']
-        )
-        self.tf_proteins = TextField(
-            label=await self.client.session.gtv(key='proteins'),
-            value=self.meal['proteins']
-        )
-        self.tf_carbohydrates = TextField(
-            label=await self.client.session.gtv(key='carbohydrates'),
-            value=self.meal['carbohydrates']
-        )
+        self.tf_fats, self.tf_proteins, self.tf_carbohydrates = [
+            TextField(
+                label=await self.client.session.gtv(key=key),
+                value=self.meal[key],
+            )
+            for key in ['fats', 'proteins', 'carbohydrates']
+        ]
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key=self.meal['type']),
@@ -174,6 +169,7 @@ class AccountMealView(AdminBaseView):
         )
 
     async def update_meal(self, _):
+        await self.set_type(loading=True)
         fields = [self.tf_date]
         for field in fields:
             if not await Error.check_date_format(self, field):
@@ -181,8 +177,8 @@ class AccountMealView(AdminBaseView):
         fields = [(self.tf_fats, True), (self.tf_proteins, True), (self.tf_carbohydrates, True)]
         for field, check_int in fields:
             if not await Error.check_field(self, field, check_int):
+                await self.set_type(loading=False)
                 return
-            await self.set_type(loading=True)
         try:
             await self.client.session.api.admin.meal.update(
                 id_=self.meal_id,
@@ -193,6 +189,7 @@ class AccountMealView(AdminBaseView):
                 carbohydrates=self.tf_carbohydrates.value,
             )
             self.snack_bar.open = True
+            await self.set_type(loading=False)
             await self.update_async()
         except ApiException as e:
             await self.set_type(loading=False)

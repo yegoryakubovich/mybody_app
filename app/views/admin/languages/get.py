@@ -33,7 +33,6 @@ class LanguageView(AdminBaseView):
         self.language = await self.client.session.api.client.language.get(
             id_str=self.language_id_str,
         )
-        print(self.language)
         await self.set_type(loading=False)
 
         self.controls = await self.get_controls(

@@ -30,7 +30,7 @@ class AccountTrainingExerciseCreateView(AdminBaseView):
     exercises: list[dict]
     dd_exercise: Dropdown
     tf_priority: TextField
-    tf_value: TextField
+    tf_quantity: TextField
     tf_rest: TextField
 
     def __init__(self, training_id, exercise):
@@ -54,21 +54,18 @@ class AccountTrainingExerciseCreateView(AdminBaseView):
             value=exercise_options[0].key,
             options=exercise_options,
         )
-        self.tf_priority = TextField(
-            label=await self.client.session.gtv(key='priority'),
-        )
-        self.tf_value = TextField(
-            label=await self.client.session.gtv(key='value'),
-        )
-        self.tf_rest = TextField(
-            label=await self.client.session.gtv(key='rest'),
-        )
+        self.tf_priority, self.tf_quantity, self.tf_rest = [
+            TextField(
+                label=await self.client.session.gtv(key=key),
+            )
+            for key in ['priority', 'quantity', 'rest']
+        ]
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='admin_account_training_exercise_create_view_title'),
             main_section_controls=[
                 self.dd_exercise,
                 self.tf_priority,
-                self.tf_value,
+                self.tf_quantity,
                 self.tf_rest,
                 FilledButton(
                     content=Text(
@@ -85,7 +82,7 @@ class AccountTrainingExerciseCreateView(AdminBaseView):
             self.tf_priority.error_text = await self.client.session.gtv(key='error_priority_exists')
             await self.update_async()
             return
-        fields = [(self.tf_priority, 1, 3, True), (self.tf_value, 1, 3, True), (self.tf_rest, 1, 3, True)]
+        fields = [(self.tf_priority, 1, 3, True), (self.tf_quantity, 1, 3, True), (self.tf_rest, 1, 3, True)]
         for field, min_len, max_len, check_int in fields:
             if not await Error.check_field(self, field, min_len, max_len, check_int):
                 return
@@ -94,7 +91,7 @@ class AccountTrainingExerciseCreateView(AdminBaseView):
                 training_id=self.training_id,
                 exercise_id=self.dd_exercise.value,
                 priority=self.tf_priority.value,
-                value=self.tf_value.value,
+                value=self.tf_quantity.value,
                 rest=self.tf_rest.value,
             )
             await self.client.change_view(go_back=True, delete_current=True, with_restart=True)
