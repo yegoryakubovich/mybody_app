@@ -15,7 +15,7 @@
 #
 
 
-from flet_core import Column, Row, Container, padding, SearchBar, ListTile
+from flet_core import Column, Row, Container, padding
 from mybody_api_client.utils.base_section import ApiException
 
 from app.controls.button import FilledButton
@@ -50,9 +50,9 @@ class AuthenticationView(AuthView):
 
         # Change view
         self.client.page.views.clear()
-        view = await self.client.session.init()
         await self.set_type(loading=False)
-        await self.client.change_view(view=view)
+        from app.views.auth.init import InitView
+        await self.client.change_view(view=InitView())
 
     async def go_registration(self, _):
         from app.views.auth.registration import RegistrationFirstView

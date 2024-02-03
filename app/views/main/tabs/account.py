@@ -226,6 +226,3 @@ class AccountTab(BaseTab):
                 ink=True,
             ),
         ]
-
-    async def get_services(self, _):
-        await self.client.change_view(view=ServiceListView())

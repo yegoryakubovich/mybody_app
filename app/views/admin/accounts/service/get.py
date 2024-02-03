@@ -38,7 +38,7 @@ class AccountServiceView(AdminBaseView):
                     controls=[
                         FilledButton(
                             content=Text(
-                                value=await self.client.session.gtv(key='meal'),
+                                value=await self.client.session.gtv(key='meals'),
                             ),
                             on_click=self.meal_view,
                         ),

@@ -37,6 +37,7 @@ class InitView(AuthView):
         self.client.session = Session(client=self.client)
         await self.client.session.init()
         await self.set_type(loading=False)
+        print('INIT LOADING')
 
         # If not language
         if not self.client.session.language:

@@ -15,8 +15,7 @@
 #
 
 
-from flet_core import ButtonStyle, ElevatedButton, MaterialState, RoundedRectangleBorder, Text, TextAlign, \
-    TextThemeStyle
+from flet_core import ButtonStyle, ElevatedButton, MaterialState, RoundedRectangleBorder, Text, TextAlign
 
 from app.utils import Fonts
 
@@ -26,7 +25,6 @@ class ProductChipButton(ElevatedButton):
         super().__init__()
         self.content = Text(
             value=text,
-            style=TextThemeStyle.BODY_MEDIUM,
             font_family=Fonts.MEDIUM,
             text_align=TextAlign.CENTER,
             color='#000000',  # FIXME

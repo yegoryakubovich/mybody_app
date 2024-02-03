@@ -18,7 +18,6 @@
 from flet_core import Column
 from flet_manager.utils import Client
 
-from app.controls.information import Text
 from app.controls.information.loading import Loading
 
 from app.controls.layout import View

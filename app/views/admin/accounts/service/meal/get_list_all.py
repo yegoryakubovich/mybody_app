@@ -42,6 +42,7 @@ class AccountMealListAllView(AdminBaseView):
         self.account_service_id = account_service_id
 
     async def build(self):
+        # noinspection DuplicatedCode
         await self.set_type(loading=True)
         self.meals = await self.client.session.api.admin.meal.get_list(
             account_service_id=self.account_service_id,
@@ -112,8 +113,8 @@ class AccountMealListAllView(AdminBaseView):
                         product_id=product['product'],
                         value=product['value'],
                     )
-            await self.build()
-            await self.update_async()
+            await self.set_type(loading=False)
+            await self.restart()
         except ApiException as e:
             await self.set_type(loading=False)
             return await self.client.session.error(error=e)

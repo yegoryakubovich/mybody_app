@@ -162,6 +162,7 @@ class View(BaseView):
             ]
             await self.update_async()
         else:
+            print(self.controls, self.controls_last)
             loading_control = self.controls[0]
             loading_control.infinity = False
             self.controls = self.controls_last

@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+
 from functools import partial
 
 from app.controls.button import FilledButton
@@ -38,9 +40,12 @@ class AccountView(AdminBaseView):
             id_=self.account_id
         )
         self.service = await self.client.session.api.admin.account.get_list_services(
-            account_id=self.account_id
+            account_id=self.account_id,
         )
         await self.set_type(loading=False)
+
+        # FIXME
+        surname = self.account['surname'] if self.account['surname'] else await self.client.session.gtv(key='absent')
 
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='admin_account_get_view_title'),
@@ -54,7 +59,7 @@ class AccountView(AdminBaseView):
                     value=f"{await self.client.session.gtv(key='firstname')}: {self.account['firstname']}\n"
                           f"{await self.client.session.gtv(key='lastname')}: {self.account['lastname']}\n"
                           f"{await self.client.session.gtv(key='surname')}: "
-                          f"{self.account['surname'] if self.account['surname'] else await self.client.session.gtv(key='absent')}",
+                          f"{surname}",
                     size=15,
                     font_family=Fonts.MEDIUM,
                 ),

@@ -58,6 +58,7 @@ class LanguageCreateView(AdminBaseView):
             if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
                 await self.set_type(loading=False)
                 return
+        # noinspection DuplicatedCode
         try:
             await self.client.session.api.admin.language.create(
                 id_str=self.tf_id_str.value,

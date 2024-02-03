@@ -34,6 +34,7 @@ class ProductListView(AdminBaseView):
     products: list[dict]
     nutrient_type = None
     anchor: SearchBar
+    text: Text
 
     async def build(self):
         await self.set_type(loading=True)

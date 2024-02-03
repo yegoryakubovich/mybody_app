@@ -39,7 +39,7 @@ class AccountTrainingReportView(AdminBaseView):
             self.report = await self.client.session.api.admin.training.get_report(
                 id_=self.training_report_id,
             )
-        except ApiException as e:
+        except ApiException:
             self.report = {}
         await self.set_type(loading=False)
         if self.report:

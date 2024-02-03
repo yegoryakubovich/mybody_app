@@ -68,21 +68,12 @@ class ProductCreateView(AdminBaseView):
                 key=nutrients_unit_dict[nutrient_unit],
             ) for nutrient_unit in nutrients_unit_dict
         ]
-        self.tf_name = TextField(
-            label=await self.client.session.gtv(key='name'),
-        )
-        self.tf_fats = TextField(
-            label=await self.client.session.gtv(key='fats'),
-        )
-        self.tf_proteins = TextField(
-            label=await self.client.session.gtv(key='proteins'),
-        )
-        self.tf_carbohydrates = TextField(
-            label=await self.client.session.gtv(key='carbohydrates'),
-        )
-        self.tf_calories = TextField(
-            label=await self.client.session.gtv(key='calories'),
-        )
+        self.tf_name, self.tf_fats, self.tf_proteins, self.tf_carbohydrates, self.tf_calories = [
+            TextField(
+                label=await self.client.session.gtv(key=key),
+            )
+            for key in ['name', 'fats', 'proteins', 'carbohydrates', 'calories']
+        ]
         self.dd_type = Dropdown(
             label=await self.client.session.gtv(key='type'),
             value=list(nutrients_type_dict.values())[0],

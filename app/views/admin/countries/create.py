@@ -36,6 +36,7 @@ class CountryCreateView(AdminBaseView):
     dd_timezone = Dropdown
     dd_currency = Dropdown
 
+    # noinspection DuplicatedCode
     async def build(self):
         await self.set_type(loading=True)
         self.languages = await self.client.session.api.client.language.get_list()

@@ -54,7 +54,14 @@ class Training:
 
 
 class MealButton(Container):
-    def __init__(self, name: str, nutrients: list[int], on_click: Any, meal_report_id: int = None, prev_meal_had_report: bool = False):
+    def __init__(
+            self,
+            name: str,
+            nutrients: list[int],
+            on_click: Any,
+            meal_report_id: int = None,
+            prev_meal_had_report: bool = False,
+    ):
         super().__init__()
         self.meal_report_id = meal_report_id
         self.on_click = on_click
