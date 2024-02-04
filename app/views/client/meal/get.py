@@ -18,10 +18,11 @@
 from collections import defaultdict
 from typing import Any
 
-from flet_core import Column, Container, Image, Row, ScrollMode, Text, padding
+from flet_core import Column, Container, Image, Row, ScrollMode, Text, padding, AlertDialog
 
 from app.controls.button import FilledButton
 from app.controls.button.product_chip import ProductChipButton
+from app.controls.input import TextField
 from app.controls.layout import ClientBaseView
 from app.utils import Fonts, Icons
 
@@ -53,6 +54,9 @@ class Section:
 class MealView(ClientBaseView):
     meal: dict
     products: list
+    tf_product: TextField
+    tf_quantity: TextField
+    dlg_modal: AlertDialog
 
     def __init__(self, meal_id):
         super().__init__()

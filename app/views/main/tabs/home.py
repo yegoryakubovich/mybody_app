@@ -19,9 +19,9 @@ from datetime import datetime
 from functools import partial
 from typing import Any
 
-from flet_core import Column, Row, Container, MainAxisAlignment, Image
+from flet_core import Column, Row, Container, MainAxisAlignment, Image, FilePicker
 
-from app.controls.button import FilledButton
+from app.controls.button import FilledButton, ProductChipButton
 from app.controls.information import Text
 from app.utils import Fonts, Icons
 from app.views.auth.purchase import QuestionnaireView
@@ -75,7 +75,8 @@ class MealButton(Container):
         ]
         self.name_text = Text(
             value=name,
-            font_family=Fonts.REGULAR,
+            size=18,
+            font_family=Fonts.SEMIBOLD,
         )
         self.nutrient_texts = list(map(lambda value: Text(value=value, font_family=Fonts.REGULAR), nutrients))
         self.images = list(map(lambda src: Image(src=src, width=15), images))
@@ -171,53 +172,57 @@ class HomeTab(BaseTab):
 
         trainings = [
             Training(
-                name=str(exercise['training_exercise']['priority']) + ' ' + await self.client.session.gtv(
+                name=str(exercise['training_exercise']['priority']) + '. ' + await self.client.session.gtv(
                     key=exercise['name_text']),
                 on_click=self.training_view,
             ) for exercise in self.exercise
         ]
+
+        current_hour = datetime.now().hour
+        if 6 <= current_hour < 12:
+            greeting_key = 'good_morning'
+        elif 12 <= current_hour < 18:
+            greeting_key = 'good_afternoon'
+        elif 18 <= current_hour < 22:
+            greeting_key = 'good_evening'
+        else:
+            greeting_key = 'good_night'
 
         self.controls = [
             Container(
                 content=Column(
                     controls=[
                         Text(
-                            value=await self.client.session.gtv(key='good_morning') + f', {firstname}!',
+                            value=await self.client.session.gtv(key=greeting_key) + f', {firstname}!',
                             size=25,
-                            font_family=Fonts.SEMIBOLD,
+                            font_family=Fonts.BOLD,
                         ),
                         Row(
                             controls=[
-                                FilledButton(
-                                    content=Text(
+                                ProductChipButton(
+                                    Text(
                                         value=await self.client.session.gtv(key='meal_week'),
-                                        size=16,
-                                        font_family=Fonts.MEDIUM,
-                                    ),
+                                    ).value,
                                     on_click=self.meal_week_view,
                                 ),
-                                FilledButton(
-                                    content=Text(
+                                ProductChipButton(
+                                    Text(
                                         value=await self.client.session.gtv(key='training'),
-                                        size=16,
-                                        font_family=Fonts.MEDIUM,
-                                    ),
-                                    on_click=self.training,
+                                    ).value,
+                                    on_click=self.training_view,
                                 ),
-                                FilledButton(
-                                    content=Text(
+                                ProductChipButton(
+                                    Text(
                                         value=await self.client.session.gtv(key='support'),
-                                        size=16,
-                                        font_family=Fonts.MEDIUM,
-                                    ),
+                                    ).value,
                                     on_click=self.support,
                                 ),
                             ],
                         ),
                         Text(
                             value=await self.client.session.gtv(key='meals'),
-                            size=20,
-                            font_family=Fonts.SEMIBOLD,
+                            size=25,
+                            font_family=Fonts.BOLD,
                         ),
                         any(meals) and Column(
                             controls=[
@@ -234,46 +239,60 @@ class HomeTab(BaseTab):
                             font_family=Fonts.MEDIUM,
                         ),
                         Text(
-                            value=await self.client.session.gtv(key='trainings'),
-                            size=20,
-                            font_family=Fonts.SEMIBOLD,
+                            value=await self.client.session.gtv(key='training'),
+                            size=25,
+                            font_family=Fonts.BOLD,
                         ),
                         any(trainings) and Container(
-                            content=Column(
+                            content=Row(
                                 controls=[
-                                    Row(
-                                        controls=[
-                                            Text(
-                                                value=training.name,
-                                                color='#FFFFFF',
-                                                font_family=Fonts.REGULAR,
-                                            ),
-                                        ],
-                                        alignment=MainAxisAlignment.SPACE_BETWEEN,
-                                    )
-                                    for training in trainings
-                                ]
+                                    Container(
+                                        content=Column(
+                                            controls=[
+                                                Row(
+                                                    controls=[
+                                                        Text(
+                                                            value=training.name,
+                                                            size=10,
+                                                            color='#FFFFFF',
+                                                            font_family=Fonts.REGULAR,
+                                                        ),
+                                                    ],
+                                                    alignment=MainAxisAlignment.SPACE_BETWEEN,
+                                                )
+                                                for training in trainings
+                                            ],
+                                            spacing=1,
+                                        ),
+                                    ),
+                                    Container(
+                                        content=Image(
+                                            src=Icons.NEXT,
+                                            width=15,
+                                            color='#FFFFFF',
+                                        ),
+                                    ),
+                                ],
+                                alignment=MainAxisAlignment.SPACE_BETWEEN
                             ),
+                            padding=10,
                             bgcolor='#008F12',
                             border_radius=10,
-                            padding=10,
+                            on_click=self.training_view
                         ) or Text(
                             value=await self.client.session.gtv(key='training_planning_stage'),
                             size=15,
                             font_family=Fonts.MEDIUM,
-                        ),
+                        )
+
                     ],
-                    spacing=15,
                 ),
                 padding=10,
             ),
         ]
 
-    async def current_meal(self, _):
-        pass
-
     async def training_view(self, _):
-        await self.client.change_view(view=TrainingView())
+        await self.client.change_view(view=TrainingView(exercise=self.exercise))
 
     async def support(self, _):
         await self.client.change_view(view=QuestionnaireView())

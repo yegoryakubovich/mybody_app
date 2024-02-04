@@ -62,15 +62,12 @@ class AccountMealCreateView(AdminBaseView):
             label=await self.client.session.gtv(key='date'),
             value=self.meal_date or None,
         )
-        self.tf_fats = TextField(
-            label=await self.client.session.gtv(key='fats'),
-        )
-        self.tf_proteins = TextField(
-            label=await self.client.session.gtv(key='proteins'),
-        )
-        self.tf_carbohydrates = TextField(
-            label=await self.client.session.gtv(key='carbohydrates'),
-        )
+        self.tf_fats, self.tf_proteins, self.tf_carbohydrates = [
+            TextField(
+                label=await self.client.session.gtv(key=key),
+            )
+            for key in ['fats', 'proteins', 'carbohydrates']
+        ]
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='admin_account_meal_create_view_title'),

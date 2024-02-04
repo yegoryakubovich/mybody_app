@@ -99,22 +99,13 @@ class ProductView(AdminBaseView):
             value=self.product['article'],
             options=article_options,
         )
-        self.tf_fats = TextField(
-            label=await self.client.session.gtv(key='fats'),
-            value=self.product['fats']
-        )
-        self.tf_proteins = TextField(
-            label=await self.client.session.gtv(key='proteins'),
-            value=self.product['proteins']
-        )
-        self.tf_carbohydrates = TextField(
-            label=await self.client.session.gtv(key='carbohydrates'),
-            value=self.product['carbohydrates']
-        )
-        self.tf_calories = TextField(
-            label=await self.client.session.gtv(key='calories'),
-            value=self.product['calories']
-        )
+        self.tf_fats, self.tf_proteins, self.tf_carbohydrates, self.tf_calories = [
+            TextField(
+                label=await self.client.session.gtv(key=key),
+                value=self.product[key],
+            )
+            for key in ['fats', 'proteins', 'carbohydrates', 'calories']
+        ]
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key=self.product['name_text']),

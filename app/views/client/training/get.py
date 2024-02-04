@@ -15,11 +15,10 @@
 #
 
 
-from flet_core import Column, Container, CrossAxisAlignment, Image, Row, ScrollMode, Text, margin, padding
-from flet_manager.utils import get_svg
+from flet_core import Column, Container, Row, ScrollMode, Text, MainAxisAlignment, alignment
 
 from app.controls.button import FilledButton
-from app.controls.layout import View
+from app.controls.layout import ClientBaseView
 from app.utils import Fonts
 
 
@@ -34,173 +33,144 @@ class Exercise:
         self.is_time = is_time
 
 
-class TrainingView(View):
-    async def go_back(self, _):
-        await self.client.change_view(go_back=True)
+class TrainingView(ClientBaseView):
+
+    def __init__(self, exercise):
+        super().__init__()
+        self.exercise = exercise
 
     async def build(self):
-        self.bgcolor = '#FFFFFF'  # FIXME
-        self.scroll = ScrollMode.ALWAYS
-
-        exercises = [  # FIXME
-                        Exercise(name=await self.client.session.gtv(key='Exercise_Quantity'), quantity=30,
-                                 is_time=False)
-                        for _ in range(5)
-                    ] + [
-                        Exercise(name=await self.client.session.gtv(key='Exercise_Time'), quantity=60,
-                                 is_time=True)
-                        for _ in range(5)
-                    ]
-        self.controls = [
-            await self.get_header(),
-            Container(
-                Column(
+        self.scroll = ScrollMode.AUTO
+        counter = 1
+        controls = []
+        for exercise in self.exercise:
+            controls.append(
+                Row(
                     controls=[
                         Container(
-                            Row(
-                                controls=[
-                                    Container(
-                                        Image(
-                                            src=get_svg(
-                                                path=f'assets/icons/arrow_back.svg',
-                                            ),
-                                            color='#000000',  # FIXME
-                                            height=20,
-                                        ),
-                                        on_click=self.go_back,
-                                    ),
-                                    Text(
-                                        value=await self.client.session.gtv(key='Training'),  # FIXME
-                                        size=30,
-                                        font_family=Fonts.BOLD,
-                                        color='#000000',  # FIXME
-                                    ),
-                                ]
+                            Text(
+                                value=str(counter) + '.',
+                                color='#000000',
+                                font_family=Fonts.MEDIUM,
                             ),
-                            padding=padding.only(bottom=15),
+                            expand=1,
                         ),
                         Container(
                             Text(
-                                value=await self.client.session.gtv(key='Your_Plan_for_Today'),  # FIXME
-                                size=18,
+                                value=await self.client.session.gtv(key=exercise['name_text']),
                                 color='#000000',
-                                font_family=Fonts.REGULAR,
+                                font_family=Fonts.MEDIUM,
                             ),
-                            padding=padding.only(bottom=15)
+                            expand=10,
+                            alignment=alignment.center,
                         ),
                         Container(
-                            content=Column(
-                                controls=[
-                                    Container(
-                                        Row(
-                                            controls=[
-                                                Column(
-                                                    [
-                                                        Text(
-                                                            value='№',
-                                                            font_family=Fonts.SEMIBOLD,
-                                                            color='#ffffff',
-                                                        ),
-                                                    ],
-                                                    expand=True,
-                                                    horizontal_alignment=CrossAxisAlignment.START,
-                                                ),
-                                                Column(
-                                                    [
-                                                        Text(
-                                                            value=await self.client.session.gtv(key='Name'),
-                                                            font_family=Fonts.SEMIBOLD,
-                                                            color='#ffffff',
-                                                        ),
-                                                    ],
-                                                    expand=True,
-                                                    horizontal_alignment=CrossAxisAlignment.CENTER,
-                                                ),
-                                                Column(
-                                                    [
-                                                        Text(
-                                                            value=await self.client.session.gtv(key='Quantity'),
-                                                            font_family=Fonts.SEMIBOLD,
-                                                            color='#ffffff',
-                                                        ),
-                                                    ],
-                                                    expand=True,
-                                                    horizontal_alignment=CrossAxisAlignment.END,
-                                                ),
-                                            ],
-                                        ),
-                                        bgcolor='#008F12',
-                                        padding=10,
-                                    ),
-                                    Container(
-                                        Column(
-                                            controls=[
-                                                Row(
-                                                    controls=[
-                                                        Column(
-                                                            [
-                                                                Text(
-                                                                    value=str(i),
-                                                                    color='#000000',
-                                                                    font_family=Fonts.MEDIUM,
-                                                                ),
-                                                            ],
-                                                            width=60,
-                                                            horizontal_alignment=CrossAxisAlignment.START,
-                                                        ),
-                                                        Column(
-                                                            [
-                                                                Text(
-                                                                    value=exercises[i].name,
-                                                                    color='#000000',
-                                                                    font_family=Fonts.MEDIUM,
-                                                                ),
-                                                            ],
-                                                            expand=True,
-                                                            horizontal_alignment=CrossAxisAlignment.CENTER,
-                                                        ),
-                                                        Column(
-                                                            [
-                                                                Text(
-                                                                    value=f'{exercises[i].quantity} '
-                                                                          f'{await self.client.session.gtv(key="sec")}'
-                                                                    if
-                                                                    exercises[i].is_time else str(
-                                                                        exercises[i].quantity),
-                                                                    color='#000000',
-                                                                    font_family=Fonts.MEDIUM,
-                                                                ),
-                                                            ],
-                                                            width=60,
-                                                            horizontal_alignment=CrossAxisAlignment.CENTER,
-                                                        ),
-                                                    ],
-                                                ) for i in range(len(exercises))
-                                            ],
-                                            spacing=5,
-                                        ),
-                                        padding=10,
-                                        bgcolor='#D9D9D9',
-                                    )
-                                ],
-                                spacing=0,
+                            Text(
+                                value=str(exercise['training_exercise']['value']),
+                                color='#000000',
+                                font_family=Fonts.MEDIUM,
                             ),
-                            border_radius=15,
-                            margin=margin.only(bottom=15),
-                        ),
-                        Container(
-                            FilledButton(
-                                content=Text(
-                                    value=await self.client.session.gtv(key='Start'),
-                                    size=14,
-                                    color='#ffffff',
-                                    font_family=Fonts.REGULAR,
-                                ),
-                            ),
+                            expand=2,
+                            alignment=alignment.center,
                         ),
                     ],
-                    spacing=0,
+                    alignment=MainAxisAlignment.SPACE_BETWEEN,
+                )
+            )
+            counter += 1
+            controls.append(
+                Row(
+                    controls=[
+                        Container(
+                            Text(
+                                value=str(counter) + '.',
+                                color='#000000',
+                                font_family=Fonts.MEDIUM,
+                            ),
+                            expand=1,
+                        ),
+                        Container(
+                            Text(
+                                value=await self.client.session.gtv(key='rest'),
+                                color='#000000',
+                                font_family=Fonts.MEDIUM,
+                            ),
+                            expand=10,
+                            alignment=alignment.center,
+                        ),
+                        Container(
+                            Text(
+                                value=str(exercise['training_exercise']['rest']) + ' ' + await self.client.session.gtv(
+                                    key='seconds' + '.'
+                                ),
+                                color='#000000',
+                                font_family=Fonts.MEDIUM,
+                            ),
+                            expand=2,
+                            alignment=alignment.center,
+                        ),
+                    ],
+                    alignment=MainAxisAlignment.SPACE_BETWEEN,
+                )
+            )
+            counter += 1
+
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key='training'),
+            main_section_controls=[
+                Text(
+                    value=await self.client.session.gtv(key='training_plan_today'),
+                    size=18,
+                    font_family=Fonts.REGULAR,
                 ),
-                padding=15
-            ),
-        ]
+                Container(
+                    Row(
+                        controls=[
+                            Container(
+                                content=Text(
+                                    value='№',
+                                    font_family=Fonts.SEMIBOLD,
+                                    color='#ffffff',
+                                ),
+                            ),
+                            Container(
+                                Text(
+                                    value=await self.client.session.gtv(key='name'),
+                                    font_family=Fonts.SEMIBOLD,
+                                    color='#ffffff',
+                                ),
+                            ),
+                            Container(
+                                Text(
+                                    value=await self.client.session.gtv(key='quantity'),
+                                    font_family=Fonts.SEMIBOLD,
+                                    color='#ffffff',
+                                ),
+                            ),
+                        ],
+                        alignment=MainAxisAlignment.SPACE_BETWEEN,
+                    ),
+                    bgcolor='#008F12',
+                    padding=10,
+                    border_radius=6
+                ),
+                Container(
+                    Column(
+                        controls=controls,
+                        spacing=1,
+                    ),
+                    padding=10,
+                    bgcolor='#D9D9D9',
+                    border_radius=6
+                ),
+                FilledButton(
+                    content=Text(
+                        value=await self.client.session.gtv(key='start'),
+                    ),
+                    on_click=self.start_training
+                ),
+            ],
+        )
+
+    async def start_training(self, _):
+        pass
