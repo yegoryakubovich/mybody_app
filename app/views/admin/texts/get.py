@@ -18,7 +18,7 @@
 from functools import partial
 
 from flet_core import Row, Column, ScrollMode
-from mybody_api_client.utils.base_section import ApiException
+from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -44,7 +44,7 @@ class TextView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.text = await self.client.session.api.admin.text.get(
+        self.text = await self.client.session.api.admin.texts.get(
             key=self.key
         )
         await self.set_type(loading=False)
@@ -118,14 +118,14 @@ class TextView(AdminBaseView):
          )
 
     async def delete_text(self, _):
-        await self.client.session.api.admin.text.delete(
+        await self.client.session.api.admin.texts.delete(
             key=self.text['key'],
         )
         await self.client.change_view(go_back=True, with_restart=True)
 
     async def update_text(self, _):
         try:
-            await self.client.session.api.admin.text.update(
+            await self.client.session.api.admin.texts.update(
                 key=self.text['key'],
                 value_default=self.tf_value_default.value,
                 new_key=self.tf_key.value

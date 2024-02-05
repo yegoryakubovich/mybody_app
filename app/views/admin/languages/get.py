@@ -30,7 +30,7 @@ class LanguageView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.language = await self.client.session.api.client.language.get(
+        self.language = await self.client.session.api.client.languages.get(
             id_str=self.language_id_str,
         )
         await self.set_type(loading=False)
@@ -48,7 +48,7 @@ class LanguageView(AdminBaseView):
          )
 
     async def delete_language(self, _):
-        await self.client.session.api.admin.language.delete(
+        await self.client.session.api.admin.languages.delete(
             id_str=self.language_id_str,
         )
         await self.client.change_view(go_back=True, with_restart=True)

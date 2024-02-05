@@ -16,7 +16,7 @@
 
 
 from flet_core import Column, Row, Container, padding
-from mybody_api_client.utils.base_section import ApiException
+from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -36,7 +36,7 @@ class AuthenticationView(AuthView):
         username = self.tf_username.value
         password = self.tf_password.value
         try:
-            session = await self.client.session.api.client.session.create(
+            session = await self.client.session.api.client.sessions.create(
                 username=username,
                 password=password,
             )

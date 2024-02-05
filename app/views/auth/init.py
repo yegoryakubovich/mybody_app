@@ -29,7 +29,7 @@ class InitView(AuthView):
     languages: list
 
     async def get_text_pack(self, language: str):
-        text_pack = await self.client.session.api.client.text.get_pack(language=language)
+        text_pack = await self.client.session.api.client.texts.packs.get(language=language)
         await self.client.session.set_cs(key='text_pack', value=text_pack)
 
     async def on_load(self):
@@ -51,7 +51,7 @@ class InitView(AuthView):
             return
 
         # Get account service
-        account_services = await self.client.session.api.client.account.get_list_services()
+        account_services = await self.client.session.api.client.accounts.services.get_list()
         account_service = None
         for as_ in account_services:
             if as_.service_id == settings.service_id:

@@ -19,7 +19,7 @@ from functools import partial
 
 from flet_core import Row, ScrollMode
 from flet_core.dropdown import Option, Dropdown
-from mybody_api_client.utils.base_section import ApiException
+from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text, Card
@@ -48,12 +48,12 @@ class AccountMealView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.meal = await self.client.session.api.admin.meal.get(
+        self.meal = await self.client.session.api.admin.meals.get(
             id_=self.meal_id,
         )
         self.products = []
         for i, product in enumerate(self.meal['products']):
-            product_info = await self.client.session.api.client.product.get(id_=product['product'])
+            product_info = await self.client.session.api.client.products.get(id_=product['product'])
             # Находим соответствующий продукт в self.meal['products']
             meal_product = self.meal['products'][i]
             if meal_product is not None:
@@ -155,7 +155,7 @@ class AccountMealView(AdminBaseView):
         )
 
     async def delete_meal(self, _):
-        await self.client.session.api.admin.meal.delete(
+        await self.client.session.api.admin.meals.delete(
             id_=self.meal_id,
         )
         await self.client.change_view(go_back=True, with_restart=True)
@@ -180,7 +180,7 @@ class AccountMealView(AdminBaseView):
                 await self.set_type(loading=False)
                 return
         try:
-            await self.client.session.api.admin.meal.update(
+            await self.client.session.api.admin.meals.update(
                 id_=self.meal_id,
                 date=self.tf_date.value,
                 type_=self.dd_type.value,

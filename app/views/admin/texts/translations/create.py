@@ -16,7 +16,7 @@
 
 
 from flet_core.dropdown import Option
-from mybody_api_client.utils.base_section import ApiException
+from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -40,10 +40,11 @@ class TextTranslationCreateView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.text = await self.client.session.api.admin.text.get(
+        self.text = await self.client.session.api.admin.texts.get(
             key=self.key,
         )
-        self.languages = await self.client.session.api.client.language.get_list()
+        print(self.text)
+        self.languages = await self.client.session.api.client.languages.get_list()
         await self.set_type(loading=False)
 
         existing_translation_languages = [
@@ -99,7 +100,7 @@ class TextTranslationCreateView(AdminBaseView):
             if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
                 return
         try:
-            await self.client.session.api.admin.text.create_translation(
+            await self.client.session.api.admin.texts.translations.create(
                 text_key=self.text['key'],
                 language=self.dd_language.value,
                 value=self.tf_value.value,

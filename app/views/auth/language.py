@@ -28,7 +28,7 @@ class LanguageView(AuthView):
     languages: list
 
     async def get_text_pack(self, language: str):
-        self.client.session.text_pack = await self.client.session.api.client.text.get_pack(language=language)
+        self.client.session.text_pack = await self.client.session.api.client.texts.packs.get(language=language)
         await self.client.session.set_cs(key='text_pack', value=self.client.session.text_pack)
 
     async def select(self, _):
@@ -46,7 +46,7 @@ class LanguageView(AuthView):
         await self.client.change_view(view=InitView())
 
     async def build(self):
-        self.languages = await self.client.session.api.client.language.get_list()
+        self.languages = await self.client.session.api.client.languages.get_list()
         await self.get_text_pack(language=settings.language_default)
 
         options = [

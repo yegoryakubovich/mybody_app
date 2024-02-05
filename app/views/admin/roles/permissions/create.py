@@ -16,7 +16,7 @@
 
 
 from flet_core.dropdown import Option
-from mybody_api_client.utils.base_section import ApiException
+from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -41,7 +41,7 @@ class RolePermissionCreateView(AdminBaseView):
         self.role = await self.client.session.api.admin.role.get(
             id_=self.role_id
         )
-        self.permissions = await self.client.session.api.client.permission.get_list()
+        self.permissions = await self.client.session.api.admin.permissions.get_list()
         await self.set_type(loading=False)
 
         existing_permissions = [
@@ -89,7 +89,7 @@ class RolePermissionCreateView(AdminBaseView):
 
     async def create_permission(self, _):
         try:
-            await self.client.session.api.admin.role.create_permission(
+            await self.client.session.api.admin.role.permissions.create(
                 role_id=self.role_id,
                 permission=self.dd_permission.value,
             )

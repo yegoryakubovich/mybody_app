@@ -17,7 +17,7 @@
 
 from flet_core import ScrollMode
 from flet_core.dropdown import Option
-from mybody_api_client.utils.base_section import ApiException
+from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -98,7 +98,7 @@ class AccountMealCreateView(AdminBaseView):
             if not await Error.check_field(self, field, check_int):
                 return
         try:
-            meal_id = await self.client.session.api.admin.meal.create(
+            meal_id = await self.client.session.api.admin.meals.create(
                 account_service_id=self.account_service_id,
                 date=self.tf_date.value,
                 type_=self.dd_type.value,

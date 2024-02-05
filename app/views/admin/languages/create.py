@@ -15,7 +15,7 @@
 #
 
 
-from mybody_api_client.utils.base_section import ApiException
+from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -60,7 +60,7 @@ class LanguageCreateView(AdminBaseView):
                 return
         # noinspection DuplicatedCode
         try:
-            await self.client.session.api.admin.language.create(
+            await self.client.session.api.admin.languages.create(
                 id_str=self.tf_id_str.value,
                 name=self.tf_name.value,
             )

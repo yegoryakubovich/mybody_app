@@ -17,7 +17,7 @@
 
 from flet_core import Row
 from flet_core.dropdown import Option
-from mybody_api_client.utils.base_section import ApiException
+from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -41,7 +41,7 @@ class AccountMealProductView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.products = await self.client.session.api.client.product.get_list()
+        self.products = await self.client.session.api.client.products.get_list()
         await self.set_type(loading=False)
 
         product_options = [
@@ -90,7 +90,7 @@ class AccountMealProductView(AdminBaseView):
         )
 
     async def delete_meal_product(self, _):
-        await self.client.session.api.admin.meal.delete_product(
+        await self.client.session.api.admin.meals.delete_product(
             id_=self.product['meal_product']['id'],
         )
         await self.client.change_view(go_back=True, with_restart=True)
@@ -103,7 +103,7 @@ class AccountMealProductView(AdminBaseView):
                 await self.set_type(loading=False)
                 return
         try:
-            await self.client.session.api.admin.meal.update_product(
+            await self.client.session.api.admin.meals.update_product(
                 id_=self.product['meal_product']['id'],
                 product_id=self.dd_product.value,
                 value=self.tf_quantity.value,

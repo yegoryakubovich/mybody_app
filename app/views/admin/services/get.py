@@ -42,7 +42,7 @@ class ServiceView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.service = await self.client.session.api.client.service.get(
+        self.service = await self.client.session.api.client.services.get(
             id_=self.service_id_str
         )
         questions = json.loads(self.service["questions"])
@@ -95,7 +95,7 @@ class ServiceView(AdminBaseView):
         )
 
     async def delete_service(self, _):
-        await self.client.session.api.admin.service.delete(
+        await self.client.session.api.admin.services.delete(
             id_str=self.service_id_str,
         )
         await self.client.change_view(go_back=True, with_restart=True)
@@ -108,9 +108,9 @@ class ServiceView(AdminBaseView):
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
                 return
-        # await self.client.session.api.admin.country.update(
-        #     id_str=self.service_id_str,
-        #     name=self.tf_name.value,
-        #     questions=self.tf_questions.value,
-        # )
-        # await self.client.change_view(go_back=True)
+        await self.client.session.api.admin.countries.update(
+            id_str=self.service_id_str,
+            name=self.tf_name.value,
+            questions=self.tf_questions.value,
+        )
+        await self.client.change_view(go_back=True)

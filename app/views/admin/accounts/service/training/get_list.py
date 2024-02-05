@@ -18,7 +18,7 @@
 from functools import partial
 
 from flet_core import ScrollMode, AlertDialog, Row, Container, Image, MainAxisAlignment
-from mybody_api_client.utils.base_section import ApiException
+from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text

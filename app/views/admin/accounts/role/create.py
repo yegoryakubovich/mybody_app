@@ -16,7 +16,7 @@
 
 
 from flet_core.dropdown import Option
-from mybody_api_client.utils.base_section import ApiException
+from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -68,7 +68,7 @@ class AccountRoleCreateView(AdminBaseView):
     async def create_article(self, _):
         await self.set_type(loading=True)
         try:
-            await self.client.session.api.admin.account.create_role(
+            await self.client.session.api.admin.accounts.create_role(
                 account_id=self.account_id,
                 role_id=self.dd_role.value,
             )

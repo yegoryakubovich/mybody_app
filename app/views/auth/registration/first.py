@@ -16,7 +16,7 @@
 
 
 from flet_core import Row, Column, Container, padding
-from mybody_api_client.utils.base_section import ApiException
+from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -49,8 +49,8 @@ class RegistrationFirstView(AuthView):
             self.client.session.registration.username = self.tf_username.value
             self.client.session.registration.password = self.tf_password.value
 
-            currencies = await self.client.session.api.client.currency.get_list()
-            countries = await self.client.session.api.client.country.get_list()
+            currencies = await self.client.session.api.client.currencies.get_list()
+            countries = await self.client.session.api.client.countries.get_list()
             timezones = await self.client.session.api.client.timezone.get_list()
 
             await self.client.change_view(

@@ -39,7 +39,7 @@ class AccountMealListView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.meals = await self.client.session.api.admin.meal.get_list(
+        self.meals = await self.client.session.api.admin.meals.get_list(
             account_service_id=self.account_service_id,
             date=self.meal_date,
         )

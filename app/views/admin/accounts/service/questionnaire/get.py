@@ -32,7 +32,7 @@ class AccountQuestionnaireGetView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.service = await self.client.session.api.admin.account.get_service(
+        self.service = await self.client.session.api.admin.accounts.services.get(
             id_=self.account_service_id,
         )
         await self.set_type(loading=True)

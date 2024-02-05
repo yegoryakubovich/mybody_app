@@ -73,7 +73,7 @@ class ArticleTranslationView(AdminBaseView):
         )
 
     async def delete_translation(self, _):
-        await self.client.session.api.admin.article.delete_translation(
+        await self.client.session.api.admin.articles.translation.delete(
             id_=self.article_id,
             language=self.language['language'],
         )

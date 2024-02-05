@@ -16,7 +16,7 @@
 
 
 from flet_core.dropdown import Option
-from mybody_api_client.utils.base_section import ApiException
+from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -71,7 +71,7 @@ class ExerciseCreateView(AdminBaseView):
             if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
                 return
         try:
-            await self.client.session.api.admin.exercise.create(
+            await self.client.session.api.admin.exercises.create(
                 type_=self.dd_exercise_type.value,
                 name=self.tf_name.value,
             )

@@ -16,7 +16,7 @@
 
 
 from flet_core import Row
-from mybody_api_client.utils.base_section import ApiException
+from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -71,7 +71,7 @@ class TextTranslationView(AdminBaseView):
          )
 
     async def delete_translation(self, _):
-        await self.client.session.api.admin.text.delete_translation(
+        await self.client.session.api.admin.texts.translations.delete(
             text_key=self.text_key,
             language=self.language['language'],
         )
@@ -83,7 +83,7 @@ class TextTranslationView(AdminBaseView):
             if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
                 return
         try:
-            await self.client.session.api.admin.text.update_translation(
+            await self.client.session.api.admin.texts.translations.update(
                 text_key=self.text_key,
                 language=self.language['language'],
                 value=self.tf_value.value,

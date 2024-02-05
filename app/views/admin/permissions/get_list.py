@@ -32,7 +32,7 @@ class PermissionListView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.permissions = await self.client.session.api.client.permission.get_list()
+        self.permissions = await self.client.session.api.admin.permissions.get_list()
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO

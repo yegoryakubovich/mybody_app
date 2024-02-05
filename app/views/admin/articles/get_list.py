@@ -32,7 +32,7 @@ class ArticleListView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.articles = await self.client.session.api.client.article.get_list()
+        self.articles = await self.client.session.api.client.articles.get_list()
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO

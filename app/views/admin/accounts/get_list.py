@@ -36,7 +36,7 @@ class AccountListView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        response = await self.client.session.api.admin.account.search(
+        response = await self.client.session.api.admin.accounts.search(
             page=self.page_account,
         )
         self.accounts = response.accounts

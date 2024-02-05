@@ -41,8 +41,8 @@ class QuestionnaireView(ClientBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.services = await self.client.session.api.client.service.get_list()
-        self.service = await self.client.session.api.client.service.get(
+        self.services = await self.client.session.api.client.services.get_list()
+        self.service = await self.client.session.api.client.services.get(
             id_=self.services[0]['id_str'],
         )
         await self.set_type(loading=False)

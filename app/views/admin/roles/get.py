@@ -41,7 +41,7 @@ class RoleView(AdminBaseView):
         self.role = await self.client.session.api.admin.role.get(
             id_=self.role_id
         )
-        self.permissions = await self.client.session.api.admin.role.get_list_permissions(
+        self.permissions = await self.client.session.api.admin.role.permissions.get_list(
             role_id=self.role_id,
         )
         await self.set_type(loading=False)

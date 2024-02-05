@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-from mybody_api_client.utils.base_section import ApiException
+from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -57,7 +57,7 @@ class TextCreateView(AdminBaseView):
             if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
                 return
         try:
-            key = await self.client.session.api.admin.text.create(
+            key = await self.client.session.api.admin.texts.create(
                 value_default=self.tf_value_default.value,
                 key=self.tf_key.value,
             )

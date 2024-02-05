@@ -16,7 +16,7 @@
 
 
 from flet_core.dropdown import Option
-from mybody_api_client.utils.base_section import ApiException
+from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -39,9 +39,9 @@ class CountryCreateView(AdminBaseView):
     # noinspection DuplicatedCode
     async def build(self):
         await self.set_type(loading=True)
-        self.languages = await self.client.session.api.client.language.get_list()
+        self.languages = await self.client.session.api.client.languages.get_list()
         self.timezones = await self.client.session.api.client.timezone.get_list()
-        self.currencies = await self.client.session.api.client.currency.get_list()
+        self.currencies = await self.client.session.api.client.currencies.get_list()
         await self.set_type(loading=False)
 
         language_options = [
@@ -109,7 +109,7 @@ class CountryCreateView(AdminBaseView):
             if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
                 return
         try:
-            await self.client.session.api.admin.country.create(
+            await self.client.session.api.admin.countries.create(
                 id_str=self.tf_id_str.value,
                 name=self.tf_name.value,
                 language=self.dd_language.value,

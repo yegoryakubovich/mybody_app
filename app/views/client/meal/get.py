@@ -63,12 +63,12 @@ class MealView(ClientBaseView):
         self.meal_id = meal_id
 
     async def build(self):
-        self.meal = await self.client.session.api.client.meal.get(
+        self.meal = await self.client.session.api.client.meals.get(
             id_=self.meal_id,
         )
         self.products = []
         for i, product in enumerate(self.meal['products']):
-            product_info = await self.client.session.api.client.product.get(id_=product['product'])
+            product_info = await self.client.session.api.client.products.get(id_=product['product'])
             # Находим соответствующий продукт в self.meal['products']
             meal_product = self.meal['products'][i]
             if meal_product is not None:

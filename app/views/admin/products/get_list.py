@@ -38,7 +38,7 @@ class ProductListView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.products = await self.client.session.api.client.product.get_list(
+        self.products = await self.client.session.api.client.products.get_list(
             type_=self.nutrient_type,
         )
         await self.set_type(loading=False)

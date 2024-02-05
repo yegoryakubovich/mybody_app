@@ -17,7 +17,7 @@
 
 from flet_core import Row
 from flet_core.dropdown import Option, Dropdown
-from mybody_api_client.utils.base_section import ApiException
+from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -42,12 +42,12 @@ class CountryView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.country = await self.client.session.api.client.country.get(
+        self.country = await self.client.session.api.client.countries.get(
             id_str=self.country_id_str,
         )
-        self.languages = await self.client.session.api.client.language.get_list()
+        self.languages = await self.client.session.api.client.languages.get_list()
         self.timezones = await self.client.session.api.client.timezone.get_list()
-        self.currencies = await self.client.session.api.client.currency.get_list()
+        self.currencies = await self.client.session.api.client.currencies.get_list()
         await self.set_type(loading=False)
 
         language_options = [
@@ -116,7 +116,7 @@ class CountryView(AdminBaseView):
         )
 
     async def delete_country(self, _):
-        await self.client.session.api.admin.country.delete(
+        await self.client.session.api.admin.countries.delete(
             id_str=self.country_id_str,
         )
         await self.client.change_view(go_back=True, with_restart=True)
@@ -124,7 +124,7 @@ class CountryView(AdminBaseView):
     async def update_country(self, _):
         await self.set_type(loading=True)
         try:
-            await self.client.session.api.admin.country.update(
+            await self.client.session.api.admin.countries.update(
                 id_str=self.country_id_str,
                 language=self.dd_language.value,
                 currency=self.dd_currency.value,

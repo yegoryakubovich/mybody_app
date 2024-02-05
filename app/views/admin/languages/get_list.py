@@ -32,7 +32,8 @@ class LanguageListView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.languages = await self.client.session.api.client.language.get_list()
+        self.languages = await self.client.session.api.client.languages.get_list()
+        print(self.languages)
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO

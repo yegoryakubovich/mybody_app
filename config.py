@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     is_test: bool = True
     language_default: str = 'eng'
     service_id: int = 1
+    url: str = 'https://api.test.mybody.one'
 
     model_config = SettingsConfigDict(env_file='.env')
 

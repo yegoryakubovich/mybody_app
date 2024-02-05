@@ -28,7 +28,7 @@ from app.views.admin.accounts.service.get import AccountServiceView
 class AccountView(AdminBaseView):
     route = '/admin/accounts/get'
     account: dict
-    service: list[dict] = None
+    services: list[dict]
 
     def __init__(self, account_id):
         super().__init__()
@@ -36,12 +36,14 @@ class AccountView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.account = await self.client.session.api.admin.account.get(
+        self.account = await self.client.session.api.admin.accounts.get(
             id_=self.account_id
         )
-        self.service = await self.client.session.api.admin.account.get_list_services(
+        print(self.account_id)
+        self.services = await self.client.session.api.admin.accounts.services.get_list(
             account_id=self.account_id,
         )
+        print(self.services)
         await self.set_type(loading=False)
 
         # FIXME
@@ -95,7 +97,7 @@ class AccountView(AdminBaseView):
                             ],
                             on_click=partial(self.service_view, service['id']),
                         )
-                        for service in self.service
+                        for service in self.services
                     ],
                 ),
             ],

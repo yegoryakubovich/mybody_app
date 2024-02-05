@@ -20,7 +20,7 @@ from typing import Any
 from flet_core import Page
 from flet_manager.utils import Client
 from mybody_api_client import MyBodyApiClient
-from mybody_api_client.utils.base_section import ApiException
+from mybody_api_client.utils import ApiException
 
 from app.utils.registration import Registration
 from config import settings
@@ -70,10 +70,10 @@ class Session:
         self.language = await self.get_cs(key='language')
         self.text_pack = await self.get_cs(key='text_pack')
 
-        self.api = MyBodyApiClient(token=self.token, is_test=settings.is_test)
+        self.api = MyBodyApiClient(url=settings.url, token=self.token)
 
         try:
-            self.account = await self.api.client.account.get()
+            self.account = await self.api.client.accounts.get()
             self.language = self.account.language
             if self.language != self.account.language:
                 await self.set_cs(key='language', value=self.language)

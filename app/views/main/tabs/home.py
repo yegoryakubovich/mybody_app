@@ -137,17 +137,17 @@ class HomeTab(BaseTab):
         now = datetime.now()
         self.date = now.strftime('%Y-%m-%d')
         self.account_service_id = self.client.session.account_service.id
-        self.meals = await self.client.session.api.client.meal.get_list(
+        self.meals = await self.client.session.api.client.meals.get_list(
             account_service_id=self.account_service_id,
             date=self.date,
         )
-        self.trainings = await self.client.session.api.client.training.get_list(
+        self.trainings = await self.client.session.api.client.trainings.get_list(
             account_service_id=self.account_service_id,
             date=self.date,
         )
         self.exercise = []
         if self.trainings:
-            self.training = await self.client.session.api.client.training.get(
+            self.training = await self.client.session.api.client.trainings.get(
                 id_=self.trainings[0]['id'],
             )
             for i, training in enumerate(self.training['exercises']):

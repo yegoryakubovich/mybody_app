@@ -20,7 +20,7 @@ import json
 
 from flet_core import PopupMenuButton, PopupMenuItem, ScrollMode, Row, IconButton, icons, \
     MainAxisAlignment
-from mybody_api_client.utils.base_section import ApiException
+from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -231,7 +231,7 @@ class ServiceCreateView(AdminBaseView):
 
         questions = json.dumps(self.questions, ensure_ascii=False)
         try:
-            service_id_str = await self.client.session.api.admin.service.create(
+            service_id_str = await self.client.session.api.admin.services.create(
                 id_str=self.tf_id_str.value,
                 name=self.tf_name.value,
                 questions=questions,

@@ -15,7 +15,7 @@
 #
 from flet_core import ScrollMode
 from flet_core.dropdown import Option
-from mybody_api_client.utils.base_section import ApiException
+from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -38,7 +38,7 @@ class ProductCreateView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.articles = await self.client.session.api.client.article.get_list(
+        self.articles = await self.client.session.api.client.articles.get_list(
         )
         await self.set_type(loading=False)
         nutrients_type_dict = {
@@ -117,7 +117,7 @@ class ProductCreateView(AdminBaseView):
             if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
                 return
         try:
-            product_id = await self.client.session.api.admin.product.create(
+            product_id = await self.client.session.api.admin.products.create(
                 name=self.tf_name.value,
                 type_=self.dd_type.value,
                 unit=self.dd_unit.value,

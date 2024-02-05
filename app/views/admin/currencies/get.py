@@ -30,7 +30,7 @@ class CurrencyView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.currency = await self.client.session.api.client.currency.get(
+        self.currency = await self.client.session.api.client.currencies.get(
             id_str=self.currency_id_str,
         )
         await self.set_type(loading=False)
@@ -48,7 +48,7 @@ class CurrencyView(AdminBaseView):
         )
 
     async def delete_currency(self, _):
-        await self.client.session.api.admin.currency.delete(
+        await self.client.session.api.admin.currencies.delete(
             id_str=self.currency_id_str,
         )
         await self.client.change_view(go_back=True, with_restart=True)

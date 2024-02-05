@@ -43,7 +43,7 @@ class MealReportView(ClientBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.products = await self.client.session.api.client.product.get_list(
+        self.products = await self.client.session.api.client.products.get_list(
             type_=self.nutrient_type,
         )
         await self.set_type(loading=False)
@@ -188,7 +188,7 @@ class MealReportView(ClientBaseView):
         await self.close_dlg(_)
         product_id = self.dd_product.value
         quantity = self.tf_quantity.value
-        product = await self.client.session.api.client.product.get(id_=product_id)
+        product = await self.client.session.api.client.products.get(id_=product_id)
         self.added_products.append((product, quantity))
         await self.restart()
         await self.update_async()

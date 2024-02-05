@@ -18,7 +18,7 @@
 from functools import partial
 
 from flet_core import Row, ScrollMode
-from mybody_api_client.utils.base_section import ApiException
+from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.button.switch import StitchButton
@@ -43,7 +43,7 @@ class ArticleView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.article = await self.client.session.api.client.article.get(
+        self.article = await self.client.session.api.client.articles.get(
             id_=self.article_id
         )
         await self.set_type(loading=False)
@@ -112,7 +112,7 @@ class ArticleView(AdminBaseView):
 
     async def delete_article(self, _):
         try:
-            await self.client.session.api.admin.article.delete(
+            await self.client.session.api.admin.articles.delete(
                 id_=self.article_id,
             )
             await self.client.change_view(go_back=True, with_restart=True)
@@ -121,7 +121,7 @@ class ArticleView(AdminBaseView):
             return await self.client.session.error(error=e)
 
     async def change_visibility(self, _):
-        await self.client.session.api.admin.article.update(
+        await self.client.session.api.admin.articles.update(
             id_=self.article_id,
             is_hide=not self.article['is_hide'],
         )

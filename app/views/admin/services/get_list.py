@@ -31,7 +31,7 @@ class ServiceListView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.services = await self.client.session.api.client.service.get_list()
+        self.services = await self.client.session.api.client.services.get_list()
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO

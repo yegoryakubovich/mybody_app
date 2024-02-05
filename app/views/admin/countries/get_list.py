@@ -32,7 +32,7 @@ class CountryListView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.countries = await self.client.session.api.client.country.get_list()
+        self.countries = await self.client.session.api.client.countries.get_list()
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO

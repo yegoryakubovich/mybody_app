@@ -16,7 +16,7 @@
 
 
 from flet_core.dropdown import Option
-from mybody_api_client.utils.base_section import ApiException
+from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -37,7 +37,7 @@ class AccountMealProductCreateView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.products = await self.client.session.api.client.product.get_list()
+        self.products = await self.client.session.api.client.products.get_list()
         await self.set_type(loading=False)
 
         product_options = [
@@ -76,7 +76,7 @@ class AccountMealProductCreateView(AdminBaseView):
             if not await Error.check_field(self, field, check_int):
                 return
         try:
-            await self.client.session.api.admin.meal.create_product(
+            await self.client.session.api.admin.meals.create_product(
                 meal_id=self.meal_id,
                 product_id=self.dd_product.value,
                 value=self.tf_quantity.value,

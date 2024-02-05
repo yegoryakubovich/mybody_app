@@ -17,7 +17,7 @@
 
 from flet_core import Row, ScrollMode
 from flet_core.dropdown import Option
-from mybody_api_client.utils.base_section import ApiException
+from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -45,10 +45,10 @@ class ProductView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.product = await self.client.session.api.client.product.get(
+        self.product = await self.client.session.api.client.products.get(
             id_=self.product_id
         )
-        self.articles = await self.client.session.api.client.article.get_list(
+        self.articles = await self.client.session.api.client.articles.get_list(
         )
         await self.set_type(loading=False)
 
@@ -138,14 +138,14 @@ class ProductView(AdminBaseView):
         )
 
     async def delete_product(self, _):
-        await self.client.session.api.admin.product.delete(
+        await self.client.session.api.admin.products.delete(
             id_=self.product_id
         )
         await self.client.change_view(go_back=True, with_restart=True)
 
     async def update_product(self, _):
         try:
-            await self.client.session.api.admin.product.update(
+            await self.client.session.api.admin.products.update(
                 id_=self.product_id,
                 type_=self.dd_type.value,
                 unit=self.dd_units.value,

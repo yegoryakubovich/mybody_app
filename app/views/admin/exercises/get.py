@@ -17,7 +17,7 @@
 
 from flet_core import Row
 from flet_core.dropdown import Option, Dropdown
-from mybody_api_client.utils.base_section import ApiException
+from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -37,7 +37,7 @@ class ExerciseView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.exercise = await self.client.session.api.client.exercise.get(
+        self.exercise = await self.client.session.api.client.exercises.get(
             id_=self.exercise_id
         )
         await self.set_type(loading=False)
@@ -88,14 +88,14 @@ class ExerciseView(AdminBaseView):
         )
 
     async def delete_exercise(self, _):
-        await self.client.session.api.admin.exercise.delete(
+        await self.client.session.api.admin.exercisess.delete(
             id_=self.exercise_id,
         )
         await self.client.change_view(go_back=True, with_restart=True)
 
     async def update_exercise(self, _):
         try:
-            await self.client.session.api.admin.exercise.update(
+            await self.client.session.api.admin.exercisess.update(
                 id_=self.exercise_id,
                 type_=self.dd_exercise_type.value,
             )

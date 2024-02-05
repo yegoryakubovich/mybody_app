@@ -19,7 +19,7 @@ from collections import defaultdict
 from functools import partial
 
 from flet_core import ScrollMode, Row, Container, Image, MainAxisAlignment, AlertDialog
-from mybody_api_client.utils.base_section import ApiException
+from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -46,7 +46,7 @@ class AccountMealListAllView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.meals = await self.client.session.api.admin.meal.get_list(
+        self.meals = await self.client.session.api.admin.meals.get_list(
             account_service_id=self.account_service_id,
             date=self.date,
         )
@@ -142,13 +142,13 @@ class AccountMealListAllView(AdminBaseView):
 
     async def create_duplicate_meal(self, _):
         await self.set_type(loading=True)
-        duplicate_meal = await self.client.session.api.admin.meal.get_list(
+        duplicate_meal = await self.client.session.api.admin.meals.get_list(
             account_service_id=self.account_service_id,
             date=self.date,
         )
         try:
             for meal in duplicate_meal:
-                meal_response = await self.client.session.api.admin.meal.create(
+                meal_response = await self.client.session.api.admin.meals.create(
                     account_service_id=self.account_service_id,
                     date=self.tf_date_duplicate_meal.value,
                     type_=meal['type'],
@@ -157,7 +157,7 @@ class AccountMealListAllView(AdminBaseView):
                     carbohydrates=meal['carbohydrates'],
                 )
                 for product in meal['products']:
-                    await self.client.session.api.admin.meal.create_product(
+                    await self.client.session.api.admin.meals.create_product(
                         meal_id=meal_response,
                         product_id=product['product'],
                         value=product['value'],
