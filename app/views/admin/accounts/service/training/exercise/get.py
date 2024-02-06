@@ -41,7 +41,7 @@ class AccountTrainingExerciseView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.exercises = await self.client.session.api.client.exercise.get_list()
+        self.exercises = await self.client.session.api.client.exercises.get_list()
         await self.set_type(loading=False)
 
         self.snack_bar = SnackBar(
@@ -100,14 +100,14 @@ class AccountTrainingExerciseView(AdminBaseView):
         )
 
     async def delete_training_exercise(self, _):
-        await self.client.session.api.admin.training.delete_exercise(
+        await self.client.session.api.admin.trainings.delete_exercise(
             id_=self.exercise['training_exercise']['id'],
         )
         await self.client.change_view(go_back=True, with_restart=True)
 
     async def update_training_exercise(self, _):
         try:
-            await self.client.session.api.admin.training.update_exercise(
+            await self.client.session.api.admin.trainings.update_exercise(
                 id_=self.exercise['training_exercise']['id'],
                 exercise_id=self.dd_exercise.value,
                 priority=self.tf_priority.value,

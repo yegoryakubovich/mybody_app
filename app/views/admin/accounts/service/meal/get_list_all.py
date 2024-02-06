@@ -157,14 +157,14 @@ class AccountMealListAllView(AdminBaseView):
                     carbohydrates=meal['carbohydrates'],
                 )
                 for product in meal['products']:
-                    await self.client.session.api.admin.meals.create_product(
+                    await self.client.session.api.admin.meals.products.create(
                         meal_id=meal_response,
                         product_id=product['product'],
                         value=product['value'],
                     )
             await self.set_type(loading=False)
-            await self.build()
             await self.update_async()
+            await self.build()
         except ApiException as e:
             await self.set_type(loading=False)
             return await self.client.session.error(error=e)

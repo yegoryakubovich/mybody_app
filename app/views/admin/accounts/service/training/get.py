@@ -48,12 +48,12 @@ class AccountTrainingView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.training = await self.client.session.api.admin.training.get(
+        self.training = await self.client.session.api.admin.trainings.get(
             id_=self.training_id,
         )
         self.exercise = []
         for i, training in enumerate(self.training['exercises']):
-            training_info = await self.client.session.api.client.exercise.get(id_=training['exercise'])
+            training_info = await self.client.session.api.client.exercises.get(id_=training['exercise'])
             # Находим соответствующий продукт в self.exercise['exercise']
             training_exercise = self.training['exercises'][i]
             if training_exercise is not None:
@@ -137,7 +137,7 @@ class AccountTrainingView(AdminBaseView):
         )
 
     async def delete_training(self, _):
-        await self.client.session.api.admin.training.delete(
+        await self.client.session.api.admin.trainings.delete(
             id_=self.training_id,
         )
         await self.client.change_view(go_back=True, with_restart=True)
@@ -157,7 +157,7 @@ class AccountTrainingView(AdminBaseView):
                 return
 
         try:
-            await self.client.session.api.admin.training.update(
+            await self.client.session.api.admin.trainings.update(
                 id_=self.training_id,
                 date=self.tf_date.value,
                 article_id=0,

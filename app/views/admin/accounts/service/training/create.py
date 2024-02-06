@@ -59,7 +59,7 @@ class AccountTrainingCreateView(AdminBaseView):
             if not await Error.check_date_format(self, field):
                 return
         try:
-            training_id = await self.client.session.api.admin.training.create(
+            training_id = await self.client.session.api.admin.trainings.create(
                 account_service_id=self.account_service_id,
                 date=self.tf_date.value,
                 article_id=0,

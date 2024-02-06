@@ -45,7 +45,7 @@ class AccountTrainingListView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.trainings = await self.client.session.api.admin.training.get_list(
+        self.trainings = await self.client.session.api.admin.trainings.get_list(
             account_service_id=self.account_service_id,
             date=self.date,
         )
@@ -72,7 +72,6 @@ class AccountTrainingListView(AdminBaseView):
                     on_click=self.close_dlg,
                 ),
             ],
-            modal=False,
         )
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
@@ -142,20 +141,19 @@ class AccountTrainingListView(AdminBaseView):
     
     async def create_duplicate_training(self, _):
         await self.set_type(loading=True)
-        duplicate_training = await self.client.session.api.admin.training.get_list(
+        duplicate_training = await self.client.session.api.admin.trainings.get_list(
             account_service_id=self.account_service_id,
             date=self.date,
         )
-        print(duplicate_training)
         try:
             for training in duplicate_training:
-                training_id = await self.client.session.api.admin.training.create(
+                training_id = await self.client.session.api.admin.trainings.create(
                     account_service_id=self.account_service_id,
                     date=self.tf_date_duplicate_training.value,
                     article_id=0,
                 )
                 for exercise in training['exercises']:
-                    await self.client.session.api.admin.training.create_exercise(
+                    await self.client.session.api.admin.trainings.exercises.create(
                         training_id=training_id,
                         exercise_id=exercise['exercise'],
                         priority=exercise['priority'],
@@ -163,8 +161,8 @@ class AccountTrainingListView(AdminBaseView):
                         rest=exercise['rest'],
                     )
             await self.set_type(loading=False)
-            await self.build()
             await self.update_async()
+            await self.build()
         except ApiException as e:
             await self.set_type(loading=False)
             return await self.client.session.error(error=e)

@@ -46,7 +46,7 @@ class CountryView(AdminBaseView):
             id_str=self.country_id_str,
         )
         self.languages = await self.client.session.api.client.languages.get_list()
-        self.timezones = await self.client.session.api.client.timezone.get_list()
+        self.timezones = await self.client.session.api.client.timezones.get_list()
         self.currencies = await self.client.session.api.client.currencies.get_list()
         await self.set_type(loading=False)
 
@@ -130,6 +130,7 @@ class CountryView(AdminBaseView):
                 currency=self.dd_currency.value,
                 timezone=self.dd_timezone.value,
             )
+            await self.set_type(loading=False)
             self.snack_bar.open = True
             await self.update_async()
         except ApiException as e:

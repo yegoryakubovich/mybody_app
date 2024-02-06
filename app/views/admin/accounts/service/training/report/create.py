@@ -58,7 +58,7 @@ class AccountTrainingReportCreateView(AdminBaseView):
             if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
                 return
         try:
-            report_id = await self.client.session.api.admin.training.create_report(
+            report_id = await self.client.session.api.admin.trainings.create_report(
                 training_id=self.training_id,
                 comment=self.tf_comment.value,
             )

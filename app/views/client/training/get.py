@@ -41,83 +41,91 @@ class TrainingView(ClientBaseView):
 
     async def build(self):
         self.scroll = ScrollMode.AUTO
-        counter = 1
         controls = []
-        for exercise in self.exercise:
+        if not self.exercise:
             controls.append(
-                Row(
-                    controls=[
-                        Container(
-                            Text(
-                                value=str(counter) + '.',
-                                color='#000000',
-                                font_family=Fonts.MEDIUM,
-                            ),
-                            expand=1,
-                        ),
-                        Container(
-                            Text(
-                                value=await self.client.session.gtv(key=exercise['name_text']),
-                                color='#000000',
-                                font_family=Fonts.MEDIUM,
-                            ),
-                            expand=10,
-                            alignment=alignment.center,
-                        ),
-                        Container(
-                            Text(
-                                value=str(exercise['training_exercise']['value']),
-                                color='#000000',
-                                font_family=Fonts.MEDIUM,
-                            ),
-                            expand=2,
-                            alignment=alignment.center,
-                        ),
-                    ],
-                    alignment=MainAxisAlignment.SPACE_BETWEEN,
+                Text(
+                    value=await self.client.session.gtv(key='training_planning_stage'),
+                    size=15,
+                    font_family=Fonts.MEDIUM,
                 )
             )
-            counter += 1
-            controls.append(
-                Row(
-                    controls=[
-                        Container(
-                            Text(
-                                value=str(counter) + '.',
-                                color='#000000',
-                                font_family=Fonts.MEDIUM,
-                            ),
-                            expand=1,
-                        ),
-                        Container(
-                            Text(
-                                value=await self.client.session.gtv(key='rest'),
-                                color='#000000',
-                                font_family=Fonts.MEDIUM,
-                            ),
-                            expand=10,
-                            alignment=alignment.center,
-                        ),
-                        Container(
-                            Text(
-                                value=str(exercise['training_exercise']['rest']) + ' ' + await self.client.session.gtv(
-                                    key='seconds' + '.'
+        else:
+            counter = 1
+            for exercise in self.exercise:
+                controls.append(
+                    Row(
+                        controls=[
+                            Container(
+                                Text(
+                                    value=str(counter) + '.',
+                                    color='#000000',
+                                    font_family=Fonts.MEDIUM,
                                 ),
-                                color='#000000',
-                                font_family=Fonts.MEDIUM,
+                                expand=1,
                             ),
-                            expand=2,
-                            alignment=alignment.center,
-                        ),
-                    ],
-                    alignment=MainAxisAlignment.SPACE_BETWEEN,
+                            Container(
+                                Text(
+                                    value=await self.client.session.gtv(key=exercise['name_text']),
+                                    color='#000000',
+                                    font_family=Fonts.MEDIUM,
+                                ),
+                                expand=10,
+                                alignment=alignment.center,
+                            ),
+                            Container(
+                                Text(
+                                    value=str(exercise['training_exercise']['value']),
+                                    color='#000000',
+                                    font_family=Fonts.MEDIUM,
+                                ),
+                                expand=2,
+                                alignment=alignment.center,
+                            ),
+                        ],
+                        alignment=MainAxisAlignment.SPACE_BETWEEN,
+                    )
                 )
-            )
-            counter += 1
+                counter += 1
+                controls.append(
+                    Row(
+                        controls=[
+                            Container(
+                                Text(
+                                    value=str(counter) + '.',
+                                    color='#000000',
+                                    font_family=Fonts.MEDIUM,
+                                ),
+                                expand=1,
+                            ),
+                            Container(
+                                Text(
+                                    value=await self.client.session.gtv(key='rest'),
+                                    color='#000000',
+                                    font_family=Fonts.MEDIUM,
+                                ),
+                                expand=10,
+                                alignment=alignment.center,
+                            ),
+                            Container(
+                                Text(
+                                    value=str(
+                                        exercise['training_exercise']['rest']) + ' ' + await self.client.session.gtv(
+                                        key='seconds' + '.'
+                                    ),
+                                    color='#000000',
+                                    font_family=Fonts.MEDIUM,
+                                ),
+                                expand=2,
+                                alignment=alignment.center,
+                            ),
+                        ],
+                        alignment=MainAxisAlignment.SPACE_BETWEEN,
+                    )
+                )
+                counter += 1
 
-        self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='training'),
-            main_section_controls=[
+            controls.extend([
                 Text(
                     value=await self.client.session.gtv(key='training_plan_today'),
                     size=18,
@@ -169,7 +177,11 @@ class TrainingView(ClientBaseView):
                     ),
                     on_click=self.start_training
                 ),
-            ],
+            ])
+
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key='training'),
+            main_section_controls=controls,
         )
 
     async def start_training(self, _):

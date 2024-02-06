@@ -51,7 +51,7 @@ class RegistrationFirstView(AuthView):
 
             currencies = await self.client.session.api.client.currencies.get_list()
             countries = await self.client.session.api.client.countries.get_list()
-            timezones = await self.client.session.api.client.timezone.get_list()
+            timezones = await self.client.session.api.client.timezones.get_list()
 
             await self.client.change_view(
                 view=RegistrationSecondView(

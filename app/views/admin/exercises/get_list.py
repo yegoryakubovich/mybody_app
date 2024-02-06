@@ -32,7 +32,7 @@ class ExerciseListView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.exercises = await self.client.session.api.client.exercise.get_list()
+        self.exercises = await self.client.session.api.client.exercises.get_list()
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO

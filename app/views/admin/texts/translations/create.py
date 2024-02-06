@@ -43,7 +43,6 @@ class TextTranslationCreateView(AdminBaseView):
         self.text = await self.client.session.api.admin.texts.get(
             key=self.key,
         )
-        print(self.text)
         self.languages = await self.client.session.api.client.languages.get_list()
         await self.set_type(loading=False)
 

@@ -39,11 +39,9 @@ class AccountView(AdminBaseView):
         self.account = await self.client.session.api.admin.accounts.get(
             id_=self.account_id
         )
-        print(self.account_id)
         self.services = await self.client.session.api.admin.accounts.services.get_list(
             account_id=self.account_id,
         )
-        print(self.services)
         await self.set_type(loading=False)
 
         # FIXME

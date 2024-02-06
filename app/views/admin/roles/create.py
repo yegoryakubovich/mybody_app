@@ -53,7 +53,7 @@ class RoleCreateView(AdminBaseView):
             if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
                 return
         try:
-            role_id = await self.client.session.api.admin.role.create(
+            role_id = await self.client.session.api.admin.roles.create(
                 name=self.tf_name.value,
             )
             await self.client.change_view(view=RoleView(role_id=role_id), delete_current=True)

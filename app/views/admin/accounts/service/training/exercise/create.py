@@ -40,7 +40,7 @@ class AccountTrainingExerciseCreateView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.exercises = await self.client.session.api.client.exercise.get_list()
+        self.exercises = await self.client.session.api.client.exercises.get_list()
         await self.set_type(loading=False)
 
         exercise_options = [
@@ -87,7 +87,7 @@ class AccountTrainingExerciseCreateView(AdminBaseView):
             if not await Error.check_field(self, field, min_len, max_len, check_int):
                 return
         try:
-            await self.client.session.api.admin.training.create_exercise(
+            await self.client.session.api.admin.trainings.create_exercise(
                 training_id=self.training_id,
                 exercise_id=self.dd_exercise.value,
                 priority=self.tf_priority.value,

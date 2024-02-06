@@ -38,10 +38,10 @@ class RoleView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.role = await self.client.session.api.admin.role.get(
+        self.role = await self.client.session.api.admin.roles.get(
             id_=self.role_id
         )
-        self.permissions = await self.client.session.api.admin.role.permissions.get_list(
+        self.permissions = await self.client.session.api.admin.roles.permissions.get_list(
             role_id=self.role_id,
         )
         await self.set_type(loading=False)
@@ -79,7 +79,7 @@ class RoleView(AdminBaseView):
          )
 
     async def delete_role(self, _):
-        await self.client.session.api.admin.role.delete(
+        await self.client.session.api.admin.roles.delete(
             id_=self.role_id,
         )
         await self.client.change_view(go_back=True, with_restart=True)

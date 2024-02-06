@@ -38,7 +38,7 @@ class RolePermissionCreateView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.role = await self.client.session.api.admin.role.get(
+        self.role = await self.client.session.api.admin.roles.get(
             id_=self.role_id
         )
         self.permissions = await self.client.session.api.admin.permissions.get_list()
@@ -89,7 +89,7 @@ class RolePermissionCreateView(AdminBaseView):
 
     async def create_permission(self, _):
         try:
-            await self.client.session.api.admin.role.permissions.create(
+            await self.client.session.api.admin.roles.permissions.create(
                 role_id=self.role_id,
                 permission=self.dd_permission.value,
             )

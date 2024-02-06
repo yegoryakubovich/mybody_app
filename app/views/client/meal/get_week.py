@@ -38,7 +38,6 @@ class MealWeekView(ClientBaseView):
     async def build(self):
         from app.views.main.tabs.home import MealButton
         await self.set_type(loading=True)
-        print(self.date)
         self.meals = await self.client.session.api.client.meals.get_list(
             account_service_id=self.account_service_id,
             date=self.date,

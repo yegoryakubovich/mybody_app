@@ -32,7 +32,7 @@ class TimezoneListView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.timezones = await self.client.session.api.client.timezone.get_list()
+        self.timezones = await self.client.session.api.client.timezones.get_list()
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO

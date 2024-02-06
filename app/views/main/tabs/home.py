@@ -151,7 +151,7 @@ class HomeTab(BaseTab):
                 id_=self.trainings[0]['id'],
             )
             for i, training in enumerate(self.training['exercises']):
-                training_info = await self.client.session.api.client.exercise.get(id_=training['exercise'])
+                training_info = await self.client.session.api.client.exercises.get(id_=training['exercise'])
                 # Находим соответствующий продукт в self.exercise['exercise']
                 training_exercise = self.training['exercises'][i]
                 if training_exercise is not None:

@@ -38,7 +38,7 @@ class AccountTrainingReportView(AdminBaseView):
     async def build(self):
         await self.set_type(loading=True)
         try:
-            self.report = await self.client.session.api.admin.training.get_report(
+            self.report = await self.client.session.api.admin.trainings.get_report(
                 id_=self.training_report_id,
             )
         except ApiException:
@@ -74,7 +74,7 @@ class AccountTrainingReportView(AdminBaseView):
         )
 
     async def delete_training_report(self, _):
-        await self.client.session.api.admin.training.delete_report(
+        await self.client.session.api.admin.trainings.delete_report(
             id_=self.training_report_id,
         )
         await self.client.change_view(go_back=True, with_restart=True)

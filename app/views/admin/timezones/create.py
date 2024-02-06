@@ -58,7 +58,7 @@ class TimezoneCreateView(AdminBaseView):
                 return
         else:
             try:
-                await self.client.session.api.admin.timezone.create(
+                await self.client.session.api.admin.timezones.create(
                     id_str=self.tf_id_str.value,
                     deviation=self.tf_deviation.value,
                 )
