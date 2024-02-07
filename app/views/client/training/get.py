@@ -125,7 +125,9 @@ class TrainingView(ClientBaseView):
                 )
                 counter += 1
 
-            controls.extend([
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key='training'),
+            main_section_controls=[
                 Text(
                     value=await self.client.session.gtv(key='training_plan_today'),
                     size=18,
@@ -177,11 +179,7 @@ class TrainingView(ClientBaseView):
                     ),
                     on_click=self.start_training
                 ),
-            ])
-
-        self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='training'),
-            main_section_controls=controls,
+            ]
         )
 
     async def start_training(self, _):

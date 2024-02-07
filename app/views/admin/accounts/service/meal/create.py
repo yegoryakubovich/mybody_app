@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 
+from datetime import datetime
 
 from flet_core import ScrollMode
 from flet_core.dropdown import Option
@@ -58,9 +59,11 @@ class AccountMealCreateView(AdminBaseView):
             value=meal_type_options[0].key,
             options=meal_type_options,
         )
+        now = datetime.now()
         self.tf_date = TextField(
             label=await self.client.session.gtv(key='date'),
-            value=self.meal_date or None,
+            value=self.meal_date or now.strftime("%Y-%m-%d"),
+            on_focus=self.datepicker
         )
         self.tf_fats, self.tf_proteins, self.tf_carbohydrates = [
             TextField(
@@ -86,6 +89,19 @@ class AccountMealCreateView(AdminBaseView):
                 ),
             ]
         )
+
+    async def select_datepicker(self, _):
+        selected_date = self.client.session.datepicker.value
+        date_string = selected_date.strftime("%Y-%m-%d")
+        self.tf_date.value = date_string
+        await self.tf_date.update_async()
+        await self.tf_fats.focus_async()
+
+    async def datepicker(self, _):
+        await self.client.session.datepicker.open_(
+            on_select=self.select_datepicker
+        )
+        await self.tf_fats.focus_async()
 
     async def create_meal(self, _):
         from app.views.admin.accounts.service.meal.get import AccountMealView

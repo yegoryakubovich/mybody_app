@@ -30,6 +30,7 @@ class MealWeekView(ClientBaseView):
     meals: list[dict]
     role: list
     date: str = None
+    month_value: dict = None
 
     def __init__(self, account_service_id):
         super().__init__()
@@ -62,6 +63,13 @@ class MealWeekView(ClientBaseView):
                     )
                 )
 
+        months = ['january', 'february', 'march', 'april', 'may', 'june',
+                  'july', 'august', 'september', 'october', 'november', 'december']
+
+        month_values = {}
+        for month in months:
+            month_values[month] = await self.client.session.gtv(key=month)
+
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='client_meal_get_week_view_title'),
@@ -69,7 +77,8 @@ class MealWeekView(ClientBaseView):
                 Column(
                     controls=[
                         Text(
-                            value=date,
+                            value=f"{datetime.strptime(date, '%Y-%m-%d').day} "
+                                  f"{month_values[months[datetime.strptime(date, '%Y-%m-%d').month - 1]]}",
                             size=20,
                             font_family=Fonts.SEMIBOLD,
                         ),

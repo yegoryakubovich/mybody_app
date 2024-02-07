@@ -17,7 +17,7 @@
 
 import base64
 
-from flet_core import ScrollMode, AlertDialog, Container, Column, FilePicker, Image, ImageFit
+from flet_core import ScrollMode, AlertDialog, Container, Column, FilePicker, Image, ImageFit, ResponsiveRow
 from flet_core.dropdown import Option
 
 from app.controls.button import FilledButton, ProductChipButton
@@ -102,14 +102,21 @@ class MealReportView(ClientBaseView):
             modal=False,
         )
         self.added_product_controls = [
-            ProductChipButton(
-                Text(
-                    value=await self.client.session.gtv(key=product['name_text']) + ' ' + quantity + ' ' +
-                          await self.client.session.gtv(key='gr')
-                ).value,
-                on_click=None,
+            ResponsiveRow(
+                controls=[
+                    Container(
+                        content=ProductChipButton(
+                            Text(
+                                value=await self.client.session.gtv(key=product['name_text']) + ' ' + quantity + ' ' +
+                                      await self.client.session.gtv(key='gr')
+                            ).value,
+                            on_click=None,
+                        ),
+                        col={"xs": 5}
+                    )
+                    for product, quantity in self.added_products
+                ],
             )
-            for product, quantity in self.added_products
         ]
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
@@ -155,14 +162,14 @@ class MealReportView(ClientBaseView):
                     font_family=Fonts.REGULAR,
                 ),
                 *[Image(
-                    src=f"data:image/jpeg;base64,{base64.b64encode(photo.content).decode()}",
+                    src=f"data:image/jpeg;base64,{photo}",
                     fit=ImageFit.CONTAIN,
                 ) for photo in self.photos],
                 FilledButton(
                     content=Text(
                         value=await self.client.session.gtv(key='add'),
                     ),
-                    on_click=None,
+                    on_click=self.add_photo,
                 ),
                 FilledButton(
                     content=Text(
@@ -173,8 +180,19 @@ class MealReportView(ClientBaseView):
             ]
         )
 
+    async def on_file_select(self, file):
+        for f in file.files:
+            print(f)
+            # Преобразуем содержимое файла в base64
+            encoded_content = base64.b64encode(f.path).decode()
+            self.photos.append(encoded_content)
+        await self.restart()
+
     async def add_photo(self, _):
-        pass
+        await self.client.session.filepicker.open_(
+            on_select=self.on_file_select,
+            allowed_extensions=['svg', 'jpg']
+        )
 
     async def close_dlg(self, _):
         self.dlg_modal.open = False
