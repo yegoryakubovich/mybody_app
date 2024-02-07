@@ -15,6 +15,24 @@
 #
 
 
-from .textfield import TextField
-from .dropdown import Dropdown
-from .datepicker import DatePicker
+from datetime import datetime
+
+from flet_core import DatePicker as DatePickerFlet
+
+
+class DatePicker(DatePickerFlet):
+    def __init__(self):
+        super().__init__()
+
+    async def open_(
+            self,
+            on_select=None,
+            on_dismiss=None,
+            date_from: datetime = datetime(year=2024, month=1, day=1),
+            date_to: datetime = datetime(year=2025, month=1, day=1),
+    ):
+        self.on_change = on_select
+        self.on_dismiss = on_dismiss
+        self.first_date = date_from
+        self.last_date = date_to
+        await self.pick_date_async()

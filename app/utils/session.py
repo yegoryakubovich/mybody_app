@@ -41,6 +41,7 @@ class Session:
     date_picker: Any
     account_service: Any
     fp_open: Any
+    datepicker: Any
 
     def __init__(self, client: Client):
         self.client = client
@@ -55,14 +56,17 @@ class Session:
     async def init_bs(self):
         from app.controls.information.bottomsheet import BottomSheet
         from app.controls.information.filepicker import FilePicker
+        from app.controls.input.datepicker import DatePicker
 
         self.bs_error = BottomSheet()
         self.bs_info = BottomSheet()
         self.fp_open = FilePicker()
+        self.datepicker = DatePicker()
 
         self.page.overlay.append(self.bs_error)
         self.page.overlay.append(self.bs_info)
         self.page.overlay.append(self.fp_open)
+        self.page.overlay.append(self.datepicker)
         await self.page.update_async()
 
     async def init(self):
