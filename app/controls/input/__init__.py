@@ -18,3 +18,4 @@
 from .textfield import TextField
 from .dropdown import Dropdown
 from .datepicker import DatePicker
+from .filepicker import FilePicker
