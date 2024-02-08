@@ -31,5 +31,7 @@ def create_app():
         assets_dir=abspath('assets'),
         fonts=fonts,
         themes=themes,
+        upload_dir='uploads',
+        secret_key='1',  # FIXME
     )
     return app.fastapi

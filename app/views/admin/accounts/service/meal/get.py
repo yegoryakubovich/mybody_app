@@ -24,7 +24,7 @@ from mybody_api_client.utils import ApiException
 from app.controls.button import FilledButton
 from app.controls.information import Text, Card
 from app.controls.information.snackbar import SnackBar
-from app.controls.input import TextField
+from app.controls.input import TextField, TextFieldDate
 from app.controls.layout import AdminBaseView, Section
 from app.utils import Fonts, Error
 from app.views.admin.accounts.service.meal.product import AccountMealProductView
@@ -79,10 +79,10 @@ class AccountMealView(AdminBaseView):
             value=self.meal['type'],
             options=meal_type_options,
         )
-
-        self.tf_date = TextField(
+        self.tf_date = TextFieldDate(
             label=await self.client.session.gtv(key='date'),
             value=self.meal['date'],
+            client=self.client
         )
         self.snack_bar = SnackBar(
             content=Text(
@@ -180,14 +180,17 @@ class AccountMealView(AdminBaseView):
                 await self.set_type(loading=False)
                 return
         try:
-            await self.client.session.api.admin.meals.update(
-                id_=self.meal_id,
-                date=self.tf_date.value,
-                type_=self.dd_type.value,
-                fats=self.tf_fats.value,
-                proteins=self.tf_proteins.value,
-                carbohydrates=self.tf_carbohydrates.value,
-            )
+            update_data = {
+                "id_": self.meal_id,
+                "type_": self.dd_type.value,
+                "fats": self.tf_fats.value,
+                "proteins": self.tf_proteins.value,
+                "carbohydrates": self.tf_carbohydrates.value,
+            }
+            if self.tf_date.value != self.meal['date']:
+                update_data.update({"date": self.tf_date.value})
+            print(update_data)
+            await self.client.session.api.admin.meals.update(**update_data)
             self.snack_bar.open = True
             await self.set_type(loading=False)
             await self.update_async()

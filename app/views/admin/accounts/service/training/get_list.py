@@ -17,13 +17,12 @@
 
 from functools import partial
 
-from flet_core import ScrollMode, AlertDialog, Row, Container, Image, MainAxisAlignment
+from flet_core import ScrollMode, AlertDialog, Row, Container, Image, MainAxisAlignment, TextButton
 from mybody_api_client.utils import ApiException
 
-from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.information.card import Card
-from app.controls.input import TextField
+from app.controls.input import TextField, TextFieldDate
 from app.controls.layout import AdminBaseView
 from app.utils import Fonts, Icons
 from app.views.admin.accounts.service.training.create import AccountTrainingCreateView
@@ -31,13 +30,14 @@ from app.views.admin.accounts.service.training.get import AccountTrainingView
 
 
 class AccountTrainingListView(AdminBaseView):
-    route = '/admin/account/training/list/get'
+    route = '/admin/account/trainings/list/get'
     trainings: list[dict]
-    role: list
     duplicate: list[dict]
+    role: dict
     date: str = None
-    dlg_modal = AlertDialog
-    tf_date_duplicate_training = TextField
+    duplicate_date: str = None
+    dlg_modal: AlertDialog
+    tf_date_duplicate_training: TextField
 
     def __init__(self, account_service_id):
         super().__init__()
@@ -51,25 +51,31 @@ class AccountTrainingListView(AdminBaseView):
         )
         await self.set_type(loading=False)
 
-        self.tf_date_duplicate_training = TextField(
-                label=await self.client.session.gtv(key='date'),
-            )
+        self.tf_date_duplicate_training = TextFieldDate(
+            label=await self.client.session.gtv(key='date'),
+            client=self.client
+        )
         self.dlg_modal = AlertDialog(
             content=self.tf_date_duplicate_training,
             actions=[
-                FilledButton(
-                    content=Text(
-                        value=await self.client.session.gtv(key='create'),
-                        size=16,
-                    ),
-                    on_click=self.create_duplicate_training
-                ),
-                FilledButton(
-                    content=Text(
-                        value=await self.client.session.gtv(key='close'),
-                        size=16,
-                    ),
-                    on_click=self.close_dlg,
+                Row(
+                    controls=[
+                        TextButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='create'),
+                                size=16,
+                            ),
+                            on_click=self.create_duplicate_training
+                        ),
+                        TextButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='close'),
+                                size=16,
+                            ),
+                            on_click=self.close_dlg,
+                        ),
+                    ],
+                    alignment=MainAxisAlignment.END
                 ),
             ],
         )
@@ -108,7 +114,7 @@ class AccountTrainingListView(AdminBaseView):
                                     padding=7,
                                     border_radius=24,
                                     bgcolor='#008F12',
-                                    on_click=partial(self.open_dlg_modal, training['date']),
+                                    on_click=partial(self.open_dlg, training['date']),
                                 ),
                             ],
                             alignment=MainAxisAlignment.SPACE_BETWEEN,
@@ -124,8 +130,8 @@ class AccountTrainingListView(AdminBaseView):
         self.dlg_modal.open = False
         await self.update_async()
 
-    async def open_dlg_modal(self, date, _):
-        self.date = date
+    async def open_dlg(self, date, _):
+        self.duplicate_date = date
         self.dlg_modal.open = True
         await self.update_async()
 
@@ -143,14 +149,13 @@ class AccountTrainingListView(AdminBaseView):
         await self.set_type(loading=True)
         duplicate_training = await self.client.session.api.admin.trainings.get_list(
             account_service_id=self.account_service_id,
-            date=self.date,
+            date=self.duplicate_date,
         )
         try:
             for training in duplicate_training:
                 training_id = await self.client.session.api.admin.trainings.create(
                     account_service_id=self.account_service_id,
                     date=self.tf_date_duplicate_training.value,
-                    article_id=0,
                 )
                 for exercise in training['exercises']:
                     await self.client.session.api.admin.trainings.exercises.create(
@@ -160,9 +165,8 @@ class AccountTrainingListView(AdminBaseView):
                         value=exercise['value'],
                         rest=exercise['rest'],
                     )
-            await self.set_type(loading=False)
-            await self.update_async()
-            await self.build()
+                    await self.set_type(loading=False)
+            await self.restart()
         except ApiException as e:
             await self.set_type(loading=False)
             return await self.client.session.error(error=e)

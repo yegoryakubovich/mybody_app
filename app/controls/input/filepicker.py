@@ -31,7 +31,6 @@ class FilePicker(FilePickerFlet):
             allow_multiple: bool = False,
             file_type: FilePickerFileType = FilePickerFileType.ANY,
             initial_directory: str = None,
-
     ):
         self.on_result = on_select
         self.allowed_extensions = allowed_extensions
@@ -39,3 +38,4 @@ class FilePicker(FilePickerFlet):
         self.file_type = file_type
         self.initial_directory = initial_directory
         await self.pick_files_async()
+

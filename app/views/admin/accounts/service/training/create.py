@@ -19,7 +19,7 @@ from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
-from app.controls.input import TextField, Dropdown
+from app.controls.input import TextField, Dropdown, TextFieldDate
 from app.controls.layout import AdminBaseView
 from app.utils import Error
 
@@ -28,15 +28,15 @@ class AccountTrainingCreateView(AdminBaseView):
     route = '/admin/account/training/create'
     tf_date: TextField
     dd_articles: Dropdown
-    articles = list[dict]
 
     def __init__(self, account_service_id):
         super().__init__()
         self.account_service_id = account_service_id
 
     async def build(self):
-        self.tf_date = TextField(
+        self.tf_date = TextFieldDate(
             label=await self.client.session.gtv(key='date'),
+            client=self.client,
         )
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='admin_account_training_create_view_title'),
@@ -49,20 +49,18 @@ class AccountTrainingCreateView(AdminBaseView):
                     ),
                     on_click=self.create_training,
                 ),
-            ]
+            ],
         )
 
     async def create_training(self, _):
         from app.views.admin.accounts.service.training.get import AccountTrainingView
-        fields = [self.tf_date]
-        for field in fields:
-            if not await Error.check_date_format(self, field):
-                return
+        await self.set_type(loading=True)
         try:
             training_id = await self.client.session.api.admin.trainings.create(
                 account_service_id=self.account_service_id,
                 date=self.tf_date.value,
             )
+            await self.set_type(loading=False)
             await self.client.change_view(AccountTrainingView(training_id=training_id), delete_current=True)
         except ApiException as e:
             await self.set_type(loading=False)

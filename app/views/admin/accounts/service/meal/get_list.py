@@ -44,7 +44,6 @@ class AccountMealListView(AdminBaseView):
             date=self.meal_date,
         )
         await self.set_type(loading=False)
-
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
             title=self.meal_date,

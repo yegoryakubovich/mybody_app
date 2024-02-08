@@ -18,13 +18,12 @@
 from collections import defaultdict
 from functools import partial
 
-from flet_core import ScrollMode, Row, Container, Image, MainAxisAlignment, AlertDialog
+from flet_core import ScrollMode, Row, Container, Image, MainAxisAlignment, AlertDialog, TextButton
 from mybody_api_client.utils import ApiException
 
-from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.information.card import Card
-from app.controls.input import TextField
+from app.controls.input import TextField, TextFieldDate
 from app.controls.layout import AdminBaseView
 from app.utils import Fonts, Icons
 from app.views.admin.accounts.service.meal import AccountMealListView
@@ -37,6 +36,7 @@ class AccountMealListAllView(AdminBaseView):
     role: list
     duplicate: list[dict]
     date: str = None
+    duplicate_date: str = None
     dlg_modal = AlertDialog
     tf_date_duplicate_meal = TextField
 
@@ -60,26 +60,32 @@ class AccountMealListAllView(AdminBaseView):
             self.duplicate = meals_by_date[sorted_dates[0]]
         await self.set_type(loading=False)
 
-        self.tf_date_duplicate_meal = TextField(
-                label=await self.client.session.gtv(key='date'),
-            )
+        self.tf_date_duplicate_meal = TextFieldDate(
+            label=await self.client.session.gtv(key='date'),
+            client=self.client
+        )
         self.dlg_modal = AlertDialog(
             content=self.tf_date_duplicate_meal,
             actions=[
-                FilledButton(
-                    content=Text(
-                        value=await self.client.session.gtv(key='create'),
-                        size=16,
-                    ),
-                    on_click=self.create_duplicate_meal
-                ),
-                FilledButton(
-                    content=Text(
-                        value=await self.client.session.gtv(key='close'),
-                        size=16,
-                    ),
-                    on_click=self.close_dlg,
-                ),
+                Row(
+                    controls=[
+                        TextButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='create'),
+                                size=16,
+                            ),
+                            on_click=self.create_duplicate_meal
+                        ),
+                        TextButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='close'),
+                                size=16,
+                            ),
+                            on_click=self.close_dlg,
+                        ),
+                    ],
+                    alignment=MainAxisAlignment.END
+                )
             ],
             modal=False,
         )
@@ -119,7 +125,7 @@ class AccountMealListAllView(AdminBaseView):
                                     padding=7,
                                     border_radius=24,
                                     bgcolor='#008F12',
-                                    on_click=partial(self.open_dlg_modal, date),
+                                    on_click=partial(self.open_dlg, date),
                                 ),
                             ],
                             alignment=MainAxisAlignment.SPACE_BETWEEN,
@@ -135,8 +141,8 @@ class AccountMealListAllView(AdminBaseView):
         self.dlg_modal.open = False
         await self.update_async()
 
-    async def open_dlg_modal(self, date, _):
-        self.date = date
+    async def open_dlg(self, date, _):
+        self.duplicate_date = date
         self.dlg_modal.open = True
         await self.update_async()
 
@@ -144,7 +150,7 @@ class AccountMealListAllView(AdminBaseView):
         await self.set_type(loading=True)
         duplicate_meal = await self.client.session.api.admin.meals.get_list(
             account_service_id=self.account_service_id,
-            date=self.date,
+            date=self.duplicate_date,
         )
         try:
             for meal in duplicate_meal:
@@ -163,8 +169,7 @@ class AccountMealListAllView(AdminBaseView):
                         value=product['value'],
                     )
             await self.set_type(loading=False)
-            await self.update_async()
-            await self.build()
+            await self.restart()
         except ApiException as e:
             await self.set_type(loading=False)
             return await self.client.session.error(error=e)

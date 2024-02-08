@@ -24,7 +24,7 @@ from mybody_api_client.utils import ApiException
 from app.controls.button import FilledButton
 from app.controls.information import Text, Card
 from app.controls.information.snackbar import SnackBar
-from app.controls.input import TextField
+from app.controls.input import TextField, TextFieldDate
 from app.controls.layout import AdminBaseView, Section
 from app.utils import Fonts, Error
 from app.views.admin.accounts.service.training.exercise.create import AccountTrainingExerciseCreateView
@@ -35,8 +35,7 @@ from app.views.admin.accounts.service.training.report.get import AccountTraining
 class AccountTrainingView(AdminBaseView):
     route = '/admin/account/training/get'
     training: dict
-    exercise: list
-    articles: list[dict]
+    exercise: list[dict]
     snack_bar: SnackBar
     dd_type: Dropdown
     tf_date: TextField
@@ -59,11 +58,12 @@ class AccountTrainingView(AdminBaseView):
             if training_exercise is not None:
                 training_info['training_exercise'] = training_exercise
             self.exercise.append(training_info)
-
         await self.set_type(loading=False)
-        self.tf_date = TextField(
+
+        self.tf_date = TextFieldDate(
             label=await self.client.session.gtv(key='date'),
             value=self.training['date'],
+            client=self.client,
         )
         self.snack_bar = SnackBar(
             content=Text(
@@ -117,7 +117,7 @@ class AccountTrainingView(AdminBaseView):
                         for exercise in self.exercise
                     ],
                 ),
-            ]
+            ],
         )
 
     async def exercise_view(self, exercise, _):
@@ -157,10 +157,12 @@ class AccountTrainingView(AdminBaseView):
                 return
 
         try:
-            await self.client.session.api.admin.trainings.update(
-                id_=self.training_id,
-                date=self.tf_date.value,
-            )
+            update_data = {
+                "id_": self.training_id,
+            }
+            if self.tf_date.value != self.training['date']:
+                update_data.update({"date": self.tf_date.value})
+            await self.client.session.api.admin.trainings.update(**update_data)
             self.snack_bar.open = True
             await self.update_async()
         except ApiException as e:

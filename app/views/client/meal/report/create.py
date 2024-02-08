@@ -13,18 +13,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-
 import base64
+from functools import partial
 
-from flet_core import ScrollMode, AlertDialog, Container, Column, FilePicker, Image, ImageFit, ResponsiveRow
+from flet_core import ScrollMode, AlertDialog, Container, Column, ResponsiveRow, FilePickerUploadFile, Image, Row, \
+    MainAxisAlignment, TextButton, IconButton, icons
 from flet_core.dropdown import Option
 
 from app.controls.button import FilledButton, ProductChipButton
 from app.controls.information import Text
 from app.controls.input import TextField, Dropdown
 from app.controls.layout import ClientBaseView
-from app.utils import Fonts
+from app.utils import Fonts, Error
 
 
 class MealReportView(ClientBaseView):
@@ -34,12 +34,12 @@ class MealReportView(ClientBaseView):
     dlg_modal: AlertDialog
     products: list[dict]
     product: dict
+    photos = []
     added_products = []
     bottom_sheet = None
     nutrient_type = None
     added_product_controls = None
-    file_picker: FilePicker
-    photos = []
+    added_photo_controls = None
 
     async def build(self):
         await self.set_type(loading=True)
@@ -84,39 +84,60 @@ class MealReportView(ClientBaseView):
                 height=220,
             ),
             actions=[
-                FilledButton(
-                    content=Text(
-                        value=await self.client.session.gtv(key='add'),
-                        size=16,
-                    ),
-                    on_click=self.add_product
-                ),
-                FilledButton(
-                    content=Text(
-                        value=await self.client.session.gtv(key='close'),
-                        size=16,
-                    ),
-                    on_click=self.close_dlg,
+                Row(
+                    controls=[
+                        TextButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='add'),
+                                size=16,
+                            ),
+                            on_click=self.add_product
+                        ),
+                        TextButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='close'),
+                                size=16,
+                            ),
+                            on_click=self.close_dlg,
+                        ),
+                    ],
+                    alignment=MainAxisAlignment.END,
                 ),
             ],
             modal=False,
         )
-        self.added_product_controls = [
-            ResponsiveRow(
-                controls=[
-                    Container(
-                        content=ProductChipButton(
+        controls = []
+        for product, quantity in self.added_products:
+            controls.append(
+                Row(
+                    controls=[
+                        ProductChipButton(
                             Text(
-                                value=await self.client.session.gtv(key=product['name_text']) + ' ' + quantity + ' ' +
+                                value=await self.client.session.gtv(
+                                    key=product['name_text']) + ' ' + quantity + ' ' +
                                       await self.client.session.gtv(key='gr')
                             ).value,
                             on_click=None,
                         ),
-                        col={"xs": 5}
-                    )
-                    for product, quantity in self.added_products
-                ],
+                        IconButton(
+                            icon=icons.DELETE,
+                            on_click=partial(self.remove_product, product, quantity),
+                        ),
+                    ],
+                    spacing=1,
+                ),
             )
+
+        self.added_product_controls = [
+            Row(
+                controls=controls,
+            ),
+        ]
+        self.added_photo_controls = [
+            Image(
+                src=f"data:image/jpeg;base64,{photo}",
+            )
+            for photo in self.photos
         ]
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
@@ -161,10 +182,7 @@ class MealReportView(ClientBaseView):
                     size=20,
                     font_family=Fonts.REGULAR,
                 ),
-                *[Image(
-                    src=f"data:image/jpeg;base64,{photo}",
-                    fit=ImageFit.CONTAIN,
-                ) for photo in self.photos],
+                *self.added_photo_controls,
                 FilledButton(
                     content=Text(
                         value=await self.client.session.gtv(key='add'),
@@ -180,18 +198,33 @@ class MealReportView(ClientBaseView):
             ]
         )
 
-    async def on_file_select(self, file):
-        for f in file.files:
-            print(f)
-            # Преобразуем содержимое файла в base64
-            encoded_content = base64.b64encode(f.path).decode()
-            self.photos.append(encoded_content)
+    async def remove_product(self, product_to_remove, quantity_to_remove, _):
+        self.added_products = [(product, quantity) for (product, quantity) in self.added_products if not (
+                product['id'] == product_to_remove['id'] and quantity == quantity_to_remove)]
         await self.restart()
+
+    async def upload_files(self, _):
+        uf = []
+        if self.client.session.filepicker.result.files is not None:
+            for f in self.client.session.filepicker.result.files:
+                uf.append(
+                    FilePickerUploadFile(
+                        f.name,
+                        upload_url=await self.client.session.page.get_upload_url_async(f.name, 600),
+                    )
+                )
+            await self.client.session.filepicker.upload_async(uf)
+            for u in uf:
+                with open(f'uploads/{u.name}', 'rb') as f:
+                    image_data = f.read()
+                encoded_image_data = base64.b64encode(image_data).decode()
+                self.photos.append(encoded_image_data)
+            await self.restart()
 
     async def add_photo(self, _):
         await self.client.session.filepicker.open_(
-            on_select=self.on_file_select,
-            allowed_extensions=['svg', 'jpg']
+            on_select=self.upload_files,
+            allowed_extensions=['svg', 'jpg'],
         )
 
     async def close_dlg(self, _):
@@ -203,13 +236,14 @@ class MealReportView(ClientBaseView):
         await self.update_async()
 
     async def add_product(self, _):
+        fields = [(self.tf_quantity, 1, 3, True)]
+        for field, min_len, max_len, check_int in fields:
+            if not await Error.check_field(self, field, min_len=min_len, max_len=max_len, check_int=check_int):
+                return
         await self.close_dlg(_)
-        product_id = self.dd_product.value
-        quantity = self.tf_quantity.value
-        product = await self.client.session.api.client.products.get(id_=product_id)
-        self.added_products.append((product, quantity))
+        product = await self.client.session.api.client.products.get(id_=self.dd_product.value)
+        self.added_products.append((product, self.tf_quantity.value))
         await self.restart()
-        await self.update_async()
 
     async def send_report(self, _):
         pass
