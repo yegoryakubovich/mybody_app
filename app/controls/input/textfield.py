@@ -19,6 +19,6 @@ from flet_core import TextField as FletTextField
 
 
 class TextField(FletTextField):
-    def __init__(self, **kwargs):
+    def __init__(self, key_question=None, **kwargs):
         super().__init__(**kwargs)
-
+        self.key_question = key_question

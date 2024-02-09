@@ -18,9 +18,10 @@
 from app.controls.input import Dropdown
 from app.controls.layout import AuthView
 from app.utils import Session
-from app.views.main import MainView
-from app.views.auth.language import LanguageView
 from app.views.auth.authentication import AuthenticationView
+from app.views.auth.language import LanguageView
+from app.views.auth.purchase import GenderSelectionView
+from app.views.main import MainView
 from config import settings
 
 
@@ -60,8 +61,7 @@ class InitView(AuthView):
         if account_service:
             self.client.session.account_service = account_service
         else:
-            # Переход на покупку
-            # await self.client.session.error(0)
-            pass
+            await self.client.change_view(view=GenderSelectionView())
+            return
 
         await self.client.change_view(view=MainView())

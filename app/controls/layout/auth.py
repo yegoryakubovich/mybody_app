@@ -15,7 +15,7 @@
 #
 
 
-from flet_core import Image, Container, padding, alignment, Column
+from flet_core import Image, Container, padding, alignment, Column, ScrollMode
 from flet_manager.utils import get_svg
 
 from app.controls.information import Text
@@ -26,7 +26,7 @@ from app.utils import Fonts
 class AuthView(View):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.padding = padding.symmetric(horizontal=16)
+        self.scroll = ScrollMode.AUTO
 
     @staticmethod
     async def get_controls(
@@ -64,8 +64,8 @@ class AuthView(View):
                     ],
                     width=640,
                 ),
-                expand=True,
                 alignment=alignment.center,
+                padding=10,
             ),
         ]
         return controls

@@ -24,21 +24,6 @@ from app.views.auth.registration.successful import RegistrationSuccessfulView
 
 
 class AgreementRegistrationView(AuthView):
-    async def change_view(self, _):
-        await self.client.session.api.client.account.create(
-            username=self.client.session.registration.username,
-            password=self.client.session.registration.password,
-            firstname=self.client.session.registration.firstname,
-            lastname=self.client.session.registration.lastname,
-            surname=self.client.session.registration.surname or None,
-            country=self.client.session.registration.country,
-            language=self.client.session.language,
-            timezone=self.client.session.registration.timezone,
-            currency=self.client.session.registration.currency,
-        )
-        await self.client.change_view(view=RegistrationSuccessfulView())
-
-        await self.update_async()
 
     async def build(self):
         self.controls = await self.get_controls(
@@ -52,7 +37,7 @@ class AgreementRegistrationView(AuthView):
                         ),
                         FilledButton(
                             content=Text(
-                                value=await self.client.session.gtv(key='account_creation_button'),
+                                value=await self.client.session.gtv(key='account_create'),
                                 size=16,
                             ),
                             on_click=self.change_view,
@@ -62,3 +47,18 @@ class AgreementRegistrationView(AuthView):
                 ),
             ],
         )
+
+    async def change_view(self, _):
+        await self.client.session.api.client.accounts.create(
+            username=self.client.session.registration.username,
+            password=self.client.session.registration.password,
+            firstname=self.client.session.registration.firstname,
+            lastname=self.client.session.registration.lastname,
+            surname=self.client.session.registration.surname or None,
+            country=self.client.session.registration.country,
+            language=self.client.session.language,
+            timezone=self.client.session.registration.timezone,
+            currency=self.client.session.registration.currency,
+        )
+        await self.client.change_view(view=RegistrationSuccessfulView())
+        await self.update_async()

@@ -17,10 +17,10 @@
 
 from flet_core import Text, Image, Container, Column, alignment, MainAxisAlignment, CrossAxisAlignment
 
-from app import InitView
 from app.controls.button import FilledButton
 from app.controls.layout import AuthView
 from app.utils import Fonts, Session, Icons
+from app.views.auth.purchase import QuestionnaireView
 
 
 class RegistrationSuccessfulView(AuthView):
@@ -48,42 +48,37 @@ class RegistrationSuccessfulView(AuthView):
 
         # Change view
         await self.set_type(loading=False)
-        await self.client.change_view(view=InitView())
+        await self.client.change_view(view=QuestionnaireView())
 
     async def build(self):
         self.controls = await self.get_controls(
             controls=[
-                Column(
-                    controls=[
-                        Container(
-                            content=Column(
-                                controls=[
-                                    Text(
-                                        value=await self.client.session.gtv(key='successful'),
-                                        size=40,
-                                        font_family=Fonts.SEMIBOLD,
-                                    ),
-                                    Image(
-                                        src=Icons.SUCCESSFUL,
-                                        height=200,
-                                    ),
-                                    FilledButton(
-                                        content=Text(
-                                            value=await self.client.session.gtv(key='next'),
-                                            size=16,
-                                        ),
-                                        on_click=self.change_view,
-                                        horizontal_padding=54,
-                                    ),
-                                ],
-                                spacing=70,
-                                alignment=MainAxisAlignment.CENTER,
-                                horizontal_alignment=CrossAxisAlignment.CENTER,
+                Container(
+                    content=Column(
+                        controls=[
+                            Text(
+                                value=await self.client.session.gtv(key='successful'),
+                                size=40,
+                                font_family=Fonts.SEMIBOLD,
                             ),
-                            alignment=alignment.center,
-                        ),
-                    ],
-                    expand=True,
-                )
+                            Image(
+                                src=Icons.SUCCESSFUL,
+                                height=200,
+                            ),
+                            FilledButton(
+                                content=Text(
+                                    value=await self.client.session.gtv(key='next'),
+                                    size=16,
+                                ),
+                                on_click=self.change_view,
+                                horizontal_padding=54,
+                            ),
+                        ],
+                        spacing=60,
+                        alignment=MainAxisAlignment.CENTER,
+                        horizontal_alignment=CrossAxisAlignment.CENTER,
+                    ),
+                    alignment=alignment.top_center,
+                ),
             ],
         )

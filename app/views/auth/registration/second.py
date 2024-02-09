@@ -83,7 +83,6 @@ class RegistrationSecondView(AuthView):
             options=timezone_options,
             value=timezone_options[0].key,
         )
-
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='registration_account_create_view_title'),
             controls=[
