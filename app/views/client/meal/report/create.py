@@ -13,12 +13,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+
 import base64
+import json
 from functools import partial
 
-from flet_core import ScrollMode, AlertDialog, Container, Column, ResponsiveRow, FilePickerUploadFile, Image, Row, \
+from flet_core import ScrollMode, AlertDialog, Container, Column, FilePickerUploadFile, Image, Row, \
     MainAxisAlignment, TextButton, IconButton, icons
 from flet_core.dropdown import Option
+from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton, ProductChipButton
 from app.controls.information import Text
@@ -40,6 +44,10 @@ class MealReportView(ClientBaseView):
     nutrient_type = None
     added_product_controls = None
     added_photo_controls = None
+
+    def __init__(self, meal_id):
+        super().__init__()
+        self.meal_id = meal_id
 
     async def build(self):
         await self.set_type(loading=True)
@@ -193,7 +201,7 @@ class MealReportView(ClientBaseView):
                     content=Text(
                         value=await self.client.session.gtv(key='send_report'),
                     ),
-                    on_click=self.send_report,
+                    on_click=self.create_report,
                 ),
             ]
         )
@@ -245,5 +253,22 @@ class MealReportView(ClientBaseView):
         self.added_products.append((product, self.tf_quantity.value))
         await self.restart()
 
-    async def send_report(self, _):
-        pass
+    async def create_report(self, _):
+        await self.set_type(loading=True)
+        product_list = [{"id": product[0]['id'], "value": int(product[1])} for product in self.added_products]
+        product_list_json = json.dumps(product_list, ensure_ascii=False)
+        try:
+            id_meal_report = await self.client.session.api.client.meals.reports.create(
+                meal_id=self.meal_id,
+                comment=self.tf_comment.value or None,
+                products=product_list_json or None,
+            )
+            await self.client.session.api.client.images.create(
+                # model='meal_report',
+                # model_id=id_meal_report,
+                # file=open(path, 'rb'),
+            )
+            await self.client.change_view(go_back=True, with_restart=True)
+        except ApiException as e:
+            await self.set_type(loading=False)
+            return await self.client.session.error(error=e)

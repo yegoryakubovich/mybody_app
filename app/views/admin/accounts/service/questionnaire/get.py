@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+
 import json
 
 from flet_core import ScrollMode
@@ -36,7 +38,7 @@ class AccountQuestionnaireGetView(AdminBaseView):
             id_=self.account_service_id,
         )
         await self.set_type(loading=True)
-        self.scroll = ScrollMode.AUTO
+
         questions = json.loads(self.service['questions'])
         answers = json.loads(self.service['answers'])
 
@@ -57,6 +59,7 @@ class AccountQuestionnaireGetView(AdminBaseView):
                 )
                 main_section_controls.extend([question_text, answer_text])
 
+        self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='questionnaire'),
             main_section_controls=main_section_controls,

@@ -182,4 +182,4 @@ class MealView(ClientBaseView):
 
     async def go_meal_report(self, _):
         from app.views.client.meal.report.create import MealReportView
-        await self.client.change_view(view=MealReportView())
+        await self.client.change_view(view=MealReportView(meal_id=self.meal_id))

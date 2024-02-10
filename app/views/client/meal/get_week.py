@@ -18,7 +18,7 @@
 from functools import partial
 from datetime import datetime, timedelta
 
-from flet_core import Text, ScrollMode, Column
+from flet_core import Text, ScrollMode, Column, colors
 
 from app.controls.layout import ClientBaseView
 from app.utils import Fonts
@@ -70,10 +70,16 @@ class MealWeekView(ClientBaseView):
         for month in months:
             month_values[month] = await self.client.session.gtv(key=month)
 
-        self.scroll = ScrollMode.AUTO
-        self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='client_meal_get_week_view_title'),
-            main_section_controls=[
+        main_section_controls = []
+        if not self.meals:
+            main_section_controls.append(Text(
+                value=await self.client.session.gtv(key='meal_planning_stage'),
+                size=15,
+                font_family=Fonts.MEDIUM,
+                color=colors.ON_BACKGROUND,
+            ))
+        else:
+            main_section_controls.extend([
                 Column(
                     controls=[
                         Text(
@@ -86,7 +92,12 @@ class MealWeekView(ClientBaseView):
                     ]
                 )
                 for date, meals in sorted(meals_by_date.items())
-            ]
+            ])
+
+        self.scroll = ScrollMode.AUTO
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key='client_meal_get_week_view_title'),
+            main_section_controls=main_section_controls,
         )
 
     async def meal_view(self, meal_id, _):
