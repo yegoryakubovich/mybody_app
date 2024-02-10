@@ -15,7 +15,7 @@
 #
 
 
-from flet_core import ButtonStyle, ElevatedButton, MaterialState, RoundedRectangleBorder, Text, TextAlign
+from flet_core import ButtonStyle, ElevatedButton, MaterialState, RoundedRectangleBorder, Text, TextAlign, colors
 
 from app.utils import Fonts
 
@@ -27,16 +27,16 @@ class ProductChipButton(ElevatedButton):
             value=text,
             font_family=Fonts.MEDIUM,
             text_align=TextAlign.CENTER,
-            color='#000000',  # FIXME
+            color=colors.BACKGROUND,
         )
         self.style = ButtonStyle(
             shape={MaterialState.DEFAULT: RoundedRectangleBorder(radius=10)},
             overlay_color={
-                MaterialState.DEFAULT: '#51B62E',
-                MaterialState.HOVERED: '#B3DDB8',  # FIXME
+                MaterialState.DEFAULT: colors.PRIMARY,
+                MaterialState.HOVERED: colors.PRIMARY_CONTAINER,  # FIXME
             },
         )
-        self.bgcolor = '#B3DDB8'
+        self.bgcolor = colors.PRIMARY
         self.elevation = 0
         self.height = 25
         self.on_click = on_click

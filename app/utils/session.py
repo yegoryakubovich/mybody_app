@@ -54,9 +54,9 @@ class Session:
         )
 
     async def init_bs(self):
-        from app.controls.information.bottomsheet import BottomSheet
-        from app.controls.input.filepicker import FilePicker
-        from app.controls.input.datepicker import DatePicker
+        from app.controls.information.bottom_sheet import BottomSheet
+        from app.controls.input.file_picker import FilePicker
+        from app.controls.input.date_picker import DatePicker
 
         self.bs_error = BottomSheet()
         self.bs_info = BottomSheet()

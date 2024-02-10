@@ -22,7 +22,7 @@ from flet_core import Row, ScrollMode
 from app.controls.button import ProductChipButton
 from app.controls.information import Text
 from app.controls.information.card import Card
-from app.controls.information.searchbar import SearchBar
+from app.controls.information.search_bar import SearchBar
 from app.controls.layout import AdminBaseView
 from app.utils import Fonts
 from app.views.admin.products.create import ProductCreateView

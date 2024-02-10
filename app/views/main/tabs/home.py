@@ -19,7 +19,7 @@ from datetime import datetime
 from functools import partial
 from typing import Any
 
-from flet_core import Column, Row, Container, MainAxisAlignment, Image, FilePicker
+from flet_core import Column, Row, Container, MainAxisAlignment, Image, FilePicker, colors
 
 from app.controls.button import FilledButton, ProductChipButton
 from app.controls.information import Text
@@ -104,14 +104,14 @@ class MealButton(Container):
 
     def update_color(self, meal_report_id, prev_meal_had_report):
         if prev_meal_had_report:
-            color = '#000000'
-            bgcolor = '#005B0C'
+            color = colors.ON_PRIMARY
+            bgcolor = colors.SECONDARY_CONTAINER
         elif not meal_report_id:
-            color = '#000000'
-            bgcolor = '#B3E5B9'
+            color = colors.ON_PRIMARY
+            bgcolor = colors.PRIMARY_CONTAINER
         else:
-            color = '#FFFFFF'
-            bgcolor = '#008F12'
+            color = colors.BACKGROUND
+            bgcolor = colors.PRIMARY
 
         self.bgcolor = bgcolor
         self.update_text_and_image_color(color)
@@ -196,33 +196,30 @@ class HomeTab(BaseTab):
                             value=await self.client.session.gtv(key=greeting_key) + f', {firstname}!',
                             size=25,
                             font_family=Fonts.BOLD,
+                            color=colors.ON_BACKGROUND,
                         ),
                         Row(
                             controls=[
                                 ProductChipButton(
-                                    Text(
-                                        value=await self.client.session.gtv(key='meal_week'),
-                                    ).value,
+                                    text=await self.client.session.gtv(key='meal_week'),
                                     on_click=self.meal_week_view,
                                 ),
                                 ProductChipButton(
-                                    Text(
-                                        value=await self.client.session.gtv(key='training'),
-                                    ).value,
+                                    text=await self.client.session.gtv(key='training'),
                                     on_click=self.training_view,
                                 ),
                                 ProductChipButton(
-                                    Text(
-                                        value=await self.client.session.gtv(key='support'),
-                                    ).value,
+                                    text=await self.client.session.gtv(key='support'),
                                     on_click=self.support,
                                 ),
                             ],
+                            wrap=True,
                         ),
                         Text(
                             value=await self.client.session.gtv(key='meals'),
                             size=25,
                             font_family=Fonts.BOLD,
+                            color=colors.ON_BACKGROUND,
                         ),
                         any(meals) and Column(
                             controls=[
@@ -237,11 +234,13 @@ class HomeTab(BaseTab):
                             value=await self.client.session.gtv(key='meal_planning_stage'),
                             size=15,
                             font_family=Fonts.MEDIUM,
+                            color=colors.ON_BACKGROUND,
                         ),
                         Text(
                             value=await self.client.session.gtv(key='training'),
                             size=25,
                             font_family=Fonts.BOLD,
+                            color=colors.ON_BACKGROUND,
                         ),
                         any(trainings) and Container(
                             content=Row(
@@ -254,7 +253,7 @@ class HomeTab(BaseTab):
                                                         Text(
                                                             value=training.name,
                                                             size=10,
-                                                            color='#FFFFFF',
+                                                            color=colors.BACKGROUND,
                                                             font_family=Fonts.REGULAR,
                                                         ),
                                                     ],
@@ -269,14 +268,14 @@ class HomeTab(BaseTab):
                                         content=Image(
                                             src=Icons.NEXT,
                                             width=15,
-                                            color='#FFFFFF',
+                                            color=colors.BACKGROUND,
                                         ),
                                     ),
                                 ],
                                 alignment=MainAxisAlignment.SPACE_BETWEEN
                             ),
                             padding=10,
-                            bgcolor='#008F12',
+                            bgcolor=colors.PRIMARY,
                             border_radius=10,
                             on_click=self.training_view
                         ) or Text(

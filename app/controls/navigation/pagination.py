@@ -17,7 +17,7 @@
 
 from typing import Callable
 
-from flet_core import Container, Row, IconButton, icons
+from flet_core import Container, Row, IconButton, icons, colors
 
 from app.controls.information import Text
 from app.utils import Fonts
@@ -36,16 +36,19 @@ class PaginationWidget(Container):
                     icon=icons.ARROW_LEFT,
                     on_click=self.on_previous,
                     disabled=self.current_page <= 1,
+                    icon_color=colors.ON_BACKGROUND,
                 ),
                 Text(
                     value=f'{self.current_page}/{self.total_pages}',
                     size=18,
                     font_family=Fonts.SEMIBOLD,
+                    color=colors.ON_BACKGROUND,
                 ),
                 IconButton(
                     icon=icons.ARROW_RIGHT,
                     on_click=self.on_next,
                     disabled=self.current_page >= self.total_pages,
+                    icon_color=colors.ON_BACKGROUND,
                 ),
             ],
         )

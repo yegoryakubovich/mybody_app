@@ -109,6 +109,7 @@ class MealView(ClientBaseView):
                 meals=products_by_type[section['type']],
             ) for section in sections_list
         ]
+        gr = await self.client.session.gtv(key="gr")
         sections_controls = [
             Container(
                 Column(
@@ -135,7 +136,7 @@ class MealView(ClientBaseView):
                                             ProductChipButton(
                                                 text=f'{meal.name} '
                                                      f'{meal.weight}'
-                                                     f' {await self.client.session.gtv(key="gr")}',
+                                                     f' {gr}',
                                                 on_click=None,
                                             )
                                             for meal in section.meals

@@ -32,6 +32,7 @@ class View(BaseView):
         super().__init__(**kwargs)
         self.padding = 0
         self.spacing = 0
+        self.bgcolor = colors.BACKGROUND
 
     @staticmethod
     async def get_header():
@@ -71,7 +72,7 @@ class View(BaseView):
                     content=Image(
                         src=Icons.BACK,
                         height=20,
-                        color='#000000',
+                        color=colors.ON_BACKGROUND,
                     ),
                     ink=True,
                     on_click=go_back,
@@ -83,6 +84,7 @@ class View(BaseView):
                 value=title,
                 size=36,
                 font_family=Fonts.SEMIBOLD,
+                color=colors.ON_BACKGROUND
             ),
         )
 

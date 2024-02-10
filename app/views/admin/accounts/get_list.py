@@ -17,7 +17,7 @@
 
 from functools import partial
 
-from flet_core import Row, Text, ScrollMode
+from flet_core import Row, Text, ScrollMode, colors
 
 from app.controls.information.card import Card
 from app.controls.input import TextField
@@ -53,6 +53,7 @@ class AccountListView(AdminBaseView):
                             value=account['username'],
                             size=18,
                             font_family=Fonts.SEMIBOLD,
+                            color=colors.ON_PRIMARY,
                         ),
                         Row(
                             controls=[
@@ -60,13 +61,16 @@ class AccountListView(AdminBaseView):
                                     value=account['firstname'],
                                     size=13,
                                     font_family=Fonts.REGULAR,
+                                    color=colors.ON_PRIMARY,
                                 ),
                                 Text(
                                     value=account['lastname'],
                                     size=13,
                                     font_family=Fonts.REGULAR,
+                                    color=colors.ON_PRIMARY,
                                 ),
                             ],
+                            spacing=5,
                         ),
                     ],
                     on_click=partial(self.account_view, account['id']),

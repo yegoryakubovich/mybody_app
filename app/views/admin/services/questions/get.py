@@ -27,7 +27,7 @@ class ServiceQuestionView(AdminBaseView):
     route = '/admin/service/get'
     service: dict
     questions: list[dict] = []
-    textfields: list[tuple] = []
+    text_fields: list[tuple] = []
     question_type: str = 'str'
     dropdown_values: list[list[TextField]] = []
     tf_title: TextField
@@ -90,7 +90,7 @@ class ServiceQuestionView(AdminBaseView):
                                      ),
                                  ],
                              )
-                             for _, tf in self.textfields
+                             for _, tf in self.text_fields
                          ] + (
                              [Row(
                                  controls=[
@@ -144,7 +144,7 @@ class ServiceQuestionView(AdminBaseView):
             label=await self.client.session.gtv(key='question'),
             expand=True,
         )
-        self.textfields.append((self.question_type, tf))
+        self.text_fields.append((self.question_type, tf))
         await self.build()
         await self.update_async()
 
@@ -167,9 +167,9 @@ class ServiceQuestionView(AdminBaseView):
         await self.update_async()
 
     async def remove_textfield(self, tf, _):
-        for i, (question_type, existing_tf) in enumerate(self.textfields):
+        for i, (question_type, existing_tf) in enumerate(self.text_fields):
             if existing_tf == tf:
-                del self.textfields[i]
+                del self.text_fields[i]
                 del self.dropdown_values[i]
                 await self.build()
                 await self.update_async()

@@ -18,7 +18,7 @@
 from typing import Any
 
 from flet_core import Column, Container, CrossAxisAlignment, Image, MainAxisAlignment, Row, Text, \
-    padding, BoxShadow
+    padding, BoxShadow, colors
 
 from app.utils import Fonts
 
@@ -31,7 +31,7 @@ class BottomNavigationTab(Container):
         await self.on_click_tab(tab=self)
 
     async def set_state(self, activated: bool):
-        color = '#008F12' if activated else '#B7B7B7'
+        color = colors.PRIMARY if activated else colors.ON_PRIMARY_CONTAINER
         self.text.color = color
         self.icon.color = color
 
@@ -54,14 +54,14 @@ class BottomNavigationTab(Container):
 
         self.icon = Image(
             src=icon,
-            color='#B7B7B7',  # FIXME
+            color=colors.ON_PRIMARY_CONTAINER,
             height=30,
         )
         self.text = Text(
             font_family=Fonts.MEDIUM,
             value=self.name,
             size=12,
-            color='#B7B7B7',  # FIXME
+            color=colors.ON_PRIMARY_CONTAINER,
         )
 
         self.content = Column(
@@ -94,7 +94,7 @@ class BottomNavigation(Container):
         for tab in self.tabs:
             tab.on_click_tab = self.click_tab
 
-        self.bgcolor = '#ffffff'  # FIXME
+        self.bgcolor = colors.BACKGROUND
         self.padding = padding.symmetric(vertical=10)
         self.content = Row(
             controls=self.tabs,
@@ -105,7 +105,7 @@ class BottomNavigation(Container):
 
         # FIXME
         self.shadow = BoxShadow(
-            color='#DDDDDD',  # FIXME
+            color=colors.SHADOW,
             spread_radius=1,
             blur_radius=20,
         )

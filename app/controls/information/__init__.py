@@ -17,7 +17,7 @@
 
 from .text import Text
 from .card import Card
-from .bottomsheet import BottomSheet
+from .bottom_sheet import BottomSheet
 from .loading import Loading
-from .snackbar import SnackBar
+from .snack_bar import SnackBar
 

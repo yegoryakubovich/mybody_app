@@ -164,6 +164,7 @@ class AccountTab(BaseTab):
                                 value=await self.client.session.gtv(section.name),
                                 font_family=Fonts.SEMIBOLD,
                                 size=26,
+                                color=colors.ON_BACKGROUND,
                             ),
                         ),
                         Column(
@@ -191,7 +192,7 @@ class AccountTab(BaseTab):
                         CircleAvatar(
                             content=Image(
                                 src=Icons.ACCOUNT,
-                                color=colors.TERTIARY,  # FIXME
+                                color=colors.SECONDARY,
                             ),
                             bgcolor=colors.TERTIARY_CONTAINER,
                             radius=38,
@@ -200,11 +201,13 @@ class AccountTab(BaseTab):
                             value=f'{firstname} {lastname}',
                             font_family=Fonts.SEMIBOLD,
                             size=30,
+                            color=colors.ON_PRIMARY,
                         ),
                         Text(
                             value=f'@{username}',
                             font_family=Fonts.SEMIBOLD,
                             size=12,
+                            color=colors.ON_PRIMARY,
                         ),
                     ],
                     spacing=0,
@@ -219,6 +222,7 @@ class AccountTab(BaseTab):
                     value=f'{await self.client.session.gtv(key="version")} {settings.version}',
                     font_family=Fonts.REGULAR,
                     size=16,
+                    color=colors.ON_BACKGROUND,
                 ),
                 alignment=alignment.center,
                 on_click=self.go_admin,

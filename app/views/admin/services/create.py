@@ -32,7 +32,7 @@ from app.utils import Fonts, Error
 class ServiceCreateView(AdminBaseView):
     route = '/admin/service/get'
     questions: list[dict] = []
-    textfields: list[tuple] = []
+    text_fields: list[tuple] = []
     question_type: str = 'str'
     dropdown_values: list[list[TextField]] = []
     tf_name: TextField
@@ -50,7 +50,7 @@ class ServiceCreateView(AdminBaseView):
             label=await self.client.session.gtv(key='title'),
         )
         rows = []
-        for textfield in self.textfields:
+        for textfield in self.text_fields:
             if textfield[0] == 'title':
                 question_type, tf = textfield
                 row = Row(
@@ -164,16 +164,16 @@ class ServiceCreateView(AdminBaseView):
                 label=await self.client.session.gtv(key='title'),
                 expand=True,
             )
-            self.textfields.append(('title', self.tf_title))
+            self.text_fields.append(('title', self.tf_title))
         else:
-            self.textfields.append((self.question_type, tf, key_tf))
+            self.text_fields.append((self.question_type, tf, key_tf))
         await self.build()
         await self.update_async()
 
     async def save_questions(self, _):
         questions_list = []
         title_value = ''
-        for i, textfield in enumerate(self.textfields):
+        for i, textfield in enumerate(self.text_fields):
             if textfield[0] == 'title':
                 # Если это не первый title, сохраняем предыдущий набор вопросов
                 if title_value:
@@ -192,7 +192,7 @@ class ServiceCreateView(AdminBaseView):
         if title_value and questions_list:
             entry = {'title': title_value, 'questions': questions_list}
             self.questions.append(entry)
-        self.textfields = []
+        self.text_fields = []
         self.dropdown_values = []
 
         await self.build()
@@ -214,9 +214,9 @@ class ServiceCreateView(AdminBaseView):
         await self.update_async()
 
     async def remove_textfield(self, tf, _):
-        for i, textfield in enumerate(self.textfields):
+        for i, textfield in enumerate(self.text_fields):
             if textfield[1] == tf:
-                del self.textfields[i]
+                del self.text_fields[i]
                 if textfield[0] != 'title':
                     del self.dropdown_values[i]
                 await self.build()

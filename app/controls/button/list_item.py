@@ -16,7 +16,7 @@
 
 
 from flet_core import padding, \
-    Container, Row, Image, border_radius
+    Container, Row, Image, border_radius, colors
 
 from app.controls.information import Text
 from app.utils import Fonts
@@ -35,6 +35,7 @@ class ListItemButton(Container):
                         value=name,
                         font_family=Fonts.REGULAR,
                         size=20,
+                        color=colors.ON_PRIMARY,
                     ),
                 ],
                 spacing=12,

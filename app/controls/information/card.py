@@ -15,7 +15,7 @@
 #
 
 
-from flet_core import Card as FletCard, Container, Column
+from flet_core import Card as FletCard, Container, Column, colors
 
 
 class Card(FletCard):
@@ -32,3 +32,4 @@ class Card(FletCard):
             border_radius=10,
             on_click=on_click
         )
+        self.color = colors.SECONDARY
