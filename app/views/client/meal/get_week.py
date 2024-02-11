@@ -45,8 +45,7 @@ class MealWeekView(ClientBaseView):
         )
         await self.set_type(loading=False)
 
-        # Получение текущей даты и даты через 6 дней
-        start_date = datetime.now().date()
+        start_date = datetime.now().date() + timedelta(days=1)
         end_date = start_date + timedelta(days=6)
 
         # Фильтрация и группировка приемов пищи по датам

@@ -26,6 +26,7 @@ from app.controls.input import TextField, Dropdown
 from app.controls.layout import AuthView
 from app.controls.navigation.pagination import PaginationWidget
 from app.utils import Fonts, Error
+from app.views.auth.purchase.about import PurchaseFirstView
 
 
 class QuestionnaireView(AuthView):
@@ -51,6 +52,8 @@ class QuestionnaireView(AuthView):
         await self.set_type(loading=False)
 
         titles = json.loads(self.service['questions'])
+        if self.gender == 'men':
+            titles = [title for title in titles if title['title_text'] != 'peculiarities']
         self.total_pages = len(titles)
 
         title = titles[self.page_account - 1]
@@ -121,7 +124,6 @@ class QuestionnaireView(AuthView):
         return True
 
     async def send_form(self, _):
-        from app import InitView
         if not await self.check_errors(self.tf_answers, 1, 1024):
             return
 
@@ -135,7 +137,7 @@ class QuestionnaireView(AuthView):
             service=self.services[0]['id_str'],
             answers=answers_json,
         )
-        await self.client.change_view(view=InitView())
+        await self.client.change_view(view=PurchaseFirstView())
 
     async def next_page(self, _):
         if not await self.check_errors(self.tf_answers, 1, 1024):

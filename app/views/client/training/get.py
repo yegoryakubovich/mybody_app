@@ -47,9 +47,10 @@ class TrainingView(ClientBaseView):
         self.training_id = training_id
 
     async def build(self):
-        self.training = await self.client.session.api.client.trainings.get(
-            id_=self.training_id,
-        )
+        if self.training_id:
+            self.training = await self.client.session.api.client.trainings.get(
+                id_=self.training_id,
+            )
         controls = []
         counter = 1
         for exercise in self.exercise:
@@ -182,25 +183,25 @@ class TrainingView(ClientBaseView):
                     border_radius=6
                 ),
             ])
-
-        if self.training['training_report_id'] is None:
-            main_section_controls.append(
-                FilledButton(
-                    content=Text(
-                        value=await self.client.session.gtv(key='send_report'),
+        if self.training_id:
+            if self.training['training_report_id'] is None:
+                main_section_controls.append(
+                    FilledButton(
+                        content=Text(
+                            value=await self.client.session.gtv(key='send_report'),
+                        ),
+                        on_click=self.open_dlg,
                     ),
-                    on_click=self.open_dlg,
-                ),
-            )
-        else:
-            main_section_controls.append(
-                Text(
-                    value=await self.client.session.gtv(key='thanks_for_report'),
-                    size=25,
-                    font_family=Fonts.SEMIBOLD,
-                    color=colors.ON_BACKGROUND,
-                ),
-            )
+                )
+            else:
+                main_section_controls.append(
+                    Text(
+                        value=await self.client.session.gtv(key='thanks_for_report'),
+                        size=25,
+                        font_family=Fonts.SEMIBOLD,
+                        color=colors.ON_BACKGROUND,
+                    ),
+                )
 
         self.tf_comment = TextField(
             label=await self.client.session.gtv(key='comment')

@@ -36,7 +36,7 @@ class AccountRoleCreateView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.roles = await self.client.session.api.client.role.get_list()
+        self.roles = await self.client.session.api.admin.roles.get_list()
         await self.set_type(loading=False)
 
         role_options = [
@@ -68,11 +68,12 @@ class AccountRoleCreateView(AdminBaseView):
     async def create_article(self, _):
         await self.set_type(loading=True)
         try:
-            await self.client.session.api.admin.accounts.create_role(
+            await self.client.session.api.admin.accounts.roles.create(
                 account_id=self.account_id,
                 role_id=self.dd_role.value,
             )
-            await self.client.change_view(go_back=True, with_restart=True)
+            await self.set_type(loading=False)
+            await self.client.change_view(go_back=True, with_restart=True, delete_current=True)
         except ApiException as e:
             await self.set_type(loading=False)
             return await self.client.session.error(error=e)

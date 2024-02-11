@@ -15,14 +15,89 @@
 #
 
 
+from flet_core import Container, Column, alignment, border, margin
+
+from app.controls.button import FilledButton
 from app.controls.information import Text
-from app.controls.layout import View
+from app.controls.layout import AuthView
+from app.utils import Fonts
 
 
-class PurchaseFirstView(View):
+class PurchaseFirstView(AuthView):
     async def build(self):
-        self.controls = [
-            Text(
-                value='about',
-            ),
-        ]
+        self.controls = await self.get_controls(
+            controls=[
+                Container(
+                    content=Column(
+                        controls=[
+                            Container(
+                                content=Text(
+                                    value=await self.client.session.gtv(key='НАЗВАНИЕ ПРОДУКТА'),
+                                    size=20,
+                                    font_family=Fonts.SEMIBOLD,
+                                ),
+                                alignment=alignment.top_center
+                            ),
+                            Container(
+                                content=Column(
+                                    controls=[
+                                        Text(
+                                            value=f"— {await self.client.session.gtv(key='НАЗВАНИЕ ПРОДУКТА')}",
+                                            size=15,
+                                            font_family=Fonts.MEDIUM,
+                                        ),
+                                        Text(
+                                            value=f"— {await self.client.session.gtv(key='НАЗВАНИЕ ПРОДУКТА')}",
+                                            size=15,
+                                            font_family=Fonts.MEDIUM,
+                                        ),
+                                        Text(
+                                            value=f"— {await self.client.session.gtv(key='НАЗВАНИЕ ПРОДУКТА')}",
+                                            size=15,
+                                            font_family=Fonts.MEDIUM,
+                                        ),
+                                        Text(
+                                            value=f"— {await self.client.session.gtv(key='НАЗВАНИЕ ПРОДУКТА')}",
+                                            size=15,
+                                            font_family=Fonts.MEDIUM,
+                                        ),
+                                        Text(
+                                            value=f"— {await self.client.session.gtv(key='НАЗВАНИЕ ПРОДУКТА')}",
+                                            size=15,
+                                            font_family=Fonts.MEDIUM,
+                                        ),
+                                    ],
+                                ),
+                            ),
+                            Container(
+                                content=Text(
+                                    value=1000000,
+                                    size=20,
+                                    font_family=Fonts.SEMIBOLD,
+                                ),
+                                alignment=alignment.top_center
+                            ),
+                            Container(
+                                content=FilledButton(
+                                    content=Text(
+                                        value=await self.client.session.gtv(key='next'),
+                                        size=16,
+                                    ),
+                                    on_click=self.change_view,
+                                ),
+                                alignment=alignment.top_center,
+                            ),
+                        ]
+                    ),
+                    alignment=alignment.top_center,
+                    border=border.all(2),
+                    border_radius=6,
+                    padding=20,
+                    margin=margin.symmetric(horizontal=100)
+                ),
+            ],
+        )
+
+    async def change_view(self, _):
+        from app import InitView
+        await self.client.change_view(view=InitView())

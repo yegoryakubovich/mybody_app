@@ -22,7 +22,8 @@ from mybody_api_client.utils import ApiException
 
 from app.controls.information import Text
 from app.controls.information.card import Card
-from app.controls.input import TextField, TextFieldDate
+from app.controls.input import TextField
+from app.controls.input.textfielddate import TextFieldDate
 from app.controls.layout import AdminBaseView
 from app.utils import Fonts, Icons
 from app.views.admin.accounts.service.training.create import AccountTrainingCreateView

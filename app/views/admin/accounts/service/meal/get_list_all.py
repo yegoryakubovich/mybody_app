@@ -23,7 +23,8 @@ from mybody_api_client.utils import ApiException
 
 from app.controls.information import Text
 from app.controls.information.card import Card
-from app.controls.input import TextField, TextFieldDate
+from app.controls.input import TextField
+from app.controls.input.textfielddate import TextFieldDate
 from app.controls.layout import AdminBaseView
 from app.utils import Fonts, Icons
 from app.views.admin.accounts.service.meal import AccountMealListView
@@ -45,12 +46,10 @@ class AccountMealListAllView(AdminBaseView):
         self.account_service_id = account_service_id
 
     async def build(self):
-        await self.set_type(loading=True)
         self.meals = await self.client.session.api.admin.meals.get_list(
             account_service_id=self.account_service_id,
             date=self.date,
         )
-
         meals_by_date = defaultdict(list)
         for meal in self.meals:
             meals_by_date[meal['date']].append(meal)
@@ -58,7 +57,6 @@ class AccountMealListAllView(AdminBaseView):
         sorted_dates = sorted(meals_by_date.keys(), reverse=True)
         if sorted_dates:
             self.duplicate = meals_by_date[sorted_dates[0]]
-        await self.set_type(loading=False)
 
         self.tf_date_duplicate_meal = TextFieldDate(
             label=await self.client.session.gtv(key='date'),

@@ -90,7 +90,7 @@ class AccountMealProductView(AdminBaseView):
         )
 
     async def delete_meal_product(self, _):
-        await self.client.session.api.admin.meals.delete_product(
+        await self.client.session.api.admin.meals.products.delete(
             id_=self.product['meal_product']['id'],
         )
         await self.client.change_view(go_back=True, with_restart=True)
@@ -103,7 +103,7 @@ class AccountMealProductView(AdminBaseView):
                 await self.set_type(loading=False)
                 return
         try:
-            await self.client.session.api.admin.meals.update_product(
+            await self.client.session.api.admin.meals.products.update(
                 id_=self.product['meal_product']['id'],
                 product_id=self.dd_product.value,
                 value=self.tf_quantity.value,

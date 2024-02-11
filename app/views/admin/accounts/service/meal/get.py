@@ -26,6 +26,7 @@ from app.controls.information import Text, Card
 
 from app.controls.information.snack_bar import SnackBar
 from app.controls.input import TextField
+from app.controls.input.textfielddate import TextFieldDate
 from app.controls.layout import AdminBaseView, Section
 from app.utils import Fonts, Error
 from app.views.admin.accounts.service.meal.product import AccountMealProductView
@@ -170,7 +171,6 @@ class AccountMealView(AdminBaseView):
         )
 
     async def update_meal(self, _):
-        await self.set_type(loading=True)
         fields = [self.tf_date]
         for field in fields:
             if not await Error.check_date_format(self, field):
@@ -178,9 +178,9 @@ class AccountMealView(AdminBaseView):
         fields = [(self.tf_fats, True), (self.tf_proteins, True), (self.tf_carbohydrates, True)]
         for field, check_int in fields:
             if not await Error.check_field(self, field, check_int):
-                await self.set_type(loading=False)
                 return
         try:
+            await self.set_type(loading=True)
             update_data = {
                 "id_": self.meal_id,
                 "type_": self.dd_type.value,
@@ -190,7 +190,6 @@ class AccountMealView(AdminBaseView):
             }
             if self.tf_date.value != self.meal['date']:
                 update_data.update({"date": self.tf_date.value})
-            print(update_data)
             await self.client.session.api.admin.meals.update(**update_data)
             self.snack_bar.open = True
             await self.set_type(loading=False)

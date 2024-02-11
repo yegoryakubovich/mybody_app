@@ -37,17 +37,18 @@ class AccountRoleListView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.roles = await self.client.session.api.admin.accounts.get_role(
+        self.roles = await self.client.session.api.admin.accounts.roles.get(
             account_id=self.account_id
         )
-        self.role = []
-        for item in self.roles:
-            role_id = item['role_id']
-            role = await self.client.session.api.client.role.get(
-                id_=role_id
-            )
-            self.role.append({'id': item['id'], 'role': role})
         await self.set_type(loading=False)
+        self.role = []
+        if self.roles:
+            for item in self.roles:
+                role_id = item['role_id']
+                role = await self.client.session.api.admin.roles.get(
+                    id_=role_id
+                )
+                self.role.append({'id': item['id'], 'role': role})
 
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(

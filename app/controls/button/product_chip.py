@@ -33,7 +33,6 @@ class ProductChipButton(ElevatedButton):
             shape={MaterialState.DEFAULT: RoundedRectangleBorder(radius=10)},
             overlay_color={
                 MaterialState.DEFAULT: colors.PRIMARY,
-                MaterialState.HOVERED: colors.PRIMARY_CONTAINER,  # FIXME
             },
         )
         self.bgcolor = colors.PRIMARY

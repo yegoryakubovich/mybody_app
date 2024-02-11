@@ -231,7 +231,7 @@ class MealReportView(ClientBaseView):
         if e.progress < 1.0:
             print(f"Загрузка файла {e.file_name} {e.progress:}")  # FIXME
         else:
-            # Проверяем, существует ли файл, прежде чем пытаться его открыть
+            # Проверяем, существует ли файл
             if os.path.exists(f'uploads/{e.file_name}'):
                 with open(f'uploads/{e.file_name}', 'rb') as f:
                     image_data = f.read()

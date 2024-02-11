@@ -16,6 +16,7 @@
 
 
 from collections import defaultdict
+from datetime import date
 from typing import Any
 
 from flet_core import Column, Container, Image, Row, ScrollMode, Text, padding, AlertDialog, colors
@@ -154,7 +155,19 @@ class MealView(ClientBaseView):
             )
         ]
         controls_report = []
-        if self.meal['meal_report_id'] is None:
+        if self.meal['date'] != str(date.today()):
+            controls_report.append(
+                FilledButton(
+                    content=Text(
+                        value=await self.client.session.gtv(key='create_report'),
+                        size=14,
+                        font_family=Fonts.REGULAR,
+                    ),
+                    on_click=self.go_meal_report,
+                    disabled=True,
+                ),
+            )
+        elif self.meal['meal_report_id'] is None:
             controls_report.append(
                 FilledButton(
                     content=Text(
@@ -178,18 +191,18 @@ class MealView(ClientBaseView):
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key=self.meal['type']),
             main_section_controls=[
-                Text(
-                    value=await self.client.session.gtv(key='client_meal_get_guide_text_info'),
-                    size=18,
-                    font_family=Fonts.REGULAR,
-                ),
-            ] + sections_controls + [
-                Text(
-                    value=await self.client.session.gtv(key='client_meal_get_second_text_info'),
-                    size=18,
-                    font_family=Fonts.REGULAR,
-                ),
-            ] + controls_report,
+                  Text(
+                      value=await self.client.session.gtv(key='client_meal_get_guide_text_info'),
+                      size=18,
+                      font_family=Fonts.REGULAR,
+                  ),
+              ] + sections_controls + [
+                  Text(
+                      value=await self.client.session.gtv(key='client_meal_get_second_text_info'),
+                      size=18,
+                      font_family=Fonts.REGULAR,
+                  ),
+              ] + controls_report,
         )
 
     async def go_meal_report(self, _):

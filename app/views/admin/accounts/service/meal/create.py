@@ -22,7 +22,8 @@ from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
-from app.controls.input import TextField, Dropdown, TextFieldDate
+from app.controls.input import TextField, Dropdown
+from app.controls.input.textfielddate import TextFieldDate
 from app.controls.layout import AdminBaseView
 from app.utils import Error
 
@@ -101,6 +102,7 @@ class AccountMealCreateView(AdminBaseView):
             if not await Error.check_field(self, field, check_int):
                 return
         try:
+            await self.set_type(loading=True)
             meal_id = await self.client.session.api.admin.meals.create(
                 account_service_id=self.account_service_id,
                 date=self.tf_date.value,
@@ -109,6 +111,7 @@ class AccountMealCreateView(AdminBaseView):
                 proteins=self.tf_proteins.value,
                 carbohydrates=self.tf_carbohydrates.value,
             )
+            await self.set_type(loading=False)
             await self.client.change_view(AccountMealView(meal_id=meal_id), delete_current=True)
         except ApiException as e:
             await self.set_type(loading=False)

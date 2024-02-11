@@ -20,6 +20,7 @@ from functools import partial
 from typing import Any
 
 from flet_core import Column, Row, Container, MainAxisAlignment, Image, colors
+from pytz import timezone
 
 from app.controls.button import ProductChipButton
 from app.controls.information import Text
@@ -59,7 +60,6 @@ class MealButton(Container):
             nutrients: list[int],
             on_click: Any,
             meal_report_id: int = None,
-            prev_meal_had_report: bool = False,
     ):
         super().__init__()
         self.meal_report_id = meal_report_id
@@ -99,18 +99,15 @@ class MealButton(Container):
             expand=True,
             alignment=MainAxisAlignment.SPACE_BETWEEN,
         )
-        self.update_color(meal_report_id, prev_meal_had_report)
+        self.update_color(meal_report_id)
 
-    def update_color(self, meal_report_id, prev_meal_had_report):
-        if prev_meal_had_report:
-            color = colors.ON_PRIMARY
-            bgcolor = colors.SECONDARY_CONTAINER
-        elif not meal_report_id:
-            color = colors.ON_PRIMARY
-            bgcolor = colors.PRIMARY_CONTAINER
-        else:
+    def update_color(self, meal_report_id):
+        if meal_report_id:
             color = colors.BACKGROUND
             bgcolor = colors.PRIMARY
+        else:
+            color = colors.ON_PRIMARY
+            bgcolor = colors.PRIMARY_CONTAINER
 
         self.bgcolor = bgcolor
         self.update_text_and_image_color(color)
@@ -131,9 +128,12 @@ class HomeTab(BaseTab):
     training: dict = None
     account_service_id: int
     date: str
+    user_tz: timezone
 
     async def build(self):
-        now = datetime.now()
+        self.user_tz = timezone(self.client.session.account.timezone)
+        firstname = self.client.session.account.firstname
+        now = datetime.now(self.user_tz)
         self.date = now.strftime('%Y-%m-%d')
         self.account_service_id = self.client.session.account_service.id
         self.meals = await self.client.session.api.client.meals.get_list(
@@ -158,8 +158,6 @@ class HomeTab(BaseTab):
                 self.exercise.append(training_info)
                 self.exercise.sort(key=lambda x: x['training_exercise']['priority'])
 
-        firstname = self.client.session.account.firstname
-
         meals = [
             Meal(
                 name=await self.client.session.gtv(key=meal['type']),
@@ -177,7 +175,8 @@ class HomeTab(BaseTab):
             ) for exercise in self.exercise
         ]
 
-        current_hour = datetime.now().hour
+        current_time = datetime.now(self.user_tz)
+        current_hour = current_time.hour
         if 6 <= current_hour < 12:
             greeting_key = 'good_morning'
         elif 12 <= current_hour < 18:
@@ -290,15 +289,21 @@ class HomeTab(BaseTab):
         ]
 
     async def training_view(self, _):
+        if self.training is not None and self.training['id'] is not None:
+            training_id = self.training['id']
+        else:
+            training_id = None
+
         await self.client.change_view(
             view=TrainingView(
                 exercise=self.exercise,
-                training_id=self.training['id'],
+                training_id=training_id,
             ),
         )
 
     async def support(self, _):
-        pass
+        from app.views.auth.purchase.about import PurchaseFirstView
+        await self.client.change_view(view=PurchaseFirstView())
 
     async def meal_week_view(self, _):
         await self.client.change_view(view=MealWeekView(account_service_id=self.account_service_id))

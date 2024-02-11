@@ -76,11 +76,13 @@ class AccountMealProductCreateView(AdminBaseView):
             if not await Error.check_field(self, field, check_int):
                 return
         try:
-            await self.client.session.api.admin.meals.create_product(
+            await self.set_type(loading=True)
+            await self.client.session.api.admin.meals.products.create(
                 meal_id=self.meal_id,
                 product_id=self.dd_product.value,
                 value=self.tf_quantity.value,
             )
+            await self.set_type(loading=False)
             await self.client.change_view(AccountMealView(meal_id=self.meal_id), delete_current=True)
         except ApiException as e:
             await self.set_type(loading=False)

@@ -33,9 +33,9 @@ class AccountTrainingExerciseCreateView(AdminBaseView):
     tf_quantity: TextField
     tf_rest: TextField
 
-    def __init__(self, training_id, exercise):
+    def __init__(self, training_id, exercises):
         super().__init__()
-        self.exercise = exercise
+        self.exercises = exercises
         self.training_id = training_id
 
     async def build(self):
@@ -78,16 +78,16 @@ class AccountTrainingExerciseCreateView(AdminBaseView):
         )
 
     async def create_training_exercise(self, _):
-        if int(self.tf_priority.value) in [exercise['training_exercise']['priority'] for exercise in self.exercise]:
-            self.tf_priority.error_text = await self.client.session.gtv(key='error_priority_exists')
-            await self.update_async()
-            return
         fields = [(self.tf_priority, 1, 3, True), (self.tf_quantity, 1, 3, True), (self.tf_rest, 1, 3, True)]
         for field, min_len, max_len, check_int in fields:
             if not await Error.check_field(self, field, min_len, max_len, check_int):
                 return
+        if int(self.tf_priority.value) in [exercise['training_exercise']['priority'] for exercise in self.exercises]:
+            self.tf_priority.error_text = await self.client.session.gtv(key='error_priority_exists')
+            await self.update_async()
+            return
         try:
-            await self.client.session.api.admin.trainings.create_exercise(
+            await self.client.session.api.admin.trainings.exercises.create(
                 training_id=self.training_id,
                 exercise_id=self.dd_exercise.value,
                 priority=self.tf_priority.value,
