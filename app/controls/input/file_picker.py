@@ -17,7 +17,7 @@
 
 from typing import Any
 
-from flet_core import FilePicker as FilePickerFlet, FilePickerFileType
+from flet_core import FilePicker as FilePickerFlet, FilePickerFileType, FilePickerUploadEvent
 
 
 class FilePicker(FilePickerFlet):
@@ -27,15 +27,16 @@ class FilePicker(FilePickerFlet):
     async def open_(
             self,
             on_select: Any,
+            on_upload: Any = None,
             allowed_extensions: list[str] = None,
             allow_multiple: bool = False,
             file_type: FilePickerFileType = FilePickerFileType.ANY,
             initial_directory: str = None,
     ):
         self.on_result = on_select
+        self.on_upload = on_upload
         self.allowed_extensions = allowed_extensions
         self.allow_multiple = allow_multiple
         self.file_type = file_type
         self.initial_directory = initial_directory
         await self.pick_files_async()
-

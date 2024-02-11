@@ -290,7 +290,12 @@ class HomeTab(BaseTab):
         ]
 
     async def training_view(self, _):
-        await self.client.change_view(view=TrainingView(exercise=self.exercise))
+        await self.client.change_view(
+            view=TrainingView(
+                exercise=self.exercise,
+                training_id=self.training['id'],
+            ),
+        )
 
     async def support(self, _):
         pass

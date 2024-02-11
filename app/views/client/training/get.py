@@ -15,11 +15,14 @@
 #
 
 
-from flet_core import Column, Container, Row, ScrollMode, Text, MainAxisAlignment, alignment
+from flet_core import Column, Container, Row, ScrollMode, Text, MainAxisAlignment, alignment, AlertDialog, TextButton, \
+    colors
+from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
+from app.controls.input import TextField
 from app.controls.layout import ClientBaseView
-from app.utils import Fonts
+from app.utils import Fonts, Error
 
 
 class Exercise:
@@ -34,12 +37,19 @@ class Exercise:
 
 
 class TrainingView(ClientBaseView):
+    tf_comment: TextField
+    dlg_modal: AlertDialog
+    training: dict
 
-    def __init__(self, exercise):
+    def __init__(self, exercise, training_id):
         super().__init__()
         self.exercise = exercise
+        self.training_id = training_id
 
     async def build(self):
+        self.training = await self.client.session.api.client.trainings.get(
+            id_=self.training_id,
+        )
         controls = []
         counter = 1
         for exercise in self.exercise:
@@ -171,19 +181,97 @@ class TrainingView(ClientBaseView):
                     bgcolor='#D9D9D9',
                     border_radius=6
                 ),
+            ])
+
+        if self.training['training_report_id'] is None:
+            main_section_controls.append(
                 FilledButton(
                     content=Text(
-                        value=await self.client.session.gtv(key='start'),
+                        value=await self.client.session.gtv(key='send_report'),
                     ),
-                    on_click=self.start_training
+                    on_click=self.open_dlg,
                 ),
-            ])
+            )
+        else:
+            main_section_controls.append(
+                Text(
+                    value=await self.client.session.gtv(key='thanks_for_report'),
+                    size=25,
+                    font_family=Fonts.SEMIBOLD,
+                    color=colors.ON_BACKGROUND,
+                ),
+            )
+
+        self.tf_comment = TextField(
+            label=await self.client.session.gtv(key='comment')
+        )
+        self.dlg_modal = AlertDialog(
+            content=Container(
+                content=Column(
+                    controls=[
+                        Text(
+                            value=await self.client.session.gtv(key='training_report_info'),
+                            size=20,
+                            font_family=Fonts.SEMIBOLD,
+                        ),
+                        self.tf_comment,
+                    ],
+                ),
+                height=120,
+            ),
+            actions=[
+                Row(
+                    controls=[
+                        TextButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='send'),
+                                size=16,
+                            ),
+                            on_click=self.create_report
+                        ),
+                        TextButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='close'),
+                                size=16,
+                            ),
+                            on_click=self.close_dlg,
+                        ),
+                    ],
+                    alignment=MainAxisAlignment.END,
+                ),
+            ],
+            modal=False,
+        )
 
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='training'),
-            main_section_controls=main_section_controls,
+            main_section_controls=main_section_controls + [
+                self.dlg_modal,
+            ],
         )
 
-    async def start_training(self, _):
-        pass
+    async def close_dlg(self, _):
+        self.dlg_modal.open = False
+        await self.update_async()
+
+    async def open_dlg(self, _):
+        self.dlg_modal.open = True
+        await self.update_async()
+
+    async def create_report(self, _):
+        await self.set_type(loading=True)
+        fields = [(self.tf_comment, 1, 1024)]
+        for field, min_len, max_len in fields:
+            if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
+                return
+        try:
+            await self.client.session.api.client.trainings.reports.create(
+                training_id=self.training_id,
+                comment=self.tf_comment.value,
+            )
+            await self.set_type(loading=False)
+            await self.restart()
+        except ApiException as e:
+            await self.set_type(loading=False)
+            return await self.client.session.error(error=e)

@@ -17,10 +17,11 @@
 
 import base64
 import json
+import os
 from functools import partial
 
 from flet_core import ScrollMode, AlertDialog, Container, Column, FilePickerUploadFile, Image, Row, \
-    MainAxisAlignment, TextButton, IconButton, icons
+    MainAxisAlignment, TextButton, IconButton, icons, FilePickerUploadEvent
 from flet_core.dropdown import Option
 from mybody_api_client.utils import ApiException
 
@@ -36,12 +37,11 @@ class MealReportView(ClientBaseView):
     dd_product: Dropdown
     tf_quantity: TextField
     dlg_modal: AlertDialog
+    user_comment: str = ''
     products: list[dict]
     product: dict
     photos = []
     added_products = []
-    bottom_sheet = None
-    nutrient_type = None
     added_product_controls = None
     added_photo_controls = None
 
@@ -52,7 +52,7 @@ class MealReportView(ClientBaseView):
     async def build(self):
         await self.set_type(loading=True)
         self.products = await self.client.session.api.client.products.get_list(
-            type_=self.nutrient_type,
+            type_=None,
         )
         await self.set_type(loading=False)
 
@@ -62,7 +62,10 @@ class MealReportView(ClientBaseView):
                 key=product['id'],
             ) for product in self.products
         ]
-        self.tf_comment = TextField()
+        self.tf_comment = TextField(
+            value=self.user_comment,
+            on_change=self.save_user_comment,
+        )
         self.dd_product = Dropdown(
             label=await self.client.session.gtv(key='product'),
             value=product_options[0].key,
@@ -221,17 +224,30 @@ class MealReportView(ClientBaseView):
                         upload_url=await self.client.session.page.get_upload_url_async(f.name, 600),
                     )
                 )
-            await self.client.session.filepicker.upload_async(uf)
-            for u in uf:
-                with open(f'uploads/{u.name}', 'rb') as f:
+                await self.client.session.filepicker.upload_async([uf[-1]])
+                await self.on_upload_progress(e=FilePickerUploadEvent(file_name=f.name, progress=1.0, error=None))
+
+    async def on_upload_progress(self, e: FilePickerUploadEvent):
+        if e.progress < 1.0:
+            print(f"Загрузка файла {e.file_name} {e.progress:}")  # FIXME
+        else:
+            # Проверяем, существует ли файл, прежде чем пытаться его открыть
+            if os.path.exists(f'uploads/{e.file_name}'):
+                with open(f'uploads/{e.file_name}', 'rb') as f:
                     image_data = f.read()
                 encoded_image_data = base64.b64encode(image_data).decode()
                 self.photos.append(encoded_image_data)
-            await self.restart()
+                await self.restart()
+            else:
+                print(f"Файл {e.file_name} еще не загружен.")  # FIXME
+
+    async def save_user_comment(self, event):
+        self.user_comment = event.data
 
     async def add_photo(self, _):
         await self.client.session.filepicker.open_(
             on_select=self.upload_files,
+            on_upload=self.on_upload_progress,
             allowed_extensions=['svg', 'jpg'],
         )
 
@@ -263,12 +279,16 @@ class MealReportView(ClientBaseView):
                 comment=self.tf_comment.value or None,
                 products=product_list_json or None,
             )
-            await self.client.session.api.client.images.create(
-                # model='meal_report',
-                # model_id=id_meal_report,
-                # file=open(path, 'rb'),
-            )
-            await self.client.change_view(go_back=True, with_restart=True)
+            for photo in self.photos:
+                path = f'uploads/{photo}'
+                if os.path.exists(path):
+                    with open(path, 'rb') as file:
+                        await self.client.session.api.client.images.create(
+                            model='meal_report',
+                            model_id=id_meal_report,
+                            file=file,
+                        )
+            await self.client.change_view(go_back=True, with_restart=True, delete_current=True)
         except ApiException as e:
             await self.set_type(loading=False)
             return await self.client.session.error(error=e)

@@ -18,7 +18,7 @@
 from collections import defaultdict
 from typing import Any
 
-from flet_core import Column, Container, Image, Row, ScrollMode, Text, padding, AlertDialog
+from flet_core import Column, Container, Image, Row, ScrollMode, Text, padding, AlertDialog, colors
 
 from app.controls.button import FilledButton
 from app.controls.button.product_chip import ProductChipButton
@@ -153,7 +153,27 @@ class MealView(ClientBaseView):
                 ),
             )
         ]
-
+        controls_report = []
+        if self.meal['meal_report_id'] is None:
+            controls_report.append(
+                FilledButton(
+                    content=Text(
+                        value=await self.client.session.gtv(key='create_report'),
+                        size=14,
+                        font_family=Fonts.REGULAR,
+                    ),
+                    on_click=self.go_meal_report,
+                ),
+            )
+        else:
+            controls_report.append(
+                Text(
+                    value=await self.client.session.gtv(key='thanks_for_report'),
+                    size=25,
+                    font_family=Fonts.SEMIBOLD,
+                    color=colors.ON_BACKGROUND,
+                ),
+            )
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key=self.meal['type']),
@@ -169,15 +189,7 @@ class MealView(ClientBaseView):
                     size=18,
                     font_family=Fonts.REGULAR,
                 ),
-                FilledButton(
-                    content=Text(
-                        value=await self.client.session.gtv(key='create_report'),
-                        size=14,
-                        font_family=Fonts.REGULAR,
-                    ),
-                    on_click=self.go_meal_report,
-                ),
-            ],
+            ] + controls_report,
         )
 
     async def go_meal_report(self, _):
