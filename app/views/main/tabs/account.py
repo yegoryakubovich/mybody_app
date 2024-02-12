@@ -49,16 +49,10 @@ class Section:
 
 
 class AccountTab(BaseTab):
-    go_admin_counter: int
 
     async def go_admin(self, _):
-        self.go_admin_counter += 1
-        if self.go_admin_counter < 5:
-            return
-        self.go_admin_counter = 0
-        if 'admin' not in self.client.session.account.permissions:
-            pass  # FIXME
-        await self.client.change_view(view=AdminView())
+        if 'admin' in self.client.session.account.permissions:
+            await self.client.change_view(view=AdminView())
 
     async def update_language(self, _):
         from app.views.auth.language import LanguageView
@@ -85,9 +79,6 @@ class AccountTab(BaseTab):
             button_title=await self.client.session.gtv(key='confirm'),
             button_on_click=self.logout,
         )
-
-        # Go Admin
-        self.go_admin_counter = 0
 
         firstname = self.client.session.account.firstname
         lastname = self.client.session.account.lastname
@@ -186,47 +177,47 @@ class AccountTab(BaseTab):
         ]
 
         self.controls = [
-            Container(
-                content=Column(
-                    controls=[
-                        CircleAvatar(
-                            content=Image(
-                                src=Icons.ACCOUNT,
-                                color=colors.SECONDARY,
+                            Container(
+                                content=Column(
+                                    controls=[
+                                        CircleAvatar(
+                                            content=Image(
+                                                src=Icons.ACCOUNT,
+                                                color=colors.SECONDARY,
+                                            ),
+                                            bgcolor=colors.TERTIARY_CONTAINER,
+                                            radius=38,
+                                        ),
+                                        Text(
+                                            value=f'{firstname} {lastname}',
+                                            font_family=Fonts.SEMIBOLD,
+                                            size=30,
+                                            color=colors.ON_PRIMARY,
+                                        ),
+                                        Text(
+                                            value=f'@{username}',
+                                            font_family=Fonts.SEMIBOLD,
+                                            size=12,
+                                            color=colors.ON_PRIMARY,
+                                        ),
+                                    ],
+                                    spacing=0,
+                                    horizontal_alignment=CrossAxisAlignment.CENTER,
+                                ),
+                                padding=padding.only(top=24),
+                                alignment=alignment.center,
                             ),
-                            bgcolor=colors.TERTIARY_CONTAINER,
-                            radius=38,
-                        ),
-                        Text(
-                            value=f'{firstname} {lastname}',
-                            font_family=Fonts.SEMIBOLD,
-                            size=30,
-                            color=colors.ON_PRIMARY,
-                        ),
-                        Text(
-                            value=f'@{username}',
-                            font_family=Fonts.SEMIBOLD,
-                            size=12,
-                            color=colors.ON_PRIMARY,
-                        ),
-                    ],
-                    spacing=0,
-                    horizontal_alignment=CrossAxisAlignment.CENTER,
-                ),
-                padding=padding.only(top=24),
-                alignment=alignment.center,
-            ),
-        ] + sections_controls + [
-            Container(
-                content=Text(
-                    value=f'{await self.client.session.gtv(key="version")} {settings.version}',
-                    font_family=Fonts.REGULAR,
-                    size=16,
-                    color=colors.ON_BACKGROUND,
-                ),
-                alignment=alignment.center,
-                on_click=self.go_admin,
-                padding=padding.symmetric(vertical=4),
-                ink=True,
-            ),
-        ]
+                        ] + sections_controls + [
+                            Container(
+                                content=Text(
+                                    value=f'{await self.client.session.gtv(key="version")} {settings.version}',
+                                    font_family=Fonts.REGULAR,
+                                    size=16,
+                                    color=colors.ON_BACKGROUND,
+                                ),
+                                alignment=alignment.center,
+                                on_click=self.go_admin,
+                                padding=padding.symmetric(vertical=4),
+                                ink=True,
+                            ),
+                        ]

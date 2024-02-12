@@ -42,27 +42,27 @@ class PurchaseFirstView(AuthView):
                                 content=Column(
                                     controls=[
                                         Text(
-                                            value=f"— {await self.client.session.gtv(key='НАЗВАНИЕ ПРОДУКТА')}",
+                                            value=f"— {await self.client.session.gtv(key='advantage_1')}",
                                             size=15,
                                             font_family=Fonts.MEDIUM,
                                         ),
                                         Text(
-                                            value=f"— {await self.client.session.gtv(key='НАЗВАНИЕ ПРОДУКТА')}",
+                                            value=f"— {await self.client.session.gtv(key='advantage_2')}",
                                             size=15,
                                             font_family=Fonts.MEDIUM,
                                         ),
                                         Text(
-                                            value=f"— {await self.client.session.gtv(key='НАЗВАНИЕ ПРОДУКТА')}",
+                                            value=f"— {await self.client.session.gtv(key='advantage_3')}",
                                             size=15,
                                             font_family=Fonts.MEDIUM,
                                         ),
                                         Text(
-                                            value=f"— {await self.client.session.gtv(key='НАЗВАНИЕ ПРОДУКТА')}",
+                                            value=f"— {await self.client.session.gtv(key='advantage_4')}",
                                             size=15,
                                             font_family=Fonts.MEDIUM,
                                         ),
                                         Text(
-                                            value=f"— {await self.client.session.gtv(key='НАЗВАНИЕ ПРОДУКТА')}",
+                                            value=f"— {await self.client.session.gtv(key='advantage_5')}",
                                             size=15,
                                             font_family=Fonts.MEDIUM,
                                         ),

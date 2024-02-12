@@ -230,7 +230,6 @@ class ServiceCreateView(AdminBaseView):
                 return
 
         questions = json.dumps(self.questions, ensure_ascii=False)
-        print(questions)
         try:
             service_id_str = await self.client.session.api.admin.services.create(
                 id_str=self.tf_id_str.value,

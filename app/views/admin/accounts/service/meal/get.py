@@ -31,6 +31,7 @@ from app.controls.layout import AdminBaseView, Section
 from app.utils import Fonts, Error
 from app.views.admin.accounts.service.meal.product import AccountMealProductView
 from app.views.admin.accounts.service.meal.product.create import AccountMealProductCreateView
+from app.views.admin.accounts.service.meal.report.get import AccountMealReportView
 
 
 class AccountMealView(AdminBaseView):
@@ -120,7 +121,13 @@ class AccountMealView(AdminBaseView):
                             content=Text(
                                 value=await self.client.session.gtv(key='delete'),
                             ),
-                            on_click=self.delete_meal,
+                            on_click=self.delete_meal
+                        ),
+                        FilledButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='report'),
+                            ),
+                            on_click=self.view_report
                         ),
                     ]
                 )
@@ -153,6 +160,13 @@ class AccountMealView(AdminBaseView):
             AccountMealProductView(
                 product=product,
                 meal_id=self.meal_id,
+            ),
+        )
+
+    async def view_report(self, _):
+        await self.client.change_view(
+            view=AccountMealReportView(
+                meal_report_id=self.meal['meal_report_id'],
             ),
         )
 

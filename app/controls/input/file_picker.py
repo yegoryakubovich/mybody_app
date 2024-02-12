@@ -17,7 +17,7 @@
 
 from typing import Any
 
-from flet_core import FilePicker as FilePickerFlet, FilePickerFileType, FilePickerUploadEvent
+from flet_core import FilePicker as FilePickerFlet, FilePickerFileType
 
 
 class FilePicker(FilePickerFlet):

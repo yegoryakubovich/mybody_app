@@ -108,7 +108,6 @@ class AccountTrainingExerciseView(AdminBaseView):
         for field, min_len, max_len, check_int in fields:
             if not await Error.check_field(self, field, min_len, max_len, check_int):
                 return
-        print(self.exercise)
         if self.tf_priority.value != self.exercise['training_exercise']['priority']:
             if int(self.tf_priority.value) in [exercise['training_exercise']['priority'] for exercise in
                                                self.exercises_training]:
