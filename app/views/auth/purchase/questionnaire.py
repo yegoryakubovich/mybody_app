@@ -18,6 +18,7 @@
 import json
 from typing import List
 
+from flet_core import InputFilter
 from flet_core.dropdown import Option
 
 from app.controls.button import FilledButton
@@ -51,7 +52,7 @@ class QuestionnaireView(AuthView):
         )
         await self.set_type(loading=False)
 
-        titles = json.loads(self.service['questions'])
+        titles = json.loads(self.service.questions)
         if self.gender == 'men':
             titles = [title for title in titles if title['title_text'] != 'peculiarities']
         self.total_pages = len(titles)
@@ -69,9 +70,9 @@ class QuestionnaireView(AuthView):
             if question['type'] == 'dropdown':
                 value_options = [
                     Option(
-                        text=value,
+                        text=await self.client.session.gtv(key=value),
                         key=value,
-                    ) for value in question.get('values', [])
+                    ) for value in question['values_texts']
                 ]
                 initial_value = self.answers.get(question['key'], value_options[0].key)
                 dd_answer = Dropdown(
@@ -88,6 +89,9 @@ class QuestionnaireView(AuthView):
                     label=await self.client.session.gtv(key='answer'),
                     key_question=f"{question['key']}_{question['type']}",
                     value=initial_value,
+                    input_filter=InputFilter(
+                        allow=True, regex_string=r'[0-9]', replacement_string=''
+                    ) if question['type'] == 'int' else None,
                 )
                 if tf_answer.value is not None:
                     self.tf_answers.append(tf_answer)

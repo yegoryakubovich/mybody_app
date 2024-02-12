@@ -59,6 +59,7 @@ class LanguageView(AuthView):
             label=await self.client.session.gtv(key='language'),
             options=options,
         )
+        print(await self.client.session.gtv(key='set_language_view_title'))
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='set_language_view_title'),
             controls=[

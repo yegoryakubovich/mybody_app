@@ -56,13 +56,13 @@ class GenderSelectionView(AuthView):
                                 value=await self.client.session.gtv(key='next'),
                                 size=16,
                             ),
-                            on_click=partial(self.change_view, self.dd_gender.value),
+                            on_click=self.change_view,
                         ),
                     ],
                 ),
             ],
         )
 
-    async def change_view(self, gender, _):
+    async def change_view(self, _):
         from app.views.auth.purchase import QuestionnaireView
-        await self.client.change_view(QuestionnaireView(gender=gender))
+        await self.client.change_view(QuestionnaireView(gender=self.dd_gender.value))
