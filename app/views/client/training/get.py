@@ -112,8 +112,7 @@ class TrainingView(ClientBaseView):
                             Text(
                                 value=str(
                                     exercise['training_exercise']['rest']) + ' ' + await self.client.session.gtv(
-                                    key='seconds' + '.'
-                                ),
+                                    key='seconds') + '.',
                                 color='#000000',
                                 font_family=Fonts.MEDIUM,
                             ),
@@ -151,6 +150,7 @@ class TrainingView(ClientBaseView):
                                     font_family=Fonts.SEMIBOLD,
                                     color='#ffffff',
                                 ),
+                                expand=3,
                             ),
                             Container(
                                 Text(
@@ -158,6 +158,8 @@ class TrainingView(ClientBaseView):
                                     font_family=Fonts.SEMIBOLD,
                                     color='#ffffff',
                                 ),
+                                expand=8,
+                                alignment=alignment.center,
                             ),
                             Container(
                                 Text(
@@ -165,7 +167,10 @@ class TrainingView(ClientBaseView):
                                     font_family=Fonts.SEMIBOLD,
                                     color='#ffffff',
                                 ),
+                                expand=4,
+                                alignment=alignment.center_right,
                             ),
+
                         ],
                         alignment=MainAxisAlignment.SPACE_BETWEEN,
                     ),

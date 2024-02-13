@@ -88,6 +88,7 @@ class QuestionnaireView(AuthView):
                 initial_value = self.answers.get(question['key'], '')
                 tf_answer = TextField(
                     label=await self.client.session.gtv(key='answer'),
+                    value=initial_value,
                     key_question=f"{question['key']}_{question['type']}",
                 )
                 if tf_answer.value is not None:
@@ -95,14 +96,17 @@ class QuestionnaireView(AuthView):
                     controls.append(tf_answer)
 
         if self.page_account == self.total_pages:
-            controls.append(
+            self.button = [
                 FilledButton(
                     content=Text(
                         value=await self.client.session.gtv(key='send_form'),
                     ),
                     on_click=self.send_form
                 ),
-            )
+            ]
+        else:
+            self.button = []
+
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key=title['title_text']),
             controls=controls + [
@@ -125,7 +129,7 @@ class QuestionnaireView(AuthView):
                     ],
                     alignment=MainAxisAlignment.SPACE_BETWEEN,
                 ),
-            ],
+            ] + self.button,
         )
 
     async def check_errors(self, field_list, min_len, max_len):

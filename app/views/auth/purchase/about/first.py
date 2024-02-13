@@ -49,7 +49,7 @@ class PurchaseFirstView(AuthView):
     async def build(self):
         icon = [Icons.ADMIN_SERVICES, Icons.SECURITY, Icons.ADMIN_EXERCISES, Icons.ADMIN_PRODUCTS, Icons.SUPPORT]
         advantages = [
-            Advantage(icon[i], await self.client.session.gtv(key=f"advantage_{i+1}"))
+            Advantage(icon[i], await self.client.session.gtv(key=f"you_get_{i+1}"))
             for i in range(5)
         ]
         self.controls = await self.get_controls(

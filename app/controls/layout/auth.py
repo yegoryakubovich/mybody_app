@@ -34,6 +34,21 @@ class AuthView(View):
             title: str = None,
     ) -> list:
 
+        body_controls = []
+
+        if title is not None:
+            body_controls.append(
+                Container(
+                    Text(
+                        value=title,
+                        size=36,
+                        font_family=Fonts.SEMIBOLD,
+                    ),
+                )
+            )
+
+        body_controls += controls
+
         controls = [
             Container(
                 content=Column(
@@ -51,18 +66,10 @@ class AuthView(View):
                         ),
                         # Body
                         Column(
-                            controls=[
-                                Container(
-                                    Text(
-                                        value=title,
-                                        size=36,
-                                        font_family=Fonts.SEMIBOLD,
-                                    ),
-                                ),
-                            ] + controls,
+                            controls=body_controls,
+                            width=640,
                         ),
                     ],
-                    width=640,
                 ),
                 alignment=alignment.center,
                 padding=10,

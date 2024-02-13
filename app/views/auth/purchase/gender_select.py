@@ -22,6 +22,7 @@ from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import Dropdown
 from app.controls.layout import AuthView
+from app.utils import Fonts
 
 
 class GenderSelectionView(AuthView):
@@ -44,10 +45,14 @@ class GenderSelectionView(AuthView):
             options=gender_list_options,
         )
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='gender_selection'),
             controls=[
                 Column(
                     controls=[
+                        Text(
+                            value=await self.client.session.gtv(key='gender_selection'),
+                            font_family=Fonts.SEMIBOLD,
+                            size=20,
+                        ),
                         self.dd_gender,
                         Row(
                             controls=[

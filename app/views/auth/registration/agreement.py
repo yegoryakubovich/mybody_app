@@ -49,6 +49,7 @@ class AgreementRegistrationView(AuthView):
         )
 
     async def change_view(self, _):
+        await self.set_type(loading=True)
         await self.client.session.api.client.accounts.create(
             username=self.client.session.registration.username,
             password=self.client.session.registration.password,
@@ -61,4 +62,4 @@ class AgreementRegistrationView(AuthView):
             currency=self.client.session.registration.currency,
         )
         await self.client.change_view(view=RegistrationSuccessfulView())
-        await self.update_async()
+        await self.set_type(loading=False)
