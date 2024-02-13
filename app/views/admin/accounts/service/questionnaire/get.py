@@ -37,7 +37,7 @@ class AccountQuestionnaireGetView(AdminBaseView):
         self.service = await self.client.session.api.admin.accounts.services.get(
             id_=self.account_service_id,
         )
-        await self.set_type(loading=True)
+        await self.set_type(loading=False)
 
         questions = json.loads(self.service['questions'])
         answers = json.loads(self.service['answers'])
@@ -61,6 +61,6 @@ class AccountQuestionnaireGetView(AdminBaseView):
 
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='questionnaire'),
+            title=await self.client.session.gtv(key='admin_account_service_questionnaire_title_view'),
             main_section_controls=main_section_controls,
         )

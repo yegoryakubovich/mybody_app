@@ -16,4 +16,3 @@
 
 
 from .get import AccountMealReportView
-from .create import AccountMealReportCreateView

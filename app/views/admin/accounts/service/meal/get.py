@@ -166,7 +166,7 @@ class AccountMealView(AdminBaseView):
     async def view_report(self, _):
         await self.client.change_view(
             view=AccountMealReportView(
-                meal_report_id=self.meal['meal_report_id'],
+                meal_id=self.meal_id,
             ),
         )
 
@@ -185,10 +185,6 @@ class AccountMealView(AdminBaseView):
         )
 
     async def update_meal(self, _):
-        fields = [self.tf_date]
-        for field in fields:
-            if not await Error.check_date_format(self, field):
-                return
         fields = [(self.tf_fats, True), (self.tf_proteins, True), (self.tf_carbohydrates, True)]
         for field, check_int in fields:
             if not await Error.check_field(self, field, check_int):

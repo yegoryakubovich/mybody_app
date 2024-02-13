@@ -13,8 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-
+import asyncio
 import base64
 import json
 import os
@@ -44,6 +43,7 @@ class MealReportView(ClientBaseView):
     added_products = []
     added_product_controls = None
     added_photo_controls = None
+    file_name: str = None
 
     def __init__(self, meal_id):
         super().__init__()
@@ -236,6 +236,7 @@ class MealReportView(ClientBaseView):
                 with open(f'uploads/{e.file_name}', 'rb') as f:
                     image_data = f.read()
                 encoded_image_data = base64.b64encode(image_data).decode()
+                self.file_name = e.file_name
                 self.photos.append(encoded_image_data)
                 await self.restart()
             else:
@@ -279,15 +280,18 @@ class MealReportView(ClientBaseView):
                 comment=self.tf_comment.value or None,
                 products=product_list_json or None,
             )
-            for photo in self.photos:
-                path = f'uploads/{photo}'
-                if os.path.exists(path):
-                    with open(path, 'rb') as file:
-                        await self.client.session.api.client.images.create(
-                            model='meal_report',
-                            model_id=id_meal_report,
-                            file=file,
-                        )
+            path = f'uploads/{self.file_name}'
+            if os.path.exists(path):
+                with open(path, 'rb') as file:
+                    await self.client.session.api.client.images.create(
+                        model='meal_report',
+                        model_id=id_meal_report,
+                        file=file,
+                    )
+                os.remove(path)
+                while os.path.exists(path):
+                    await asyncio.sleep(1)
+                await self.set_type(loading=False)
             await self.client.change_view(go_back=True, with_restart=True, delete_current=True)
         except ApiException as e:
             await self.set_type(loading=False)

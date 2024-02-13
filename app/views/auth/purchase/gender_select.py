@@ -15,9 +15,7 @@
 #
 
 
-from functools import partial
-
-from flet_core import Column
+from flet_core import Column, Row, MainAxisAlignment
 from flet_core.dropdown import Option
 
 from app.controls.button import FilledButton
@@ -51,13 +49,24 @@ class GenderSelectionView(AuthView):
                 Column(
                     controls=[
                         self.dd_gender,
-                        FilledButton(
-                            content=Text(
-                                value=await self.client.session.gtv(key='next'),
-                                size=16,
-                            ),
-                            on_click=self.change_view,
-                        ),
+                        Row(
+                            controls=[
+                                FilledButton(
+                                    content=Text(
+                                        value=await self.client.session.gtv(key='next'),
+                                        size=16,
+                                    ),
+                                    on_click=self.change_view,
+                                ),
+                                FilledButton(
+                                    content=Text(
+                                        value=await self.client.session.gtv(key='logout'),
+                                    ),
+                                    on_click=self.logout
+                                ),
+                            ],
+                            alignment=MainAxisAlignment.SPACE_BETWEEN,
+                        )
                     ],
                 ),
             ],
@@ -66,3 +75,7 @@ class GenderSelectionView(AuthView):
     async def change_view(self, _):
         from app.views.auth.purchase import QuestionnaireView
         await self.client.change_view(QuestionnaireView(gender=self.dd_gender.value))
+
+    async def logout(self, _):
+        from app.views.auth import AuthenticationView
+        await self.client.change_view(view=AuthenticationView())

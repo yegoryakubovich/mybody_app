@@ -17,14 +17,15 @@
 
 from typing import Callable
 
-from flet_core import Container, Row, IconButton, icons, colors
+from flet_core import Container, Row, colors
 
+from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.utils import Fonts
 
 
 class PaginationWidget(Container):
-    def __init__(self, current_page: int, total_pages: int, on_back: Callable, on_next: Callable):
+    def __init__(self, text_next: str, text_back: str, current_page: int, total_pages: int, on_back: Callable, on_next: Callable):
         self.current_page = current_page
         self.total_pages = total_pages
         self.on_previous = on_back
@@ -32,11 +33,13 @@ class PaginationWidget(Container):
         super().__init__()
         self.content = Row(
             controls=[
-                IconButton(
-                    icon=icons.ARROW_LEFT,
+                FilledButton(
+                    content=
+                    Text(
+                        value=text_back
+                    ),
                     on_click=self.on_previous,
                     disabled=self.current_page <= 1,
-                    icon_color=colors.ON_BACKGROUND,
                 ),
                 Text(
                     value=f'{self.current_page}/{self.total_pages}',
@@ -44,11 +47,13 @@ class PaginationWidget(Container):
                     font_family=Fonts.SEMIBOLD,
                     color=colors.ON_BACKGROUND,
                 ),
-                IconButton(
-                    icon=icons.ARROW_RIGHT,
+                FilledButton(
+                    content=
+                    Text(
+                        value=text_next
+                    ),
                     on_click=self.on_next,
                     disabled=self.current_page >= self.total_pages,
-                    icon_color=colors.ON_BACKGROUND,
                 ),
             ],
         )

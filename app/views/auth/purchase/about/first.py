@@ -15,16 +15,43 @@
 #
 
 
-from flet_core import Container, Column, alignment, border, margin
+from flet_core import Container, Column, alignment, border, margin, Row, Image
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.layout import AuthView
-from app.utils import Fonts
+from app.utils import Fonts, Icons
+
+
+class Advantage:
+    def __init__(self, icon_path, text):
+        self.icon_path = icon_path
+        self.text = text
+
+    def to_control(self):
+        return Row(
+            controls=[
+                Image(
+                    src=self.icon_path,
+                    width=15,
+                    height=15,
+                ),
+                Text(
+                    value=self.text,
+                    size=15,
+                    font_family=Fonts.MEDIUM,
+                ),
+            ]
+        )
 
 
 class PurchaseFirstView(AuthView):
     async def build(self):
+        icon = [Icons.ADMIN_SERVICES, Icons.SECURITY, Icons.ADMIN_EXERCISES, Icons.ADMIN_PRODUCTS, Icons.SUPPORT]
+        advantages = [
+            Advantage(icon[i], await self.client.session.gtv(key=f"advantage_{i+1}"))
+            for i in range(5)
+        ]
         self.controls = await self.get_controls(
             controls=[
                 Container(
@@ -40,38 +67,12 @@ class PurchaseFirstView(AuthView):
                             ),
                             Container(
                                 content=Column(
-                                    controls=[
-                                        Text(
-                                            value=f"— {await self.client.session.gtv(key='advantage_1')}",
-                                            size=15,
-                                            font_family=Fonts.MEDIUM,
-                                        ),
-                                        Text(
-                                            value=f"— {await self.client.session.gtv(key='advantage_2')}",
-                                            size=15,
-                                            font_family=Fonts.MEDIUM,
-                                        ),
-                                        Text(
-                                            value=f"— {await self.client.session.gtv(key='advantage_3')}",
-                                            size=15,
-                                            font_family=Fonts.MEDIUM,
-                                        ),
-                                        Text(
-                                            value=f"— {await self.client.session.gtv(key='advantage_4')}",
-                                            size=15,
-                                            font_family=Fonts.MEDIUM,
-                                        ),
-                                        Text(
-                                            value=f"— {await self.client.session.gtv(key='advantage_5')}",
-                                            size=15,
-                                            font_family=Fonts.MEDIUM,
-                                        ),
-                                    ],
+                                    controls=[advantage.to_control() for advantage in advantages],
                                 ),
                             ),
                             Container(
                                 content=Text(
-                                    value=1000000,
+                                    value=f'{1000000} {self.client.session.account.currency}'.upper(),
                                     size=20,
                                     font_family=Fonts.SEMIBOLD,
                                 ),
@@ -90,10 +91,10 @@ class PurchaseFirstView(AuthView):
                         ]
                     ),
                     alignment=alignment.top_center,
-                    border=border.all(2),
+                    border=border.all(5, '#008F12'),
                     border_radius=6,
                     padding=20,
-                    margin=margin.symmetric(horizontal=100)
+                    margin=margin.symmetric(horizontal=20)
                 ),
             ],
         )

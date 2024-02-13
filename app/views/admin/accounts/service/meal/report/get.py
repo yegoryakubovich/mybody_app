@@ -13,13 +13,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+from flet_core import Column
+from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.layout import AdminBaseView
 from app.utils import Fonts
-from app.views.admin.accounts.service.meal.report.create import AccountMealReportCreateView
+from app.views.client.meal.report import MealReportView
 
 
 class AccountMealReportView(AdminBaseView):
@@ -28,29 +29,36 @@ class AccountMealReportView(AdminBaseView):
     tf_not_report: Text
     products: list[dict]
     report: dict
+    meal: dict
 
-    def __init__(self, meal_report_id):
+    def __init__(self, meal_id):
         super().__init__()
-        self.meal_report_id = meal_report_id
+        self.meal_id = meal_id
 
     async def build(self):
         await self.set_type(loading=True)
-        self.report = await self.client.session.api.admin.meals.reports.get(
-            id_=self.meal_report_id,
+        self.meal = await self.client.session.api.admin.meals.get(
+            id_=self.meal_id,
         )
+        try:
+            self.report = await self.client.session.api.admin.meals.reports.get(
+                id_=self.meal['meal_report_id'],
+            )
+        except ApiException:
+            self.report = {}
+        await self.set_type(loading=False)
         if self.report:
             self.products = []
-            for i, product in enumerate(self.report['products']['products_id']):
-                product_info = await self.client.session.api.client.products.get(id_=product['product']['products_id'])
+            for i, product in enumerate(self.report['products']):
+                product_info = await self.client.session.api.client.products.get(id_=product['product_id'])
                 # Находим соответствующий продукт в self.meal['products']
-                meal_product = self.report['products']['products_id'][i]
+                meal_product = self.report['products'][i]
                 if meal_product is not None:
                     product_info['meal_product'] = meal_product
                 self.products.append(product_info)
-        await self.set_type(loading=False)
         if self.report:
             self.tf_comment = Text(
-                value=self.report['comment'],
+                value=f'{await self.client.session.gtv(key="comment")}' ': ' f'{self.report["comment"]}',
                 size=20,
                 font_family=Fonts.MEDIUM,
             )
@@ -60,16 +68,35 @@ class AccountMealReportView(AdminBaseView):
                 ),
                 on_click=self.delete_meal_report,
             )
+            product_text = [
+                Text(
+                    value=f'{await self.client.session.gtv(key="products")}' + ':',
+                    size=20,
+                    font_family=Fonts.MEDIUM,
+                )
+            ]
+            product_buttons = [
+                Column(
+                    controls=[
+                        Text(
+                            value=await self.client.session.gtv(
+                                key=product['name_text']) + ' ' + str(product['meal_product']['value']) + ' ' +
+                                  await self.client.session.gtv(key='gr')
+                        )
+                        for product in self.products
+                    ],
+                ),
+            ]
+            controls = product_text + product_buttons + [self.tf_comment, button]
             on_create_click = None
-            controls = [self.tf_comment, button]
         else:
             self.tf_not_report = Text(
                 value=await self.client.session.gtv(key='not_report'),
                 size=20,
                 font_family=Fonts.MEDIUM,
             )
-            on_create_click = self.create_training_report
             controls = [self.tf_not_report]
+            on_create_click = self.create_training_report
 
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='report'),
@@ -79,9 +106,9 @@ class AccountMealReportView(AdminBaseView):
 
     async def delete_meal_report(self, _):
         await self.client.session.api.admin.meals.reports.delete(
-            id_=self.meal_report_id,
+            id_=self.meal['meal_report_id'],
         )
         await self.client.change_view(go_back=True, with_restart=True, delete_current=True)
 
     async def create_training_report(self, _):
-        await self.client.change_view(AccountMealReportCreateView())
+        await self.client.change_view(MealReportView(meal_id=self.meal_id))

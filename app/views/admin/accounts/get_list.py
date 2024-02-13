@@ -82,6 +82,8 @@ class AccountListView(AdminBaseView):
                     total_pages=self.total_pages,
                     on_back=self.previous_page,
                     on_next=self.next_page,
+                    text_back=await self.client.session.gtv(key='back'),
+                    text_next=await self.client.session.gtv(key='next'),
                 ),
             ]
         )

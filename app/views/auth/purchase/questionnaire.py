@@ -18,7 +18,7 @@
 import json
 from typing import List
 
-from flet_core import InputFilter
+from flet_core import Row, MainAxisAlignment
 from flet_core.dropdown import Option
 
 from app.controls.button import FilledButton
@@ -53,8 +53,9 @@ class QuestionnaireView(AuthView):
         await self.set_type(loading=False)
 
         titles = json.loads(self.service.questions)
-        if self.gender == 'men':
-            titles = [title for title in titles if title['title_text'] != 'peculiarities']
+
+        if self.gender == 'Men':
+            titles = [title for title in titles if title['title_text'] != 'questionnaire_tittle_3']
         self.total_pages = len(titles)
 
         title = titles[self.page_account - 1]
@@ -88,10 +89,6 @@ class QuestionnaireView(AuthView):
                 tf_answer = TextField(
                     label=await self.client.session.gtv(key='answer'),
                     key_question=f"{question['key']}_{question['type']}",
-                    value=initial_value,
-                    input_filter=InputFilter(
-                        allow=True, regex_string=r'[0-9]', replacement_string=''
-                    ) if question['type'] == 'int' else None,
                 )
                 if tf_answer.value is not None:
                     self.tf_answers.append(tf_answer)
@@ -109,13 +106,26 @@ class QuestionnaireView(AuthView):
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key=title['title_text']),
             controls=controls + [
-                PaginationWidget(
-                    current_page=self.page_account,
-                    total_pages=self.total_pages,
-                    on_back=self.previous_page,
-                    on_next=self.next_page,
+                Row(
+                    controls=[
+                        PaginationWidget(
+                            current_page=self.page_account,
+                            total_pages=self.total_pages,
+                            on_back=self.previous_page,
+                            on_next=self.next_page,
+                            text_back=await self.client.session.gtv(key='back'),
+                            text_next=await self.client.session.gtv(key='next'),
+                        ),
+                        FilledButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='logout'),
+                            ),
+                            on_click=self.logout
+                        ),
+                    ],
+                    alignment=MainAxisAlignment.SPACE_BETWEEN,
                 ),
-            ]
+            ],
         )
 
     async def check_errors(self, field_list, min_len, max_len):
@@ -136,8 +146,14 @@ class QuestionnaireView(AuthView):
             for tf in self.tf_answers
         }
         answers.update({dd.key: dd.value for dd in self.dd_answers})
-        answers_json = json.dumps(answers, ensure_ascii=False)
 
+        # Проверка и добавление ключей, если они отсутствуют
+        for key in ['key7', 'key8', 'key9']:
+            if key not in answers:
+                answers[key] = 'no answers'
+
+        answers_json = json.dumps(answers, ensure_ascii=False)
+        print(answers_json)
         await self.client.session.api.client.accounts.services.create(
             service=self.services[0]['id_str'],
             answers=answers_json,
@@ -168,3 +184,7 @@ class QuestionnaireView(AuthView):
             self.answers.update({dd.key: dd.value for dd in self.dd_answers})
             self.page_account -= 1
             await self.restart()
+
+    async def logout(self, _):
+        from app.views.auth import AuthenticationView
+        await self.client.change_view(view=AuthenticationView())
