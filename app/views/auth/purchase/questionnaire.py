@@ -137,6 +137,7 @@ class QuestionnaireView(AuthView):
         }
         answers.update({dd.key: dd.value for dd in self.dd_answers})
         answers_json = json.dumps(answers, ensure_ascii=False)
+
         await self.client.session.api.client.accounts.services.create(
             service=self.services[0]['id_str'],
             answers=answers_json,
