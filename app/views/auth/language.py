@@ -67,6 +67,7 @@ class LanguageView(AuthView):
 
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='set_language_view_title'),
+            is_go_back=self.is_go_back,
             controls=[
                 self.dropdown,
                 FilledButton(
@@ -75,5 +76,4 @@ class LanguageView(AuthView):
                     horizontal_padding=54,
                 ),
             ],
-            is_go_back=self.is_go_back,
         )

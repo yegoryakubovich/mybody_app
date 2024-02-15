@@ -15,7 +15,7 @@
 #
 
 
-from flet_core import Column, Row, Container, padding, colors
+from flet_core import Column, Row, Container, padding, colors, MainAxisAlignment
 from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
@@ -23,6 +23,7 @@ from app.controls.information import Text
 from app.controls.input import TextField
 from app.controls.layout import AuthView
 from app.utils import Fonts
+
 
 
 class AuthenticationView(AuthView):
@@ -58,6 +59,10 @@ class AuthenticationView(AuthView):
         from app.views.auth.registration import RegistrationFirstView
         await self.client.change_view(view=RegistrationFirstView(), delete_current=True)
 
+    async def go_language(self, _):
+        from app.views.auth import LanguageView
+        await self.client.change_view(view=LanguageView())
+
     async def build(self):
         self.tf_username = TextField(
             label=await self.client.session.gtv(key='username'),
@@ -74,13 +79,25 @@ class AuthenticationView(AuthView):
                     controls=[
                         self.tf_username,
                         self.tf_password,
-                        FilledButton(
-                            content=Text(
-                                value=await self.client.session.gtv(key='sign_in'),
-                                size=16,
-                            ),
-                            on_click=self.authenticate,
-                            horizontal_padding=54,
+                        Row(
+                            controls=[
+                                FilledButton(
+                                    content=Text(
+                                        value=await self.client.session.gtv(key='sign_in'),
+                                        size=16,
+                                    ),
+                                    on_click=self.authenticate,
+                                    horizontal_padding=54,
+                                ),
+                                FilledButton(
+                                    content=Text(
+                                        value=await self.client.session.gtv(key='language'),
+                                        size=16,
+                                    ),
+                                    on_click=self.go_language,
+                                ),
+                            ],
+                            alignment=MainAxisAlignment.SPACE_BETWEEN,
                         ),
                         Container(
                             content=Row(

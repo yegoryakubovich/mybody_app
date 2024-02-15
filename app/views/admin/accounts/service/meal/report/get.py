@@ -13,7 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-from flet_core import Column
+
+
+import base64
+
+from flet_core import Column, Image
 from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
@@ -25,11 +29,11 @@ from app.views.client.meal.report import MealReportView
 
 class AccountMealReportView(AdminBaseView):
     route = '/admin/account/meal/report/get'
-    tf_comment: Text
     tf_not_report: Text
     products: list[dict]
     report: dict
     meal: dict
+    image_data: str = None
 
     def __init__(self, meal_id):
         super().__init__()
@@ -44,9 +48,15 @@ class AccountMealReportView(AdminBaseView):
             self.report = await self.client.session.api.admin.meals.reports.get(
                 id_=self.meal['meal_report_id'],
             )
+            if self.report['images']:
+                response = await self.client.session.api.client.images.get(
+                    id_str=self.report['images'][0]['id_str'],
+                )
+                self.image_data = await response.read()
         except ApiException:
             self.report = {}
         await self.set_type(loading=False)
+
         if self.report:
             self.products = []
             for i, product in enumerate(self.report['products']):
@@ -56,46 +66,54 @@ class AccountMealReportView(AdminBaseView):
                 if meal_product:
                     product_info['meal_product'] = meal_product
                 self.products.append(product_info)
+        controls = []
         if self.report:
-            self.tf_comment = Text(
-                value=f'{await self.client.session.gtv(key="comment")}' ': ' f'{self.report["comment"]}',
-                size=20,
-                font_family=Fonts.MEDIUM,
-            )
-            button = FilledButton(
-                content=Text(
-                    value=await self.client.session.gtv(key='delete'),
-                ),
-                on_click=self.delete_meal_report,
-            )
-            product_text = [
-                Text(
-                    value=f'{await self.client.session.gtv(key="products")}' + ':',
+            if self.report['comment']:
+                comment = Text(
+                    value=f'{await self.client.session.gtv(key="comment")}: {self.report["comment"]}',
                     size=20,
                     font_family=Fonts.MEDIUM,
                 )
-            ]
-            product_buttons = [
-                Column(
-                    controls=[
-                        Text(
-                            value=await self.client.session.gtv(
-                                key=product['name_text']) + ' ' + str(product['meal_product']['value']) + ' ' +
-                                  await self.client.session.gtv(key='gr')
-                        )
-                        for product in self.products
-                    ],
-                ),
-            ]
-            controls = product_text + product_buttons + [self.tf_comment, button]
+                controls.append(comment)
+
+            product_text = Text(
+                value=f'{await self.client.session.gtv(key="products")} :',
+                size=20,
+                font_family=Fonts.MEDIUM,
+            )
+            controls.append(product_text)
+
+            product_buttons = Column(
+                controls=[
+                    Text(
+                        value=f'{await self.client.session.gtv(key=product["name_text"])} '
+                              f'{product["meal_product"]["value"]} {await self.client.session.gtv(key="gr")}'
+                    )
+                    for product in self.products
+                ],
+            )
+            controls.append(product_buttons)
+
+            if self.image_data:
+                base64_image = base64.b64encode(self.image_data).decode()
+                image = Image(src=f"data:image/jpeg;base64,{base64_image}")
+                controls.append(image)
+
+            button = FilledButton(
+                content=Text(value=await self.client.session.gtv(key='delete')),
+                on_click=self.delete_meal_report,
+            )
+            controls.append(button)
+
             on_create_click = None
         else:
-            self.tf_not_report = Text(
+            not_report_text = Text(
                 value=await self.client.session.gtv(key='not_report'),
                 size=20,
                 font_family=Fonts.MEDIUM,
             )
-            controls = [self.tf_not_report]
+            controls.append(not_report_text)
+
             on_create_click = self.create_training_report
 
         self.controls = await self.get_controls(

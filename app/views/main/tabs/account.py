@@ -18,7 +18,7 @@
 from functools import partial
 from typing import Any
 
-from flet_core import Container, alignment, padding, Column, CrossAxisAlignment, CircleAvatar, Image, colors, Icon
+from flet_core import Container, alignment, padding, Column, CrossAxisAlignment, CircleAvatar, Image, colors
 
 from app.controls.button import ListItemButton
 from app.controls.information import Text

@@ -47,7 +47,7 @@ class Advantage:
 
 class PurchaseFirstView(AuthView):
     async def build(self):
-        icon = [Icons.ADMIN_SERVICES, Icons.SECURITY, Icons.ADMIN_EXERCISES, Icons.ADMIN_PRODUCTS, Icons.SUPPORT]
+        icon = [Icons.ADMIN_PRODUCTS, Icons.ABOUT, Icons.ADMIN_EXERCISES, Icons.PRIVACY_POLICY, Icons.SUPPORT]
         advantages = [
             Advantage(icon[i], await self.client.session.gtv(key=f"you_get_{i+1}"))
             for i in range(5)
@@ -59,7 +59,7 @@ class PurchaseFirstView(AuthView):
                         controls=[
                             Container(
                                 content=Text(
-                                    value=await self.client.session.gtv(key='НАЗВАНИЕ ПРОДУКТА'),
+                                    value=f'{await self.client.session.gtv(key="course")}' + ' ' + 'My Body',
                                     size=20,
                                     font_family=Fonts.SEMIBOLD,
                                 ),

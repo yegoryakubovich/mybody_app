@@ -13,9 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+from typing import Any
 
-
-from flet_core import Image, Container, padding, alignment, Column, ScrollMode, colors, Row
+from flet_core import Image, Container, padding, alignment, Column, ScrollMode, colors, Row, MainAxisAlignment, \
+    CrossAxisAlignment
 from flet_manager.utils import get_svg
 
 from app.controls.information import Text
@@ -35,7 +36,7 @@ class AuthView(View):
             self,
             controls: list,
             title: str = None,
-            is_go_back: bool = False,
+            is_go_back: Any = False,
     ) -> list:
 
         body_controls = []
@@ -59,11 +60,11 @@ class AuthView(View):
                             size=36,
                             font_family=Fonts.SEMIBOLD,
                         )
-                    ]
-                )
+                    ],
+                ),
             )
             if back_control:
-                title_control.content.controls.insert(0, back_control)
+                title_control.content.controls = [back_control] + title_control.content.controls
             body_controls.append(
                 title_control
             )
