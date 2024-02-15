@@ -17,7 +17,7 @@
 
 from typing import Any
 
-from flet_core import Row, Container, Image, MainAxisAlignment, Column
+from flet_core import Row, Container, Image, MainAxisAlignment, Column, margin
 from flet_manager.utils import get_svg
 
 from app.controls.information import Text
@@ -125,6 +125,7 @@ class ClientBaseView(View):
                     spacing=8,
                 ),
                 padding=10,
+                margin=margin.only(bottom=15),
             ),
         ]
 

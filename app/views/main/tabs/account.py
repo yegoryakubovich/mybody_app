@@ -18,7 +18,7 @@
 from functools import partial
 from typing import Any
 
-from flet_core import Container, alignment, padding, Column, CrossAxisAlignment, CircleAvatar, Image, colors
+from flet_core import Container, alignment, padding, Column, CrossAxisAlignment, CircleAvatar, Image, colors, Icon
 
 from app.controls.button import ListItemButton
 from app.controls.information import Text
@@ -56,7 +56,7 @@ class AccountTab(BaseTab):
 
     async def update_language(self, _):
         from app.views.auth.language import LanguageView
-        await self.client.change_view(view=LanguageView(), delete_current=True)
+        await self.client.change_view(view=LanguageView(go_back=True))
 
     async def logout(self, _):
         await self.client.session.set_cs(key='token', value=None)

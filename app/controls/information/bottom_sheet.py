@@ -16,7 +16,7 @@
 
 
 from flet_core import BottomSheet as BottomSheetFlet, Container, Stack, Column, Image, margin, Text, TextAlign, Row, \
-    MainAxisAlignment, CrossAxisAlignment, padding, IconButton, icons
+    MainAxisAlignment, CrossAxisAlignment, padding, IconButton, icons, colors
 
 from app.controls.button import FilledButton
 from app.utils import Fonts
@@ -24,7 +24,8 @@ from app.utils import Fonts
 
 class BottomSheet(BottomSheetFlet):
     def __init__(self):
-        super().__init__(open=False, )
+        super().__init__(open=False)
+        self.bgcolor = colors.BACKGROUND
 
     async def close(self, _):
         self.open = False
@@ -44,39 +45,40 @@ class BottomSheet(BottomSheetFlet):
                     Container(
                         content=Column(
                             controls=[
-                                         Container(
-                                             content=Image(
-                                                 src=icon,
-                                                 color='#1d1d1d',  # FIXME
-                                             ),
-                                             margin=margin.only(bottom=16),
-                                         ),
-                                         Text(
-                                             value=title,
-                                             font_family=Fonts.SEMIBOLD,
-                                             size=28,
-                                         ),
-                                         Text(
-                                             value=description,
-                                             font_family=Fonts.REGULAR,
-                                             size=16,
-                                             text_align=TextAlign.CENTER,
-                                         ),
-                                     ] + ([
-                                              Row(
-                                                  controls=[
-                                                      FilledButton(
-                                                          content=Text(
-                                                              value=button_title,
-                                                              color='#000000',  # FIXME
-                                                          ),
-                                                          width=256,
-                                                          on_click=button_on_click,
-                                                      ),
-                                                  ],
-                                                  alignment=MainAxisAlignment.CENTER
-                                              ),
-                                          ] if button_title and button_on_click else []),
+                                 Container(
+                                     content=Image(
+                                         src=icon,
+                                         color=colors.ON_BACKGROUND,
+                                     ),
+                                     margin=margin.only(bottom=16),
+                                 ),
+                                 Text(
+                                     value=title,
+                                     font_family=Fonts.SEMIBOLD,
+                                     size=28,
+                                 ),
+                                 Text(
+                                     value=description,
+                                     font_family=Fonts.REGULAR,
+                                     size=16,
+                                     text_align=TextAlign.CENTER,
+                                 ),
+                                ] + (
+                                [
+                                    Row(
+                                        controls=[
+                                            FilledButton(
+                                                content=Text(
+                                                    value=button_title,
+                                                    color=colors.ON_PRIMARY,
+                                                ),
+                                                width=256,
+                                                on_click=button_on_click,
+                                            ),
+                                        ],
+                                        alignment=MainAxisAlignment.CENTER
+                                    ),
+                                ] if button_title and button_on_click else []),
                             spacing=10,
                             tight=True,
                             width=384,

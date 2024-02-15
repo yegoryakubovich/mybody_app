@@ -56,7 +56,7 @@ class AccountTrainingView(AdminBaseView):
             training_info = await self.client.session.api.client.exercises.get(id_=training['exercise'])
             # Находим соответствующий продукт в self.exercise['exercise']
             training_exercise = self.training['exercises'][i]
-            if training_exercise is not None:
+            if training_exercise:
                 training_info['training_exercise'] = training_exercise
             self.exercises.append(training_info)
         await self.set_type(loading=False)

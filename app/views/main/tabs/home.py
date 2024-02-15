@@ -153,7 +153,7 @@ class HomeTab(BaseTab):
                 training_info = await self.client.session.api.client.exercises.get(id_=training['exercise'])
                 # Находим соответствующий продукт в self.exercise['exercise']
                 training_exercise = self.training['exercises'][i]
-                if training_exercise is not None:
+                if training_exercise:
                     training_info['training_exercise'] = training_exercise
                 self.exercise.append(training_info)
                 self.exercise.sort(key=lambda x: x['training_exercise']['priority'])
@@ -289,7 +289,7 @@ class HomeTab(BaseTab):
         ]
 
     async def training_view(self, _):
-        if self.training is not None and self.training['id'] is not None:
+        if self.training and self.training['id']:
             training_id = self.training['id']
         else:
             training_id = None

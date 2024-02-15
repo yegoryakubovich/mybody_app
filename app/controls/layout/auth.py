@@ -15,12 +15,12 @@
 #
 
 
-from flet_core import Image, Container, padding, alignment, Column, ScrollMode
+from flet_core import Image, Container, padding, alignment, Column, ScrollMode, colors, Row
 from flet_manager.utils import get_svg
 
 from app.controls.information import Text
 from app.controls.layout.view import View
-from app.utils import Fonts
+from app.utils import Fonts, Icons
 
 
 class AuthView(View):
@@ -28,23 +28,44 @@ class AuthView(View):
         super().__init__(**kwargs)
         self.scroll = ScrollMode.AUTO
 
-    @staticmethod
+    async def go_back(self, _):
+        await self.client.change_view(go_back=True)
+
     async def get_controls(
+            self,
             controls: list,
             title: str = None,
+            is_go_back: bool = False,
     ) -> list:
 
         body_controls = []
 
-        if title is not None:
-            body_controls.append(
-                Container(
-                    Text(
-                        value=title,
-                        size=36,
-                        font_family=Fonts.SEMIBOLD,
-                    ),
+        back_control = Container(
+            content=Image(
+                src=Icons.BACK,
+                height=20,
+                color=colors.ON_BACKGROUND,
+            ),
+            ink=True,
+            on_click=self.go_back,
+        ) if is_go_back else None
+
+        if title:
+            title_control = Container(
+                content=Row(
+                    controls=[
+                        Text(
+                            value=title,
+                            size=36,
+                            font_family=Fonts.SEMIBOLD,
+                        )
+                    ]
                 )
+            )
+            if back_control:
+                title_control.content.controls.insert(0, back_control)
+            body_controls.append(
+                title_control
             )
 
         body_controls += controls
@@ -62,7 +83,7 @@ class AuthView(View):
                                 height=56,
                             ),
                             alignment=alignment.center,
-                            padding=padding.symmetric(vertical=32, horizontal=96),
+                            padding=padding.symmetric(vertical=32, horizontal=64),
                         ),
                         # Body
                         Column(

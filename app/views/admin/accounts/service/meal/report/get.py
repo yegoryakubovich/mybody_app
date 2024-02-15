@@ -53,7 +53,7 @@ class AccountMealReportView(AdminBaseView):
                 product_info = await self.client.session.api.client.products.get(id_=product['product_id'])
                 # Находим соответствующий продукт в self.meal['products']
                 meal_product = self.report['products'][i]
-                if meal_product is not None:
+                if meal_product:
                     product_info['meal_product'] = meal_product
                 self.products.append(product_info)
         if self.report:

@@ -216,7 +216,7 @@ class MealReportView(ClientBaseView):
 
     async def upload_files(self, _):
         uf = []
-        if self.client.session.filepicker.result.files is not None:
+        if self.client.session.filepicker.result.files:
             for f in self.client.session.filepicker.result.files:
                 uf.append(
                     FilePickerUploadFile(

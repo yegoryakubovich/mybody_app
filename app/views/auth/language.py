@@ -26,10 +26,15 @@ from config import settings
 class LanguageView(AuthView):
     dropdown: Dropdown
     languages: list
+    is_go_back: bool
 
     async def get_text_pack(self, language: str):
         self.client.session.text_pack = await self.client.session.api.client.texts.packs.get(language=language)
         await self.client.session.set_cs(key='text_pack', value=self.client.session.text_pack)
+
+    def __init__(self, go_back: bool = False):
+        super().__init__()
+        self.is_go_back = go_back
 
     async def select(self, _):
         language = self.dropdown.value
@@ -59,6 +64,7 @@ class LanguageView(AuthView):
             label=await self.client.session.gtv(key='language'),
             options=options,
         )
+
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='set_language_view_title'),
             controls=[
@@ -69,4 +75,5 @@ class LanguageView(AuthView):
                     horizontal_padding=54,
                 ),
             ],
+            is_go_back=self.is_go_back,
         )

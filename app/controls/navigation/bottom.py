@@ -18,7 +18,7 @@
 from typing import Any
 
 from flet_core import Column, Container, CrossAxisAlignment, Image, MainAxisAlignment, Row, Text, \
-    padding, BoxShadow, colors
+    padding, BoxShadow, colors, margin
 
 from app.utils import Fonts
 
@@ -64,14 +64,17 @@ class BottomNavigationTab(Container):
             color=colors.ON_PRIMARY_CONTAINER,
         )
 
-        self.content = Column(
-            controls=[
-                self.icon,
-                self.text,
-            ],
-            spacing=4,
-            alignment=MainAxisAlignment.CENTER,
-            horizontal_alignment=CrossAxisAlignment.CENTER,
+        self.content = Container(
+            content=Column(
+                controls=[
+                    self.icon,
+                    self.text,
+                ],
+                spacing=4,
+                alignment=MainAxisAlignment.CENTER,
+                horizontal_alignment=CrossAxisAlignment.CENTER,
+            ),
+            margin=margin.only(bottom=10, top=5)
         )
 
 

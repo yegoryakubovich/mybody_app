@@ -74,6 +74,7 @@ class ProductListView(AdminBaseView):
                             on_click=self.all_type,
                         ),
                     ],
+                    wrap=True,
                 ),
             ] + [
                 Card(

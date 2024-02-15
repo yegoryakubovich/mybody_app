@@ -91,7 +91,7 @@ class QuestionnaireView(AuthView):
                     value=initial_value,
                     key_question=f"{question['key']}_{question['type']}",
                 )
-                if tf_answer.value is not None:
+                if tf_answer.value:
                     self.tf_answers.append(tf_answer)
                     controls.append(tf_answer)
 

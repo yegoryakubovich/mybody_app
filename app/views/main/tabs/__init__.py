@@ -16,5 +16,4 @@
 
 
 from .home import HomeTab
-from .stats import StatsTab
 from .account import AccountTab

@@ -103,7 +103,7 @@ class Session:
 
     # Texts
     async def get_text_value(self, key):
-        if key is not None:
+        if key:
             try:
                 return self.text_pack[key]
             except KeyError:

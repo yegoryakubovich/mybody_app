@@ -31,13 +31,13 @@ class Error:
                 await self.update_async()
                 return False
 
-        if not check_int and (min_len is not None or max_len is not None):
-            if min_len is not None and len(field.value) < min_len:
+        if not check_int and (min_len or max_len):
+            if min_len and len(field.value) < min_len:
                 field.error_text = await self.client.session.gtv(key=error_text_key)
                 await self.update_async()
                 return False
 
-            if max_len is not None and len(field.value) > max_len:
+            if max_len and len(field.value) > max_len:
                 field.error_text = await self.client.session.gtv(key=error_text_key)
                 await self.update_async()
                 return False

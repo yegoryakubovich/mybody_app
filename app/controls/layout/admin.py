@@ -17,7 +17,7 @@
 
 from typing import Any
 
-from flet_core import Row, Container, Image, MainAxisAlignment, Column
+from flet_core import Row, Container, Image, MainAxisAlignment, Column, margin
 
 from app.controls.information import Text
 from app.controls.layout.view import View
@@ -124,6 +124,7 @@ class AdminBaseView(View):
                     spacing=8,
                 ),
                 padding=16,
+                margin=margin.only(bottom=15),
             ),
         ]
 
@@ -131,7 +132,7 @@ class AdminBaseView(View):
             await self.get_header(),
             *main_content,
         ]
-        if sections is not None:
+        if sections:
             for section in sections:
                 controls += await section.get_controls()
 
