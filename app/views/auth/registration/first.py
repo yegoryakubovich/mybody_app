@@ -15,7 +15,7 @@
 #
 
 
-from flet_core import Row, Column, Container, padding
+from flet_core import Row, Column, Container, padding, colors
 from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
@@ -69,7 +69,7 @@ class RegistrationFirstView(AuthView):
                                         value=await self.client.session.gtv(key='sign_in'),
                                         size=16,
                                         font_family=Fonts.SEMIBOLD,
-                                        color='#008F12',  # FIXME
+                                        color=colors.SECONDARY,
                                     ),
                                 ],
                                 spacing=4,

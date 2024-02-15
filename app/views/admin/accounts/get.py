@@ -16,11 +16,16 @@
 
 
 from functools import partial
+from pyperclip import copy
+
+from flet_core import Row, colors, MaterialState, IconButton, Container, Image, padding, margin, Icon, Border, \
+    InputBorder, Theme, TextStyle
 
 from app.controls.button import FilledButton
 from app.controls.information import Text, Card
+from app.controls.input import TextField
 from app.controls.layout import AdminBaseView, Section
-from app.utils import Fonts
+from app.utils import Fonts, Icons
 from app.views.admin.accounts.role import AccountRoleListView
 from app.views.admin.accounts.service.get import AccountServiceView
 
@@ -29,6 +34,8 @@ class AccountView(AdminBaseView):
     route = '/admin/accounts/get'
     account: dict
     services: list[dict]
+    clipboard_text_field: TextField
+    clipboard: Container
 
     def __init__(self, account_id):
         super().__init__()
@@ -46,6 +53,45 @@ class AccountView(AdminBaseView):
 
         # FIXME
         surname = self.account['surname'] if self.account['surname'] else await self.client.session.gtv(key='absent')
+
+        self.clipboard_text_field = TextField(
+            value='new_password',
+            label=await self.client.session.gtv(key='admin_new_user_password'),
+            height=50,
+            content_padding=padding.only(left=10),
+            color=colors.ON_BACKGROUND,
+            border=InputBorder.OUTLINE,
+            label_style=TextStyle(
+                color=colors.PRIMARY_CONTAINER,
+            ),
+            expand=True,
+            focused_border_color=colors.PRIMARY_CONTAINER,
+            border_color=colors.PRIMARY_CONTAINER,
+            read_only=True
+        )
+
+        self.clipboard = Container(
+            Row(
+                controls=[
+                    self.clipboard_text_field,
+                    Container(
+                        Container(
+                            content=Image(
+                                src=Icons.COPY,
+                                height=40,
+                                color=colors.ON_BACKGROUND,
+                            ),
+                            ink=True,
+                            on_click=self.copy_password,
+                            bgcolor=colors.TRANSPARENT,
+                            border_radius=15,
+                        )
+                    )
+                ],
+            ),
+            margin=margin.only(top=15),
+            visible=False,
+        )
 
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='admin_account_get_view_title'),
@@ -74,12 +120,24 @@ class AccountView(AdminBaseView):
                     size=15,
                     font_family=Fonts.MEDIUM,
                 ),
-                FilledButton(
-                    content=Text(
-                        value=await self.client.session.gtv(key='roles'),
-                    ),
-                    on_click=self.role_view,
+                Row(
+                    controls=[
+                        FilledButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='roles'),
+                            ),
+                            on_click=self.role_view,
+                        ),
+                        FilledButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='admin_reset_user_password'),
+                            ),
+                            on_click=self.reset_password,
+                            data=0,
+                        ),
+                    ]
                 ),
+                self.clipboard,
             ],
             sections=[
                 Section(
@@ -106,3 +164,29 @@ class AccountView(AdminBaseView):
 
     async def service_view(self, service, _):
         await self.client.change_view(view=AccountServiceView(account_service_id=service))
+
+    async def reset_password(self, e):
+        if e.control.data == 0:
+            e.control.bgcolor = colors.RED
+            e.control.content.value = await self.client.session.gtv(key='confirm')
+            e.control.style.overlay_color = {
+                MaterialState.DEFAULT: colors.RED_600,
+                MaterialState.HOVERED: colors.RED_600,
+            }
+            e.control.data += 1
+        elif e.control.data == 1:
+            e.control.bgcolor = colors.SECONDARY
+            e.control.style.overlay_color = {
+                MaterialState.DEFAULT: colors.PRIMARY_CONTAINER,
+                MaterialState.HOVERED: colors.PRIMARY_CONTAINER,
+            }
+            e.control.content.value = await self.client.session.gtv(key='admin_reset_user_password')
+            e.control.data = 0
+            new_password = await self.client.session.api.admin.accounts.change_password(account_id=self.account_id)
+            self.clipboard_text_field.value = new_password
+            self.clipboard.visible = True
+        await self.update_async()
+
+    async def copy_password(self, _):
+        copy(self.clipboard_text_field.value)
+

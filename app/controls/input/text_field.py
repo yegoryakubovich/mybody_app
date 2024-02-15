@@ -15,10 +15,21 @@
 #
 
 
-from flet_core import TextField as FletTextField
+from flet_core import TextField as FletTextField, colors, TextStyle
+
+from app.utils import Fonts
 
 
 class TextField(FletTextField):
     def __init__(self, key_question=None, **kwargs):
         super().__init__(**kwargs)
+        text_style = TextStyle(
+            font_family=Fonts.REGULAR,
+        )
+        self.border_color = colors.PRIMARY_CONTAINER
+        self.text_style = text_style
+        self.hint_style = text_style
+        self.error_style = text_style
+        self.label_style = text_style
+        self.helper_style = text_style
         self.key_question = key_question

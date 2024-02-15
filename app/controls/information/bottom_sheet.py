@@ -45,40 +45,40 @@ class BottomSheet(BottomSheetFlet):
                     Container(
                         content=Column(
                             controls=[
-                                 Container(
-                                     content=Image(
-                                         src=icon,
-                                         color=colors.ON_BACKGROUND,
-                                     ),
-                                     margin=margin.only(bottom=16),
-                                 ),
-                                 Text(
-                                     value=title,
-                                     font_family=Fonts.SEMIBOLD,
-                                     size=28,
-                                 ),
-                                 Text(
-                                     value=description,
-                                     font_family=Fonts.REGULAR,
-                                     size=16,
-                                     text_align=TextAlign.CENTER,
-                                 ),
-                                ] + (
-                                [
-                                    Row(
-                                        controls=[
-                                            FilledButton(
-                                                content=Text(
-                                                    value=button_title,
-                                                    color=colors.ON_PRIMARY,
-                                                ),
-                                                width=256,
-                                                on_click=button_on_click,
-                                            ),
-                                        ],
-                                        alignment=MainAxisAlignment.CENTER
-                                    ),
-                                ] if button_title and button_on_click else []),
+                                         Container(
+                                             content=Image(
+                                                 src=icon,
+                                                 color=colors.ON_BACKGROUND,
+                                             ),
+                                             margin=margin.only(bottom=16),
+                                         ),
+                                         Text(
+                                             value=title,
+                                             font_family=Fonts.SEMIBOLD,
+                                             size=28,
+                                         ),
+                                         Text(
+                                             value=description,
+                                             font_family=Fonts.REGULAR,
+                                             size=16,
+                                             text_align=TextAlign.CENTER,
+                                         ),
+                                     ] + (
+                                         [
+                                             Row(
+                                                 controls=[
+                                                     FilledButton(
+                                                         content=Text(
+                                                             value=button_title,
+                                                             color=colors.ON_PRIMARY,
+                                                         ),
+                                                         width=256,
+                                                         on_click=button_on_click,
+                                                     ),
+                                                 ],
+                                                 alignment=MainAxisAlignment.CENTER
+                                             ),
+                                         ] if button_title and button_on_click else []),
                             spacing=10,
                             tight=True,
                             width=384,

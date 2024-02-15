@@ -34,6 +34,7 @@ class Icons:
     FATS = get_svg('fats')
     CARBOHYDRATES = get_svg('carbohydrates')
     CHILL = get_svg('chill')
+    COPY = get_svg('copy')
     RELOAD = get_svg('reload')
     PLAN = get_svg('plan')
     STATS = get_svg('stats')

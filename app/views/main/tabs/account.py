@@ -58,6 +58,10 @@ class AccountTab(BaseTab):
         from app.views.auth.language import LanguageView
         await self.client.change_view(view=LanguageView(go_back=True))
 
+    async def change_password(self, _):
+        from app.views.client.settings.change_password import ChangePasswordView
+        await self.client.change_view(view=ChangePasswordView())
+
     async def logout(self, _):
         await self.client.session.set_cs(key='token', value=None)
         from app.views.auth.init import InitView
@@ -96,7 +100,7 @@ class AccountTab(BaseTab):
                     Setting(
                         name='security',
                         icon=Icons.SECURITY,
-                        on_click=on_click_coming_soon,
+                        on_click=self.change_password,
                     ),
                     Setting(
                         name='language',
