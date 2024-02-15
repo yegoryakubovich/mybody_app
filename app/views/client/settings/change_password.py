@@ -38,17 +38,17 @@ class ChangePasswordView(ClientBaseView):
     async def build(self):
         # self.client.session.account
         self.old_password_tf = TextField(
-            label=await self.client.session.gtv(key='enter_old_password'),
+            label=await self.client.session.gtv(key='change_password_enter_current_password'),
             password=True,
             can_reveal_password=True,
 
         )
         self.old_password_repeat_tf = TextField(
-            label=await self.client.session.gtv(key='repeat_old_password'),
+            label=await self.client.session.gtv(key='change_password_repeat_current_password'),
             password=True,
         )
         self.new_password_tf = TextField(
-            label=await self.client.session.gtv(key='enter_new_password'),
+            label=await self.client.session.gtv(key='change_password_enter_new_password'),
             password=True,
             can_reveal_password=True,
         )
@@ -104,7 +104,7 @@ class ChangePasswordView(ClientBaseView):
             content=Column(
                 [
                     Text(
-                        value=await self.client.session.gtv(key='success'),
+                        value=await self.client.session.gtv(key='change_password_success'),
                         size=15,
                         font_family=Fonts.SEMIBOLD,
                     ),
