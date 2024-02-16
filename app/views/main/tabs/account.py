@@ -62,6 +62,10 @@ class AccountTab(BaseTab):
         from app.views.client.settings.change_password import ChangePasswordView
         await self.client.change_view(view=ChangePasswordView())
 
+    async def article_view(self, _):
+        from app.views.client.article import ArticleListView
+        await self.client.change_view(view=ArticleListView())
+
     async def logout(self, _):
         await self.client.session.set_cs(key='token', value=None)
         from app.views.auth.init import InitView
@@ -120,7 +124,7 @@ class AccountTab(BaseTab):
                     Setting(
                         name='articles',
                         icon=Icons.ARTICLES,
-                        on_click=on_click_coming_soon,
+                        on_click=self.article_view,
                     ),
                 ],
             ),

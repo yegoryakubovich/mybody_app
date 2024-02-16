@@ -32,6 +32,7 @@ class AccountListView(AdminBaseView):
     accounts: list[dict]
     page_account: int = 1
     total_pages: int = 1
+    items_per_page: int = 6
     tf_search = TextField
 
     async def build(self):

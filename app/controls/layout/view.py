@@ -104,7 +104,6 @@ class View(BaseView):
                                 value='Create',
                                 font_family=Fonts.SEMIBOLD,
                                 color='#FFFFFF',
-                                expand=True,
                             ),
                         ],
                         spacing=4,

@@ -270,6 +270,7 @@ class TrainingView(ClientBaseView):
         fields = [(self.tf_comment, 1, 1024)]
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
+                await self.set_type(loading=False)
                 return
         try:
             await self.client.session.api.client.trainings.reports.create(

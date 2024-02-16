@@ -22,6 +22,7 @@ from flet_core import ScrollMode
 from app.controls.information import Text
 from app.controls.information.card import Card
 from app.controls.layout import AdminBaseView
+from app.controls.navigation.pagination import PaginationWidget
 from app.utils import Fonts
 from .create import TextCreateView
 from .get import TextView
@@ -30,11 +31,18 @@ from .get import TextView
 class TextListView(AdminBaseView):
     route = '/admin/text/list/get'
     texts: list[dict]
+    page_text: int = 1
+    total_pages: int = 1
+    items_per_page: int = 6
 
     async def build(self):
         await self.set_type(loading=True)
         self.texts = await self.client.session.api.admin.texts.get_list()
         await self.set_type(loading=False)
+
+        self.total_pages = (len(self.texts) - 1) // self.items_per_page + 1
+        self.texts = self.texts[(
+            self.page_text - 1) * self.items_per_page: self.page_text * self.items_per_page]
 
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
@@ -57,7 +65,16 @@ class TextListView(AdminBaseView):
                     on_click=partial(self.text_view, text['key']),
                 )
                 for text in self.texts
-            ],
+            ] + [
+                PaginationWidget(
+                    current_page=self.page_text,
+                    total_pages=self.total_pages,
+                    on_back=self.previous_page,
+                    on_next=self.next_page,
+                    text_back=await self.client.session.gtv(key='back'),
+                    text_next=await self.client.session.gtv(key='next'),
+                ),
+            ]
          )
 
     async def create_text(self, _):
@@ -65,3 +82,15 @@ class TextListView(AdminBaseView):
 
     async def text_view(self, key, _):
         await self.client.change_view(view=TextView(key=key))
+
+    async def next_page(self, _):
+        if self.page_text < self.total_pages:
+            self.page_text += 1
+            await self.build()
+            await self.update_async()
+
+    async def previous_page(self, _):
+        if self.page_text > 1:
+            self.page_text -= 1
+            await self.build()
+            await self.update_async()

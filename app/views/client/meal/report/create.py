@@ -17,6 +17,7 @@
 
 import asyncio
 import base64
+import io
 import json
 import os
 from functools import partial
@@ -234,12 +235,15 @@ class MealReportView(ClientBaseView):
             print(f"Загрузка файла {e.file_name} {e.progress:}")  # FIXME
         else:
             # Проверяем, существует ли файл
-            if os.path.exists(f'uploads/{e.file_name}'):
-                with open(f'uploads/{e.file_name}', 'rb') as f:
+            path = f'uploads/{e.file_name}'
+            if os.path.exists(path):
+                with open(path, 'rb') as f:
                     image_data = f.read()
-                encoded_image_data = base64.b64encode(image_data).decode()
+                self.data_io = io.BytesIO(image_data)
+                encoded_image_data = base64.b64encode(image_data).decode()  # Используйте image_data, а не self.data_io
                 self.file_name = e.file_name
                 self.photos.append(encoded_image_data)
+                os.remove(path)  # Укажите путь к файлу
                 await self.restart()
             else:
                 print(f"Файл {e.file_name} еще не загружен.")  # FIXME
@@ -282,18 +286,15 @@ class MealReportView(ClientBaseView):
                 comment=self.tf_comment.value or None,
                 products=product_list_json or None,
             )
-            path = f'uploads/{self.file_name}'
-            if os.path.exists(path):
-                with open(path, 'rb') as file:
-                    await self.client.session.api.client.images.create(
-                        model='meal_report',
-                        model_id=id_meal_report,
-                        file=file,
-                    )
-                os.remove(path)
-                while os.path.exists(path):
-                    await asyncio.sleep(1)
-                await self.set_type(loading=False)
+            encoded_image_data = base64.b64encode(self.data_io.getvalue()).decode()
+            await self.client.session.api.client.images.create(
+                model='meal_report',
+                model_id=id_meal_report,
+                file=encoded_image_data,
+            )
+            self.photos = []
+            self.added_products = []
+            await self.set_type(loading=False)
             await self.client.change_view(go_back=True, with_restart=True, delete_current=True)
         except ApiException as e:
             await self.set_type(loading=False)
