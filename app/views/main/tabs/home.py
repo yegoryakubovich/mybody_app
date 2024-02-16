@@ -251,7 +251,7 @@ class HomeTab(BaseTab):
                                                         Text(
                                                             value=training.name,
                                                             size=10,
-                                                            color=colors.BACKGROUND,
+                                                            color=colors.ON_PRIMARY,
                                                             font_family=Fonts.REGULAR,
                                                         ),
                                                     ],
@@ -266,7 +266,7 @@ class HomeTab(BaseTab):
                                         content=Image(
                                             src=Icons.NEXT,
                                             width=15,
-                                            color=colors.BACKGROUND,
+                                            color=colors.ON_PRIMARY,
                                         ),
                                     ),
                                 ],

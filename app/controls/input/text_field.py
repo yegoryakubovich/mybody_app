@@ -25,11 +25,13 @@ class TextField(FletTextField):
         super().__init__(**kwargs)
         text_style = TextStyle(
             font_family=Fonts.REGULAR,
+            color=colors.ON_BACKGROUND,
+        )
+        label_style = TextStyle(
+            font_family=Fonts.REGULAR,
+            color=colors.ON_PRIMARY_CONTAINER,
         )
         self.border_color = colors.PRIMARY_CONTAINER
         self.text_style = text_style
-        self.hint_style = text_style
-        self.error_style = text_style
-        self.label_style = text_style
-        self.helper_style = text_style
+        self.label_style = label_style
         self.key_question = key_question

@@ -106,6 +106,7 @@ class AuthenticationView(AuthView):
                                         value=await self.client.session.gtv(key='authentication_view_question'),
                                         size=16,
                                         font_family=Fonts.REGULAR,
+                                        color=colors.ON_BACKGROUND,
                                     ),
                                     Text(
                                         value=await self.client.session.gtv(key='create'),

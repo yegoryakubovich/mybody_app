@@ -100,6 +100,7 @@ class AccountView(AdminBaseView):
                     value=await self.client.session.gtv(key='basic_information'),
                     size=20,
                     font_family=Fonts.SEMIBOLD,
+                    color=colors.ON_BACKGROUND,
                 ),
                 Text(
                     value=f"{await self.client.session.gtv(key='firstname')}: {self.account['firstname']}\n"
@@ -108,17 +109,20 @@ class AccountView(AdminBaseView):
                           f"{surname}",
                     size=15,
                     font_family=Fonts.MEDIUM,
+                    color=colors.ON_BACKGROUND,
                 ),
                 Text(
                     value=await self.client.session.gtv(key='contact_details'),
                     size=20,
                     font_family=Fonts.SEMIBOLD,
+                    color=colors.ON_BACKGROUND,
                 ),
                 Text(
                     value=f"{await self.client.session.gtv(key='country')}: {self.account['country']}\n"
                           f"{await self.client.session.gtv(key='language')}: {self.account['language']}\n",
                     size=15,
                     font_family=Fonts.MEDIUM,
+                    color=colors.ON_BACKGROUND,
                 ),
                 Row(
                     controls=[
@@ -149,6 +153,7 @@ class AccountView(AdminBaseView):
                                     value=await self.client.session.gtv(key='individual_nutrition_plan'),
                                     size=15,
                                     font_family=Fonts.REGULAR,
+                                    color=colors.ON_PRIMARY,
                                 ),
                             ],
                             on_click=partial(self.service_view, service['id']),

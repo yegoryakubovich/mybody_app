@@ -35,7 +35,7 @@ class ListItemButton(Container):
                         value=name,
                         font_family=Fonts.REGULAR,
                         size=20,
-                        color=colors.ON_PRIMARY,
+                        color=colors.ON_BACKGROUND,
                     ),
                 ],
                 spacing=12,

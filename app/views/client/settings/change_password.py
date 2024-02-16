@@ -15,15 +15,11 @@
 #
 
 
-from collections import defaultdict
-from datetime import date
-from typing import Any
-
-from flet_core import Column, Container, Image, Row, ScrollMode, Text, padding, AlertDialog, colors
-from flet_core import icons as FletIcons
+from flet_core import Column, Container, ScrollMode, padding, colors
 from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
+from app.controls.information import Text
 from app.controls.input import TextField
 from app.controls.layout import ClientBaseView
 from app.utils import Fonts
@@ -107,6 +103,7 @@ class ChangePasswordView(ClientBaseView):
                         value=await self.client.session.gtv(key='change_password_success'),
                         size=15,
                         font_family=Fonts.SEMIBOLD,
+                        color=colors.ON_BACKGROUND,
                     ),
                     FilledButton(
                         text=await self.client.session.gtv(key='go_back'),

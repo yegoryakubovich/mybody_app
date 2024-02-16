@@ -17,7 +17,7 @@
 
 from typing import Any
 
-from flet_core import Row, Container, Image, MainAxisAlignment, Column, margin
+from flet_core import Row, Container, Image, MainAxisAlignment, Column, margin, colors
 
 from app.controls.information import Text
 from app.controls.layout.view import View
@@ -41,6 +41,7 @@ class Section:
                 value=title,
                 size=36,
                 font_family=Fonts.SEMIBOLD,
+                color=colors.ON_BACKGROUND,
             ),
         ]
 

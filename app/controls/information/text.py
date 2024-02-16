@@ -15,7 +15,7 @@
 #
 
 
-from flet_core import Text as FletText
+from flet_core import Text as FletText, colors
 
 
 class Text(FletText):

@@ -124,10 +124,11 @@ class MealView(ClientBaseView):
                                                 value=section.name,
                                                 size=25,
                                                 font_family=Fonts.BOLD,
+                                                color=colors.ON_BACKGROUND,
                                             ),
                                             Image(
                                                 src=section.icon,
-                                                color='#1d1d1d',
+                                                color=colors.ON_BACKGROUND,
                                                 height=25,
                                             )
                                         ]
@@ -195,12 +196,14 @@ class MealView(ClientBaseView):
                       value=await self.client.session.gtv(key='client_meal_get_guide_text_info'),
                       size=18,
                       font_family=Fonts.REGULAR,
+                      color=colors.ON_BACKGROUND,
                   ),
               ] + sections_controls + [
                   Text(
                       value=await self.client.session.gtv(key='client_meal_get_second_text_info'),
                       size=18,
                       font_family=Fonts.REGULAR,
+                      color=colors.ON_BACKGROUND,
                   ),
               ] + controls_report,
         )

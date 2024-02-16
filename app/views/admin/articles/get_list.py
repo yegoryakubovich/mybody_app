@@ -17,8 +17,9 @@
 
 from functools import partial
 
-from flet_core import Text, ScrollMode
+from flet_core import ScrollMode
 
+from app.controls.information import Text
 from app.controls.information.card import Card
 from app.controls.layout import AdminBaseView
 from app.utils import Fonts

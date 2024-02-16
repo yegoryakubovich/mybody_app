@@ -84,7 +84,7 @@ class View(BaseView):
                 value=title,
                 size=36,
                 font_family=Fonts.SEMIBOLD,
-                color=colors.ON_BACKGROUND
+                color=colors.ON_BACKGROUND,
             ),
         )
 
@@ -98,12 +98,12 @@ class View(BaseView):
                             Image(
                                 src=Icons.CREATE,
                                 height=10,
-                                color='#FFFFFF',
+                                color=colors.ON_PRIMARY,
                             ),
                             Text(
                                 value='Create',
                                 font_family=Fonts.SEMIBOLD,
-                                color='#FFFFFF',
+                                color=colors.ON_PRIMARY,
                             ),
                         ],
                         spacing=4,

@@ -191,22 +191,22 @@ class AccountTab(BaseTab):
                                         CircleAvatar(
                                             content=Image(
                                                 src=Icons.ACCOUNT,
-                                                color=colors.SECONDARY,
+                                                color=colors.PRIMARY,
                                             ),
-                                            bgcolor=colors.TERTIARY_CONTAINER,
+                                            bgcolor=colors.ON_PRIMARY,
                                             radius=38,
                                         ),
                                         Text(
                                             value=f'{firstname} {lastname}',
                                             font_family=Fonts.SEMIBOLD,
                                             size=30,
-                                            color=colors.ON_PRIMARY,
+                                            color=colors.ON_BACKGROUND,
                                         ),
                                         Text(
                                             value=f'@{username}',
                                             font_family=Fonts.SEMIBOLD,
                                             size=12,
-                                            color=colors.ON_PRIMARY,
+                                            color=colors.ON_BACKGROUND,
                                         ),
                                     ],
                                     spacing=0,

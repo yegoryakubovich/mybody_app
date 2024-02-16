@@ -17,7 +17,7 @@
 
 from functools import partial
 
-from flet_core import Row, ScrollMode
+from flet_core import Row, ScrollMode, colors
 
 from app.controls.button import ProductChipButton
 from app.controls.information import Text
@@ -56,58 +56,50 @@ class ProductListView(AdminBaseView):
             title=await self.client.session.gtv(key='admin_product_get_list_view_title'),
             on_create_click=self.create_product,
             main_section_controls=[
-                  Row(
-                      controls=[
-                          ProductChipButton(
-                              Text(
-                                  value=await self.client.session.gtv(key='fats'),
-                              ).value,
-                              on_click=self.fats
-                          ),
-                          ProductChipButton(
-                              Text(
-                                  value=await self.client.session.gtv(key='proteins'),
-                              ).value,
-                              on_click=self.proteins
-                          ),
-                          ProductChipButton(
-                              Text(
-                                  value=await self.client.session.gtv(key='carbohydrates'),
-                              ).value,
-                              on_click=self.carbohydrates,
-                          ),
-                          ProductChipButton(
-                              Text(
-                                  value=await self.client.session.gtv(key='all_products'),
-                              ).value,
-                              on_click=self.all_type,
-                          ),
-                      ],
-                      wrap=True,
-                  ),
-              ] + [
-                  Card(
-                      controls=[
-                          Text(
-                              value=await self.client.session.gtv(key=product['name_text']),
-                              size=18,
-                              font_family=Fonts.SEMIBOLD,
-                          ),
-                      ],
-                      on_click=partial(self.product_view, product['id']),
-                  )
-                  for product in self.products
-              ] + [
-                  PaginationWidget(
-                      current_page=self.page_product,
-                      total_pages=self.total_pages,
-                      on_back=self.previous_page,
-                      on_next=self.next_page,
-                      text_back=await self.client.session.gtv(key='back'),
-                      text_next=await self.client.session.gtv(key='next'),
-                  ),
-              ]
-        )
+                Row(
+                    controls=[
+                        ProductChipButton(
+                            Text(
+                                value=await self.client.session.gtv(key='fats'),
+                            ).value,
+                            on_click=self.fats
+                        ),
+                        ProductChipButton(
+                            Text(
+                                value=await self.client.session.gtv(key='proteins'),
+                            ).value,
+                            on_click=self.proteins
+                        ),
+                        ProductChipButton(
+                            Text(
+                                value=await self.client.session.gtv(key='carbohydrates'),
+                            ).value,
+                            on_click=self.carbohydrates,
+                        ),
+                        ProductChipButton(
+                            Text(
+                                value=await self.client.session.gtv(key='all_products'),
+                            ).value,
+                            on_click=self.all_type,
+                        ),
+                    ],
+                    wrap=True,
+                ),
+            ] + [
+                Card(
+                    controls=[
+                        Text(
+                            value=await self.client.session.gtv(key=product['name_text']),
+                            size=18,
+                            font_family=Fonts.SEMIBOLD,
+                            color=colors.ON_PRIMARY,
+                        ),
+                    ],
+                    on_click=partial(self.product_view, product['id']),
+                )
+                for product in self.products
+            ],
+         )
 
     def handle_product_click(self, event):
         self.text = event.control.data

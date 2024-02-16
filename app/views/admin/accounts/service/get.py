@@ -54,7 +54,8 @@ class AccountServiceView(AdminBaseView):
                             ),
                             on_click=self.questionnaire_view,
                         ),
-                    ]
+                    ],
+                    wrap=True,
                 )
             ],
         )
