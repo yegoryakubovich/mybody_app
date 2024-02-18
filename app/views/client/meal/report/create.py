@@ -15,7 +15,6 @@
 #
 
 
-import asyncio
 import base64
 import io
 import json
@@ -240,10 +239,10 @@ class MealReportView(ClientBaseView):
                 with open(path, 'rb') as f:
                     image_data = f.read()
                 self.data_io = io.BytesIO(image_data)
-                encoded_image_data = base64.b64encode(image_data).decode()  # Используйте image_data, а не self.data_io
+                encoded_image_data = base64.b64encode(image_data).decode()
                 self.file_name = e.file_name
                 self.photos.append(encoded_image_data)
-                os.remove(path)  # Укажите путь к файлу
+                os.remove(path)
                 await self.restart()
             else:
                 print(f"Файл {e.file_name} еще не загружен.")  # FIXME

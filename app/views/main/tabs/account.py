@@ -66,6 +66,10 @@ class AccountTab(BaseTab):
         from app.views.client.article import ArticleListView
         await self.client.change_view(view=ArticleListView())
 
+    async def question_view(self, _):
+        from app.views.client.question import QuestionView
+        await self.client.change_view(view=QuestionView())
+
     async def logout(self, _):
         await self.client.session.set_cs(key='token', value=None)
         from app.views.auth.init import InitView
@@ -144,7 +148,7 @@ class AccountTab(BaseTab):
                     Setting(
                         name='faq',
                         icon=Icons.FAQ,
-                        on_click=on_click_coming_soon,
+                        on_click=self.question_view,
                     ),
                     Setting(
                         name='privacy_policy',
