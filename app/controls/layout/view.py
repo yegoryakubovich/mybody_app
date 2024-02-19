@@ -15,7 +15,7 @@
 #
 
 
-from flet_core import Container, Image, alignment, padding, BoxShadow, Row, MainAxisAlignment, colors
+from flet_core import Container, Image, alignment, padding, BoxShadow, Row, colors, Stack
 from flet_manager.utils import get_svg
 from flet_manager.views import BaseView
 
@@ -64,34 +64,35 @@ class View(BaseView):
         async def go_back(_):
             await self.client.change_view(go_back=True, with_restart=back_with_restart)
 
-        left_controls = []
+        controls = []
         # Go back button
         if go_back_button:
-            left_controls.append(
-                Container(
-                    content=Image(
-                        src=Icons.BACK,
-                        height=20,
-                        color=colors.ON_BACKGROUND,
-                    ),
-                    ink=True,
-                    on_click=go_back,
-                ),
+            controls.append(
+                Row(
+                    controls=[
+                        Container(
+                            content=Image(
+                                src=Icons.BACK,
+                                height=20,
+                                color=colors.ON_BACKGROUND,
+                            ),
+                            ink=True,
+                            on_click=go_back,
+                        ),
+                        Text(
+                            value=title,
+                            size=36,
+                            font_family=Fonts.SEMIBOLD,
+                            color=colors.ON_BACKGROUND,
+                            no_wrap=False,
+                        ),
+                    ],
+                    wrap=True,
+                )
             )
-        # Title
-        left_controls.append(
-            Text(
-                value=title,
-                size=36,
-                font_family=Fonts.SEMIBOLD,
-                color=colors.ON_BACKGROUND,
-            ),
-        )
-
-        right_controls = []
 
         if on_create_click:
-            right_controls.append(
+            controls.append(
                 Container(
                     content=Row(
                         controls=[
@@ -107,6 +108,7 @@ class View(BaseView):
                             ),
                         ],
                         spacing=4,
+                        wrap=True,
                     ),
                     padding=7,
                     border_radius=24,
@@ -116,15 +118,8 @@ class View(BaseView):
             )
 
         return Row(
-            controls=[
-                Container(
-                    content=Row(controls=left_controls),
-                ),
-                Container(
-                    content=Row(controls=right_controls),
-                ),
-            ],
-            alignment=MainAxisAlignment.SPACE_BETWEEN,
+            controls=controls,
+            wrap=True,
         )
 
     async def set_type(self, loading: bool = False):

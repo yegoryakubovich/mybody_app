@@ -59,7 +59,7 @@ class AccountTab(BaseTab):
         await self.client.change_view(view=LanguageView(go_back=True))
 
     async def change_password(self, _):
-        from app.views.client.settings.change_password import ChangePasswordView
+        from app.views.client.account.change_password import ChangePasswordView
         await self.client.change_view(view=ChangePasswordView())
 
     async def article_view(self, _):
@@ -67,8 +67,8 @@ class AccountTab(BaseTab):
         await self.client.change_view(view=ArticleListView())
 
     async def question_view(self, _):
-        from app.views.client.question import QuestionView
-        await self.client.change_view(view=QuestionView())
+        from app.views.client.account.faq import FAQView
+        await self.client.change_view(view=FAQView())
 
     async def logout(self, _):
         await self.client.session.set_cs(key='token', value=None)

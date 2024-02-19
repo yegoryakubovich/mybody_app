@@ -26,20 +26,20 @@ from app.utils import Fonts
 
 
 class ChangePasswordView(ClientBaseView):
-    old_password_tf: TextField
-    old_password_repeat_tf: TextField
+    current_password_tf: TextField
+    current_password_repeat_tf: TextField
     new_password_tf: TextField
     controls_container: Container
 
     async def build(self):
         # self.client.session.account
-        self.old_password_tf = TextField(
+        self.current_password_tf = TextField(
             label=await self.client.session.gtv(key='change_password_enter_current_password'),
             password=True,
             can_reveal_password=True,
 
         )
-        self.old_password_repeat_tf = TextField(
+        self.current_password_repeat_tf = TextField(
             label=await self.client.session.gtv(key='change_password_repeat_current_password'),
             password=True,
         )
@@ -51,8 +51,8 @@ class ChangePasswordView(ClientBaseView):
         self.controls_container = Container(
             content=Column(
                 controls=[
-                    self.old_password_tf,
-                    self.old_password_repeat_tf,
+                    self.current_password_tf,
+                    self.current_password_repeat_tf,
                     self.new_password_tf,
                     FilledButton(
                         text=await self.client.session.gtv(key='next'),
@@ -76,22 +76,29 @@ class ChangePasswordView(ClientBaseView):
         await self.client.change_view(go_back=True)
 
     async def switch_tf(self, _):
-        self.old_password_tf.error_text = None
-        self.old_password_repeat_tf.error_text = None
+        self.current_password_tf.error_text = None
+        self.current_password_repeat_tf.error_text = None
         self.new_password_tf.error_text = None
-        if self.old_password_tf.value != self.old_password_repeat_tf.value:
-            self.old_password_tf.error_text = await self.client.session.gtv(key='change_password_do_not_match')
+        if self.current_password_tf.value != self.current_password_repeat_tf.value:
+            self.current_password_tf.error_text = await self.client.session.gtv(key='change_password_do_not_match')
+            await self.update_async()
+            return
+
+        if self.current_password_tf.value == self.new_password_tf.value:
+            self.new_password_tf.error_text = await self.client.session.gtv(
+                key='change_password_new_password_match_with_current',
+            )
             await self.update_async()
             return
 
         try:
             await self.client.session.api.client.accounts.change_password(
-                current_password=self.old_password_tf.value,
+                current_password=self.current_password_tf.value,
                 new_password=self.new_password_tf.value,
             )
         except ApiException as e:
             if e.code == 2000:
-                self.old_password_tf.error_text = e.message
+                self.current_password_tf.error_text = e.message
             elif e.code == 2003:
                 self.new_password_tf.error_text = e.message
             await self.update_async()

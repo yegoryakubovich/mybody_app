@@ -15,29 +15,34 @@
 #
 
 
-from flet_core import ScrollMode, ExpansionPanel, ListTile, ExpansionPanelList
+from flet_core import ScrollMode, ExpansionPanel, ListTile, ExpansionPanelList, colors
 
 from app.controls.information import Text
 from app.controls.layout import ClientBaseView
 
 
-class QuestionView(ClientBaseView):
+class FAQView(ClientBaseView):
     async def build(self):
         self.scroll = ScrollMode.AUTO
         questions_answers = {
-            await self.client.session.gtv(key='Сколько зарплата?'):
-                await self.client.session.gtv(key='многаааа'),
-            await self.client.session.gtv(key='Хотите денег? Есть темка'):
-                await self.client.session.gtv(key='егор дай денег')
+            await self.client.session.gtv(key='faq_question_1'):
+                await self.client.session.gtv(key='faq_answer_1'),
+            await self.client.session.gtv(key='faq_question_2'):
+                await self.client.session.gtv(key='faq_answer_2'),
+            await self.client.session.gtv(key='faq_question_3'):
+                await self.client.session.gtv(key='faq_answer_3'),
+            await self.client.session.gtv(key='faq_question_4'):
+                await self.client.session.gtv(key='faq_answer_4'),
         }
         expansion_panels = [
             ExpansionPanel(
                 header=ListTile(
-                    title=Text(value=question),
+                    title=Text(value=question, color=colors.ON_PRIMARY),
                 ),
                 content=ListTile(
-                    title=Text(value=answer),
+                    title=Text(value=answer, color=colors.ON_PRIMARY),
                 ),
+                bgcolor=colors.PRIMARY,
             )
             for question, answer in questions_answers.items()
         ]
@@ -45,7 +50,8 @@ class QuestionView(ClientBaseView):
             title=await self.client.session.gtv(key='faq'),
             main_section_controls=[
                 ExpansionPanelList(
-                    controls=expansion_panels
+                    controls=expansion_panels,
+                    divider_color=colors.BACKGROUND,
                 ),
             ],
         )
