@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+
 from flet_core import ScrollMode
 from flet_core.dropdown import Option
 from mybody_api_client.utils import ApiException
@@ -115,6 +117,10 @@ class ProductCreateView(AdminBaseView):
         fields = [(self.tf_name, 1, 32)]
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
+                return
+        fields = [(self.tf_fats, True), (self.tf_proteins, True), (self.tf_carbohydrates, True)]
+        for field, check_int in fields:
+            if not await Error.check_field(self, field, check_int):
                 return
         try:
             product_id = await self.client.session.api.admin.products.create(

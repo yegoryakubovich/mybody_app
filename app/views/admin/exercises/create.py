@@ -66,15 +66,18 @@ class ExerciseCreateView(AdminBaseView):
          )
 
     async def create_exercise(self, _):
+        await self.set_type(loading=True)
         fields = [(self.tf_name, 1, 1024)]
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
+                await self.set_type(loading=False)
                 return
         try:
             await self.client.session.api.admin.exercises.create(
                 type_=self.dd_exercise_type.value,
                 name=self.tf_name.value,
             )
+            await self.set_type(loading=False)
             await self.client.change_view(go_back=True, with_restart=True)
         except ApiException as e:
             await self.set_type(loading=False)

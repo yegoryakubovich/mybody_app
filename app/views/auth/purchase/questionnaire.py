@@ -91,9 +91,8 @@ class QuestionnaireView(AuthView):
                     value=initial_value,
                     key_question=f"{question['key']}_{question['type']}",
                 )
-                if tf_answer.value:
-                    self.tf_answers.append(tf_answer)
-                    controls.append(tf_answer)
+                self.tf_answers.append(tf_answer)
+                controls.append(tf_answer)
 
         if self.page_account == self.total_pages:
             self.button = [
@@ -157,7 +156,6 @@ class QuestionnaireView(AuthView):
                 answers[key] = 'no answers'
 
         answers_json = json.dumps(answers, ensure_ascii=False)
-        print(answers_json)
         await self.client.session.api.client.accounts.services.create(
             service=self.services[0]['id_str'],
             answers=answers_json,

@@ -41,14 +41,16 @@ class MealReportView(ClientBaseView):
     user_comment: str = ''
     products: list[dict]
     product: dict
-    photos = []
-    added_products = []
     added_product_controls = None
     added_photo_controls = None
     file_name: str = None
 
     def __init__(self, meal_id):
         super().__init__()
+        self.add_photo_button = None
+        self.photos = []
+        self.added_products = []
+        self.data_io = None
         self.meal_id = meal_id
 
     async def build(self):
@@ -127,8 +129,8 @@ class MealReportView(ClientBaseView):
                         ProductChipButton(
                             Text(
                                 value=await self.client.session.gtv(
-                                    key=product['name_text']) + ' ' + quantity + ' ' +
-                                      await self.client.session.gtv(key='gr')
+                                    key=product['name_text']
+                                ) + ' ' + quantity + ' ' + await self.client.session.gtv(key='gr')
                             ).value,
                             on_click=None,
                         ),
@@ -147,11 +149,24 @@ class MealReportView(ClientBaseView):
             ),
         ]
         self.added_photo_controls = [
-            Image(
-                src=f"data:image/jpeg;base64,{photo}",
+            Row(
+                controls=[
+                    Image(
+                        src=f"data:image/jpeg;base64,{photo}",
+                        width=150,
+                        height=150,
+                    )
+                    for photo in self.photos
+                ],
             )
-            for photo in self.photos
         ]
+        self.add_photo_button = FilledButton(
+            content=Text(
+                value=await self.client.session.gtv(key='add'),
+            ),
+            on_click=self.add_photo,
+            disabled=len(self.photos) == 2,
+        )
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='client_meal_report_create_view'),
@@ -196,12 +211,7 @@ class MealReportView(ClientBaseView):
                     font_family=Fonts.REGULAR,
                 ),
                 *self.added_photo_controls,
-                FilledButton(
-                    content=Text(
-                        value=await self.client.session.gtv(key='add'),
-                    ),
-                    on_click=self.add_photo,
-                ),
+                self.add_photo_button,
                 FilledButton(
                     content=Text(
                         value=await self.client.session.gtv(key='send_report'),
@@ -285,14 +295,12 @@ class MealReportView(ClientBaseView):
                 comment=self.tf_comment.value or None,
                 products=product_list_json or None,
             )
-            encoded_image_data = base64.b64encode(self.data_io.getvalue()).decode()
-            await self.client.session.api.client.images.create(
-                model='meal_report',
-                model_id=id_meal_report,
-                file=encoded_image_data,
-            )
-            self.photos = []
-            self.added_products = []
+            if self.data_io:
+                await self.client.session.api.client.images.create(
+                    model='meal_report',
+                    model_id=id_meal_report,
+                    file=self.data_io,  # FIXME
+                )
             await self.set_type(loading=False)
             await self.client.change_view(go_back=True, with_restart=True, delete_current=True)
         except ApiException as e:
