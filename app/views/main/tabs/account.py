@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+
 import webbrowser
 from functools import partial
 from typing import Any
@@ -47,6 +49,10 @@ class Section:
     def __init__(self, name: str, settings_: list[Setting]):
         self.name = name
         self.settings = settings_
+
+
+async def support(_):
+    webbrowser.open(settings.url_telegram)
 
 
 class AccountTab(BaseTab):
@@ -118,7 +124,7 @@ class AccountTab(BaseTab):
                     Setting(
                         name='support',
                         icon=Icons.SUPPORT,
-                        on_click=self.support,
+                        on_click=support,
                     ),
                     Setting(
                         name='faq',
@@ -228,16 +234,13 @@ class AccountTab(BaseTab):
         from app.views.client.account.faq import FAQView
         await self.client.change_view(view=FAQView())
 
-    async def support(self, _):
-        webbrowser.open(settings.url_telegram)
-
     async def about_us(self, _):
         from app.views.client.account.about_us import AboutUsView
         await self.client.change_view(view=AboutUsView())
 
     async def privacy_policy(self, _):
         url = get_url_article(
-            id_=1,  # FIXME
+            id_=settings.privacy_policy_article_id,
             token=self.client.session.token,
             is_admin=False,
             type_=UrlTypes.GET,

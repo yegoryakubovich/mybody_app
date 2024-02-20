@@ -22,8 +22,7 @@ from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField
 from app.controls.layout import AuthView
-from app.utils import Fonts
-
+from app.utils import Fonts, Error
 
 
 class AuthenticationView(AuthView):
@@ -32,15 +31,18 @@ class AuthenticationView(AuthView):
 
     async def authenticate(self, _):
         await self.set_type(loading=True)
-
+        fields = [(self.tf_username, 6, 32), (self.tf_password, 8, 32)]
+        for field, min_len, max_len in fields:
+            if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
+                await self.set_type(loading=False)
+                return
         # Create session
-        username = self.tf_username.value
-        password = self.tf_password.value
         try:
             session = await self.client.session.api.client.sessions.create(
-                username=username,
-                password=password,
+                username=self.tf_username.value,
+                password=self.tf_password.value,
             )
+            await self.set_type(loading=False)
         except ApiException as e:
             await self.set_type(loading=False)
             return await self.client.session.error(error=e)

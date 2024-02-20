@@ -98,8 +98,17 @@ class ProductListView(AdminBaseView):
                     on_click=partial(self.product_view, product['id']),
                 )
                 for product in self.products
-            ],
-         )
+            ] + [
+                PaginationWidget(
+                    current_page=self.page_product,
+                    total_pages=self.total_pages,
+                    on_back=self.previous_page,
+                    on_next=self.next_page,
+                    text_back=await self.client.session.gtv(key='back'),
+                    text_next=await self.client.session.gtv(key='next'),
+                ),
+            ]
+        )
 
     def handle_product_click(self, event):
         self.text = event.control.data

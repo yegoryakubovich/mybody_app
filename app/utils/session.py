@@ -22,6 +22,7 @@ from flet_manager.utils import Client
 from mybody_api_client import MyBodyApiClient
 from mybody_api_client.utils import ApiException
 
+from app.utils import Icons
 from app.utils.registration import Registration
 from config import settings
 
@@ -51,6 +52,7 @@ class Session:
     async def error(self, error: ApiException):
         await self.bs_error.open_(
             title=error.message,
+            icon=Icons.ERROR
         )
 
     async def init_bs(self):

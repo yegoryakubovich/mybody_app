@@ -27,6 +27,7 @@ class Settings(BaseSettings):
     service_id: int = 1
     url: str = 'https://api.test.mybody.one'
     url_telegram: str = 'https://t.me/mybody_manager'
+    privacy_policy_article_id: int = 1
 
     model_config = SettingsConfigDict(env_file='.env')
 

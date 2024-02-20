@@ -48,7 +48,6 @@ class BottomSheet(BottomSheetFlet):
                                          Container(
                                              content=Image(
                                                  src=icon,
-                                                 color=colors.ON_BACKGROUND,
                                              ),
                                              margin=margin.only(bottom=16),
                                          ),

@@ -19,6 +19,7 @@ from functools import partial
 from typing import Any
 
 from flet_core import Column, Row, Container, MainAxisAlignment, Image, colors
+from mybody_api_client.utils import ApiException
 from pytz import timezone
 
 from app.controls.button import ProductChipButton
@@ -121,6 +122,10 @@ class MealButton(Container):
             image.color = color
 
 
+async def support(_):
+    webbrowser.open(settings.url_telegram)
+
+
 class HomeTab(BaseTab):
     meals: dict = None
     trainings: dict = None
@@ -132,18 +137,20 @@ class HomeTab(BaseTab):
 
     async def build(self):
         self.user_tz = timezone(self.client.session.account.timezone)
-        firstname = self.client.session.account.firstname
-        now = datetime.now(self.user_tz)
-        self.date = now.strftime('%Y-%m-%d')
+        self.date = datetime.now(self.user_tz).strftime('%Y-%m-%d')
         self.account_service_id = self.client.session.account_service.id
         self.meals = await self.client.session.api.client.meals.get_list(
             account_service_id=self.account_service_id,
             date=self.date,
         )
-        self.trainings = await self.client.session.api.client.trainings.get_list(
-            account_service_id=self.account_service_id,
-            date=self.date,
-        )
+        try:
+            self.trainings = await self.client.session.api.client.trainings.get_by_date(
+                account_service_id=self.account_service_id,
+                date=self.date,
+            )
+        except ApiException:
+            self.trainings = {}
+
         self.exercise = []
         if self.trainings:
             self.training = await self.client.session.api.client.trainings.get(
@@ -191,7 +198,9 @@ class HomeTab(BaseTab):
                 content=Column(
                     controls=[
                         Text(
-                            value=await self.client.session.gtv(key=greeting_key) + f', {firstname}!',
+                            value=await self.client.session.gtv(
+                                key=greeting_key
+                            ) + f', {self.client.session.account.firstname}!',
                             size=25,
                             font_family=Fonts.BOLD,
                             color=colors.ON_BACKGROUND,
@@ -208,7 +217,7 @@ class HomeTab(BaseTab):
                                 ),
                                 ProductChipButton(
                                     text=await self.client.session.gtv(key='support'),
-                                    on_click=self.support,
+                                    on_click=support,
                                 ),
                             ],
                             wrap=True,
@@ -300,9 +309,6 @@ class HomeTab(BaseTab):
                 training_id=training_id,
             ),
         )
-
-    async def support(self, _):
-        webbrowser.open(settings.url_telegram)
 
     async def meal_week_view(self, _):
         await self.client.change_view(view=MealWeekView(account_service_id=self.account_service_id))

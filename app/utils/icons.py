@@ -63,3 +63,4 @@ class Icons:
     NEXT = get_svg('next')
     LIGHT = get_svg('light')
     DARK = get_svg('dark')
+    ERROR = get_svg('error')

@@ -88,13 +88,15 @@ class AuthView(View):
                             padding=padding.symmetric(vertical=32, horizontal=64),
                         ),
                         # Body
-                        Column(
-                            controls=body_controls,
-                            width=640,
+                        Container(
+                            content=Column(
+                                controls=body_controls,
+                                width=640,
+                            ),
+                            alignment=alignment.center
                         ),
                     ],
                 ),
-                alignment=alignment.center,
                 padding=10,
             ),
         ]

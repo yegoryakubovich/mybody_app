@@ -63,7 +63,7 @@ class ServiceView(AdminBaseView):
                             content=Text(
                                 value=await self.client.session.gtv(key='save'),
                             ),
-                            on_click=self.delete_service,
+                            on_click=self.update_service,
                         ),
                         FilledButton(
                             content=Text(

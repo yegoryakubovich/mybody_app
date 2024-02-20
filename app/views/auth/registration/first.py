@@ -39,6 +39,7 @@ class RegistrationFirstView(AuthView):
         self.tf_password = TextField(
             label=await self.client.session.gtv(key='password'),
             password=True,
+            can_reveal_password=True,
         )
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='registration_account_create_view_title'),
@@ -89,7 +90,7 @@ class RegistrationFirstView(AuthView):
         check_username_error = await self.client.session.gtv(key='error_check_username')
         # check_password_error = await self.client.session.gtv(key='error_check_password')
 
-        fields = [(self.tf_username, 6, 32), (self.tf_password, 6, 32)]
+        fields = [(self.tf_username, 6, 32), (self.tf_password, 8, 32)]
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
                 return
