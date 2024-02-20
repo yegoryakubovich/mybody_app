@@ -13,8 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-
+import webbrowser
 from datetime import datetime
 from functools import partial
 from typing import Any
@@ -29,6 +28,7 @@ from app.views.client.meal import MealView
 from app.views.client.meal.get_week import MealWeekView
 from app.views.client.training.get import TrainingView
 from app.views.main.tabs.base import BaseTab
+from config import settings
 
 
 class Meal:
@@ -302,8 +302,7 @@ class HomeTab(BaseTab):
         )
 
     async def support(self, _):
-        from app.views.auth.purchase.about import PurchaseFirstView
-        await self.client.change_view(view=PurchaseFirstView())
+        webbrowser.open(settings.url_telegram)
 
     async def meal_week_view(self, _):
         await self.client.change_view(view=MealWeekView(account_service_id=self.account_service_id))

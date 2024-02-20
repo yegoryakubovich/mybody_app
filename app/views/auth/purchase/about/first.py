@@ -72,7 +72,7 @@ class PurchaseFirstView(AuthView):
                             ),
                             Container(
                                 content=Text(
-                                    value=f'{1000000} {self.client.session.account.currency}'.upper(),
+                                    value=f'{109} {self.client.session.account.currency}'.upper(),
                                     size=20,
                                     font_family=Fonts.SEMIBOLD,
                                 ),
@@ -81,7 +81,7 @@ class PurchaseFirstView(AuthView):
                             Container(
                                 content=FilledButton(
                                     content=Text(
-                                        value=await self.client.session.gtv(key='next'),
+                                        value=await self.client.session.gtv(key='buy'),
                                         size=16,
                                     ),
                                     on_click=self.change_view,
@@ -91,7 +91,7 @@ class PurchaseFirstView(AuthView):
                         ]
                     ),
                     alignment=alignment.top_center,
-                    border=border.all(5, '#008F12'),
+                    border=border.all(2, '#008F12'),
                     border_radius=6,
                     padding=20,
                     margin=margin.symmetric(horizontal=20)

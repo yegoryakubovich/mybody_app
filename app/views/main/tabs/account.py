@@ -13,8 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-
+import webbrowser
 from functools import partial
 from typing import Any
 
@@ -23,7 +22,9 @@ from flet_core import Container, alignment, padding, Column, CrossAxisAlignment,
 from app.controls.button import ListItemButton
 from app.controls.information import Text
 from app.utils import Fonts, Icons
+from app.utils.article import get_url_article, UrlTypes
 from app.views.admin.admin import AdminView
+from app.views.client.account import ArticleListView
 from app.views.main.tabs.base import BaseTab
 from config import settings
 
@@ -49,32 +50,6 @@ class Section:
 
 
 class AccountTab(BaseTab):
-
-    async def go_admin(self, _):
-        if 'admin' in self.client.session.account.permissions:
-            await self.client.change_view(view=AdminView())
-
-    async def update_language(self, _):
-        from app.views.auth.language import LanguageView
-        await self.client.change_view(view=LanguageView(go_back=True))
-
-    async def change_password(self, _):
-        from app.views.client.account.change_password import ChangePasswordView
-        await self.client.change_view(view=ChangePasswordView())
-
-    async def article_view(self, _):
-        from app.views.client.article import ArticleListView
-        await self.client.change_view(view=ArticleListView())
-
-    async def question_view(self, _):
-        from app.views.client.account.faq import FAQView
-        await self.client.change_view(view=FAQView())
-
-    async def logout(self, _):
-        await self.client.session.set_cs(key='token', value=None)
-        from app.views.auth.init import InitView
-        await self.client.change_view(view=InitView(), delete_current=True)
-
     async def build(self):
         # Bottom Sheets
         on_click_coming_soon = partial(
@@ -128,7 +103,7 @@ class AccountTab(BaseTab):
                     Setting(
                         name='articles',
                         icon=Icons.ARTICLES,
-                        on_click=self.article_view,
+                        on_click=self.articles_view,
                     ),
                 ],
             ),
@@ -138,12 +113,12 @@ class AccountTab(BaseTab):
                     Setting(
                         name='about',
                         icon=Icons.ABOUT,
-                        on_click=on_click_coming_soon,
+                        on_click=self.about_us,
                     ),
                     Setting(
                         name='support',
                         icon=Icons.SUPPORT,
-                        on_click=on_click_coming_soon,
+                        on_click=self.support,
                     ),
                     Setting(
                         name='faq',
@@ -153,7 +128,7 @@ class AccountTab(BaseTab):
                     Setting(
                         name='privacy_policy',
                         icon=Icons.PRIVACY_POLICY,
-                        on_click=on_click_coming_soon,
+                        on_click=self.privacy_policy,
                     ),
                 ],
             ),
@@ -233,3 +208,43 @@ class AccountTab(BaseTab):
                                 ink=True,
                             ),
                         ]
+
+    async def go_admin(self, _):
+        if 'admin' in self.client.session.account.permissions:
+            await self.client.change_view(view=AdminView())
+
+    async def update_language(self, _):
+        from app.views.auth.language import LanguageView
+        await self.client.change_view(view=LanguageView(go_back=True))
+
+    async def change_password(self, _):
+        from app.views.client.account.change_password import ChangePasswordView
+        await self.client.change_view(view=ChangePasswordView())
+
+    async def articles_view(self, _):
+        await self.client.change_view(view=ArticleListView())
+
+    async def question_view(self, _):
+        from app.views.client.account.faq import FAQView
+        await self.client.change_view(view=FAQView())
+
+    async def support(self, _):
+        webbrowser.open(settings.url_telegram)
+
+    async def about_us(self, _):
+        from app.views.client.account.about_us import AboutUsView
+        await self.client.change_view(view=AboutUsView())
+
+    async def privacy_policy(self, _):
+        url = get_url_article(
+            id_=1,  # FIXME
+            token=self.client.session.token,
+            is_admin=False,
+            type_=UrlTypes.GET,
+        )
+        webbrowser.open(url)
+
+    async def logout(self, _):
+        await self.client.session.set_cs(key='token', value=None)
+        from app.views.auth.init import InitView
+        await self.client.change_view(view=InitView(), delete_current=True)

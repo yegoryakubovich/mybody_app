@@ -15,4 +15,20 @@
 #
 
 
-from .get_list import ArticleListView
+from flet_core import Text
+
+from app.controls.layout import ClientBaseView
+
+
+class AboutUsView(ClientBaseView):
+    route = '/client/about_us/'
+
+    async def build(self):
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key='about'),
+            main_section_controls=[
+                Text(
+                    value='text'
+                )
+            ],
+        )

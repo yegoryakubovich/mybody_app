@@ -22,6 +22,7 @@ from app.controls.layout import ClientBaseView
 
 
 class FAQView(ClientBaseView):
+    route = '/client/FAQ/'
     async def build(self):
         self.scroll = ScrollMode.AUTO
         questions_answers = {

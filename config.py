@@ -26,6 +26,7 @@ class Settings(BaseSettings):
     language_default: str = 'eng'
     service_id: int = 1
     url: str = 'https://api.test.mybody.one'
+    url_telegram: str = 'https://t.me/mybody_manager'
 
     model_config = SettingsConfigDict(env_file='.env')
 
