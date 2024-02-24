@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import webbrowser
+
 
 from flet_core import Column
 
@@ -27,35 +27,6 @@ from config import settings
 
 
 class AgreementRegistrationView(AuthView):
-
-    async def build(self):
-        self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='registration_account_create_view_title'),
-            controls=[
-                Column(
-                    controls=[
-                        ListItemButton(
-                            icon=Icons.PRIVACY_POLICY,
-                            name=await self.client.session.gtv(key='privacy_policy'),
-                            on_click=self.privacy_policy,
-                        ),
-                        Text(
-                            value=await self.client.session.gtv(key='agreement_info'),
-                            font_family=Fonts.REGULAR,
-                            size=16,
-                        ),
-                        FilledButton(
-                            content=Text(
-                                value=await self.client.session.gtv(key='account_create'),
-                            ),
-                            on_click=self.change_view,
-                        ),
-                    ],
-                    spacing=20,
-                ),
-            ],
-        )
-
     async def change_view(self, _):
         await self.set_type(loading=True)
         await self.client.session.api.client.accounts.create(
@@ -72,11 +43,36 @@ class AgreementRegistrationView(AuthView):
         await self.client.change_view(view=RegistrationSuccessfulView())
         await self.set_type(loading=False)
 
-    async def privacy_policy(self, _):
-        url = get_url_article(
-            id_=settings.privacy_policy_article_id,
-            token=self.client.session.token,
-            is_admin=False,
-            type_=UrlTypes.GET,
+    async def build(self):
+        self.controls = await self.get_controls(
+            title=await self.client.session.gtv(key='registration_account_create_view_title'),
+            controls=[
+                Column(
+                    controls=[
+                        ListItemButton(
+                            icon=Icons.PRIVACY_POLICY,
+                            name=await self.client.session.gtv(key='privacy_policy'),
+                            url=get_url_article(
+                                id_=settings.privacy_policy_article_id,
+                                token=self.client.session.token,
+                                is_admin=False,
+                                type_=UrlTypes.GET,
+                            ),
+                        ),
+                        Text(
+                            value=await self.client.session.gtv(key='agreement_info'),
+                            font_family=Fonts.REGULAR,
+                            size=16,
+                        ),
+                        FilledButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='account_create'),
+                            ),
+                            on_click=self.change_view,
+                            horizontal_padding=54,
+                        ),
+                    ],
+                    spacing=20,
+                ),
+            ],
         )
-        webbrowser.open(url)

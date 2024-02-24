@@ -13,10 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+
 from typing import Any
 
-from flet_core import Image, Container, padding, alignment, Column, ScrollMode, colors, Row, MainAxisAlignment, \
-    CrossAxisAlignment
+from flet_core import Image, Container, padding, alignment, Column, ScrollMode, colors, Row
 from flet_manager.utils import get_svg
 
 from app.controls.information import Text
@@ -44,9 +45,10 @@ class AuthView(View):
         back_control = Container(
             content=Image(
                 src=Icons.BACK,
-                height=20,
+                height=30,
                 color=colors.ON_BACKGROUND,
             ),
+            border_radius=6,
             ink=True,
             on_click=self.go_back,
         ) if is_go_back else None

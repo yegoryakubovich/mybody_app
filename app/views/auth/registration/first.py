@@ -15,7 +15,7 @@
 #
 
 
-from flet_core import Row, Column, Container, padding, colors
+from flet_core import Row, Column, Container, padding, colors, border_radius
 from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
@@ -79,6 +79,7 @@ class RegistrationFirstView(AuthView):
                             on_click=self.go_authentication,
                             ink=True,
                             padding=padding.symmetric(vertical=4),
+                            border_radius=border_radius.all(6),
                         ),
                     ],
                     spacing=20,

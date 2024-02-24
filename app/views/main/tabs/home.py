@@ -124,8 +124,8 @@ class MealButton(Container):
 
 
 class HomeTab(BaseTab):
-    meals: dict = None
-    trainings: dict = None
+    meals: list[dict] = None
+    trainings: list[dict] = None
     exercise: list[dict] = None
     training: dict = None
     account_service_id: int
@@ -140,13 +140,17 @@ class HomeTab(BaseTab):
             account_service_id=self.account_service_id,
             date=self.date,
         )
+        self.meals = sorted(
+            self.meals,
+            key=lambda meal: int(meal['type'].split('_')[1])
+        )
         try:
             self.trainings = await self.client.session.api.client.trainings.get_by_date(
                 account_service_id=self.account_service_id,
                 date=self.date,
             )
         except ApiException:
-            self.trainings = {}
+            self.trainings = []
 
         self.exercise = []
         if self.trainings:

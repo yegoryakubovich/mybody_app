@@ -28,6 +28,15 @@ from app.utils import Fonts
 class GenderSelectionView(AuthView):
     dd_gender: Dropdown
 
+    async def change_view(self, _):
+        from app.views.auth.purchase import QuestionnaireView
+        await self.client.change_view(QuestionnaireView(gender=self.dd_gender.value))
+
+    async def logout(self, _):
+        await self.client.session.set_cs(key='token', value=None)
+        from app.views.auth.init import InitView
+        await self.client.change_view(view=InitView(), delete_current=True)
+
     async def build(self):
         gender_list = [
             await self.client.session.gtv(key='men'),
@@ -61,6 +70,7 @@ class GenderSelectionView(AuthView):
                                         value=await self.client.session.gtv(key='next'),
                                         size=16,
                                     ),
+                                    horizontal_padding=54,
                                     on_click=self.change_view,
                                 ),
                                 FilledButton(
@@ -76,11 +86,3 @@ class GenderSelectionView(AuthView):
                 ),
             ],
         )
-
-    async def change_view(self, _):
-        from app.views.auth.purchase import QuestionnaireView
-        await self.client.change_view(QuestionnaireView(gender=self.dd_gender.value))
-
-    async def logout(self, _):
-        from app.views.auth import AuthenticationView
-        await self.client.change_view(view=AuthenticationView())

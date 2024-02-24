@@ -93,10 +93,6 @@ class AccountMealCreateView(AdminBaseView):
 
     async def create_meal(self, _):
         from app.views.admin.accounts.service.meal.get import AccountMealView
-        fields = [self.tf_date]
-        for field in fields:
-            if not await Error.check_date_format(self, field):
-                return
         fields = [(self.tf_fats, True), (self.tf_proteins, True), (self.tf_carbohydrates, True)]
         for field, check_int in fields:
             if not await Error.check_field(self, field, check_int):

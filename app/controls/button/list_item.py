@@ -22,7 +22,7 @@ from app.utils import Fonts
 
 
 class ListItemButton(Container):
-    def __init__(self, name, icon, on_click, url=None):
+    def __init__(self, name, icon, on_click=None, url=None):
         super().__init__(
             content=Row(
                 controls=[

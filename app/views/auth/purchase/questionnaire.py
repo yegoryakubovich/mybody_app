@@ -188,5 +188,6 @@ class QuestionnaireView(AuthView):
             await self.restart()
 
     async def logout(self, _):
-        from app.views.auth import AuthenticationView
-        await self.client.change_view(view=AuthenticationView())
+        await self.client.session.set_cs(key='token', value=None)
+        from app.views.auth.init import InitView
+        await self.client.change_view(view=InitView(), delete_current=True)

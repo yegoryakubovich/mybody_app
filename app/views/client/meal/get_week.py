@@ -38,12 +38,14 @@ class MealWeekView(ClientBaseView):
 
     async def build(self):
         from app.views.main.tabs.home import MealButton
-        await self.set_type(loading=True)
         self.meals = await self.client.session.api.client.meals.get_list(
             account_service_id=self.account_service_id,
             date=self.date,
         )
-        await self.set_type(loading=False)
+        self.meals = sorted(
+            self.meals,
+            key=lambda meal_: int(meal_['type'].split('_')[1])
+        )
 
         start_date = datetime.now().date() + timedelta(days=1)
         end_date = start_date + timedelta(days=6)
@@ -78,20 +80,20 @@ class MealWeekView(ClientBaseView):
                 color=colors.ON_BACKGROUND,
             ))
         else:
-            main_section_controls.extend([
-                Column(
-                    controls=[
-                        Text(
-                            value=f"{datetime.strptime(date, '%Y-%m-%d').day} "
-                                  f"{month_values[months[datetime.strptime(date, '%Y-%m-%d').month - 1]]}",
-                            size=20,
-                            font_family=Fonts.SEMIBOLD,
-                        ),
-                        *meals
-                    ]
+            for date, meals in sorted(meals_by_date.items()):
+                main_section_controls.append(
+                    Column(
+                        controls=[
+                            Text(
+                                value=f"{datetime.strptime(date, '%Y-%m-%d').day} "
+                                      f"{month_values[months[datetime.strptime(date, '%Y-%m-%d').month - 1]]}",
+                                size=20,
+                                font_family=Fonts.SEMIBOLD,
+                            ),
+                            *meals
+                        ]
+                    )
                 )
-                for date, meals in sorted(meals_by_date.items())
-            ])
 
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(

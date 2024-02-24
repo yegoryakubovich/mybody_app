@@ -49,7 +49,7 @@ class FAQView(ClientBaseView):
             for question, answer in questions_answers.items()
         ]
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='faq'),
+            title='FAQ',
             main_section_controls=[
                 ExpansionPanelList(
                     controls=expansion_panels,

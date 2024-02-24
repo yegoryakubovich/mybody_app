@@ -153,10 +153,6 @@ class AccountTrainingView(AdminBaseView):
         )
 
     async def update_training(self, _):
-        fields = [self.tf_date]
-        for field in fields:
-            if not await Error.check_date_format(self, field):
-                return
         await self.set_type(loading=True)
         try:
             update_data = {

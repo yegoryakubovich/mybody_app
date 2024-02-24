@@ -15,7 +15,7 @@
 #
 
 
-from flet_core import Column, Row, Container, padding, colors, MainAxisAlignment
+from flet_core import Column, Row, Container, padding, colors, MainAxisAlignment, border_radius
 from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
@@ -72,6 +72,7 @@ class AuthenticationView(AuthView):
         self.tf_password = TextField(
             label=await self.client.session.gtv(key='password'),
             password=True,
+            can_reveal_password=True,
         )
 
         self.controls = await self.get_controls(
@@ -122,6 +123,7 @@ class AuthenticationView(AuthView):
                             on_click=self.go_registration,
                             ink=True,
                             padding=padding.symmetric(vertical=4),
+                            border_radius=border_radius.all(6),
                         ),
                     ],
                     spacing=20,
