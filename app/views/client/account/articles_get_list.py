@@ -15,9 +15,6 @@
 #
 
 
-import webbrowser
-from functools import partial
-
 from flet_core import Text
 
 from app.controls.information.card import Card
@@ -48,7 +45,12 @@ class ArticleListView(ClientBaseView):
                                 font_family=Fonts.SEMIBOLD,
                             ),
                         ],
-                        on_click=partial(self.article_view, article['id']),
+                        url=get_url_article(
+                            id_=article['id'],
+                            token=self.client.session.token,
+                            is_admin=False,
+                            type_=UrlTypes.GET,
+                        ),
                     )
                 )
         else:
@@ -64,12 +66,3 @@ class ArticleListView(ClientBaseView):
             title=await self.client.session.gtv(key='articles'),
             main_section_controls=controls,
         )
-
-    async def article_view(self, article_id, _):
-        url = get_url_article(
-            id_=article_id,
-            token=self.client.session.token,
-            is_admin=False,
-            type_=UrlTypes.GET,
-        )
-        webbrowser.open(url)

@@ -15,15 +15,14 @@
 #
 
 
-from flet_core import padding, \
-    Container, Row, Image, border_radius, colors
+from flet_core import padding, Container, Row, Image, border_radius, colors
 
 from app.controls.information import Text
 from app.utils import Fonts
 
 
 class ListItemButton(Container):
-    def __init__(self, name, icon, on_click):
+    def __init__(self, name, icon, on_click, url=None):
         super().__init__(
             content=Row(
                 controls=[
@@ -43,5 +42,6 @@ class ListItemButton(Container):
             padding=padding.symmetric(vertical=4),
             ink=True,
             on_click=on_click,
+            url=url,
             border_radius=border_radius.all(6),
         )

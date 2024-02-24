@@ -13,7 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-import webbrowser
+
+
 from datetime import datetime
 from functools import partial
 from typing import Any
@@ -122,10 +123,6 @@ class MealButton(Container):
             image.color = color
 
 
-async def support(_):
-    webbrowser.open(settings.url_telegram)
-
-
 class HomeTab(BaseTab):
     meals: dict = None
     trainings: dict = None
@@ -217,7 +214,7 @@ class HomeTab(BaseTab):
                                 ),
                                 ProductChipButton(
                                     text=await self.client.session.gtv(key='support'),
-                                    on_click=support,
+                                    url=settings.url_telegram
                                 ),
                             ],
                             wrap=True,

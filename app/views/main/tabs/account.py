@@ -35,11 +35,13 @@ class Setting:
     name: str
     icon: str
     on_click: Any
+    url: Any
 
-    def __init__(self, name: str, icon: str, on_click: Any):
+    def __init__(self, name: str, icon: str, on_click: Any = None, url: Any = None):
         self.name = name
         self.icon = icon
         self.on_click = on_click
+        self.url = url
 
 
 class Section:
@@ -124,7 +126,7 @@ class AccountTab(BaseTab):
                     Setting(
                         name='support',
                         icon=Icons.SUPPORT,
-                        on_click=support,
+                        url=settings.url_telegram,
                     ),
                     Setting(
                         name='faq',
@@ -134,7 +136,12 @@ class AccountTab(BaseTab):
                     Setting(
                         name='privacy_policy',
                         icon=Icons.PRIVACY_POLICY,
-                        on_click=self.privacy_policy,
+                        url=get_url_article(
+                            id_=settings.privacy_policy_article_id,
+                            token=self.client.session.token,
+                            is_admin=False,
+                            type_=UrlTypes.GET,
+                        ),
                     ),
                 ],
             ),
@@ -157,6 +164,7 @@ class AccountTab(BaseTab):
                                     icon=setting.icon,
                                     name=await self.client.session.gtv(key=setting.name),
                                     on_click=setting.on_click,
+                                    url=setting.url,
                                 )
                                 for setting in section.settings
                             ],
@@ -237,15 +245,6 @@ class AccountTab(BaseTab):
     async def about_us(self, _):
         from app.views.client.account.about_us import AboutUsView
         await self.client.change_view(view=AboutUsView())
-
-    async def privacy_policy(self, _):
-        url = get_url_article(
-            id_=settings.privacy_policy_article_id,
-            token=self.client.session.token,
-            is_admin=False,
-            type_=UrlTypes.GET,
-        )
-        webbrowser.open(url)
 
     async def logout(self, _):
         await self.client.session.set_cs(key='token', value=None)
