@@ -15,12 +15,15 @@
 #
 
 
-from flet_core import Container, Column, alignment, border, margin, Row, Image
+import asyncio
+
+from flet_core import Container, Column, alignment, border, margin, Row, Image, ProgressRing, MainAxisAlignment
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.layout import AuthView
 from app.utils import Fonts, Icons
+from app.views.auth.purchase.about.payment import PaymentView
 
 
 class Advantage:
@@ -49,7 +52,7 @@ class PurchaseFirstView(AuthView):
     async def build(self):
         icon = [Icons.ADMIN_PRODUCTS, Icons.ABOUT, Icons.ADMIN_EXERCISES, Icons.PRIVACY_POLICY, Icons.SUPPORT]
         advantages = [
-            Advantage(icon[i], await self.client.session.gtv(key=f"you_get_{i+1}"))
+            Advantage(icon[i], await self.client.session.gtv(key=f"you_get_{i + 1}"))
             for i in range(5)
         ]
         self.controls = await self.get_controls(
@@ -100,5 +103,29 @@ class PurchaseFirstView(AuthView):
         )
 
     async def change_view(self, _):
-        from app import InitView
-        await self.client.change_view(view=InitView())
+        progress_ring = ProgressRing(
+            height=20,
+            width=20,
+        )
+        self.controls.clear()
+        self.controls = await self.get_controls(
+            controls=[
+                Container(
+                    content=Row(
+                        controls=[
+                            progress_ring,
+                            Text(
+                                value=await self.client.session.gtv(key='expose_check'),
+                                size=20,
+                                font_family=Fonts.REGULAR,
+                            ),
+                        ],
+                        alignment=MainAxisAlignment.CENTER,
+                    ),
+                    padding=50
+                ),
+            ],
+        )
+        await self.update_async()
+        await asyncio.sleep(1)
+        await self.client.change_view(view=PaymentView())

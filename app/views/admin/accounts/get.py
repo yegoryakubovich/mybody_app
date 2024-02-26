@@ -16,10 +16,9 @@
 
 
 from functools import partial
-from pyperclip import copy
 
-from flet_core import Row, colors, MaterialState, IconButton, Container, Image, padding, margin, Icon, Border, \
-    InputBorder, Theme, TextStyle
+from flet_core import Row, colors, MaterialState, Container, Image, padding, margin, InputBorder, TextStyle
+from pyperclip import copy
 
 from app.controls.button import FilledButton
 from app.controls.information import Text, Card
@@ -55,7 +54,6 @@ class AccountView(AdminBaseView):
         surname = self.account['surname'] if self.account['surname'] else await self.client.session.gtv(key='absent')
 
         self.clipboard_text_field = TextField(
-            value='new_password',
             label=await self.client.session.gtv(key='admin_new_user_password'),
             height=50,
             content_padding=padding.only(left=10),
@@ -67,7 +65,8 @@ class AccountView(AdminBaseView):
             expand=True,
             focused_border_color=colors.PRIMARY_CONTAINER,
             border_color=colors.PRIMARY_CONTAINER,
-            read_only=True
+            read_only=True,
+
         )
 
         self.clipboard = Container(

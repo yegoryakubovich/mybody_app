@@ -15,4 +15,6 @@
 #
 
 
+from .erip import ERIPView
+from .payment import PaymentView
 from .first import PurchaseFirstView
