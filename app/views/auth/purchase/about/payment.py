@@ -45,7 +45,7 @@ class PaymentView(AuthView):
                                             value='ЕРИП',
                                             size=16,
                                         ),
-                                        horizontal_padding=40,
+                                        width=150,
                                         on_click=self.erip,
                                     ),
                                     FilledButton(
@@ -53,7 +53,7 @@ class PaymentView(AuthView):
                                             value=await self.client.session.gtv(key='card'),
                                             size=16,
                                         ),
-                                        horizontal_padding=40,
+                                        width=150,
                                         url=settings.url_payment_card,
                                     ),
                                 ],

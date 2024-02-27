@@ -15,6 +15,6 @@
 #
 
 
-from app.views.admin.languages.create import LanguageCreateView
-from app.views.admin.languages.get import LanguageView
-from app.views.admin.languages.get_list import LanguageListView
+from .create import LanguageCreateView
+from .get import LanguageView
+from .get_list import LanguageListView

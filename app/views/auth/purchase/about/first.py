@@ -49,10 +49,24 @@ class Advantage:
 
 
 class PurchaseFirstView(AuthView):
+    ICONS = [Icons.ADMIN_PRODUCTS, Icons.ABOUT, Icons.ADMIN_EXERCISES, Icons.PRIVACY_POLICY, Icons.SUPPORT]
+
     async def build(self):
-        icon = [Icons.ADMIN_PRODUCTS, Icons.ABOUT, Icons.ADMIN_EXERCISES, Icons.PRIVACY_POLICY, Icons.SUPPORT]
         advantages = [
-            Advantage(icon[i], await self.client.session.gtv(key=f"you_get_{i + 1}"))
+            Row(
+                controls=[
+                    Image(
+                        src=self.ICONS[i],
+                        width=15,
+                        height=15,
+                    ),
+                    Text(
+                        value=await self.client.session.gtv(key=f"you_get_{i + 1}"),
+                        size=15,
+                        font_family=Fonts.MEDIUM,
+                    ),
+                ]
+            )
             for i in range(5)
         ]
         self.controls = await self.get_controls(
@@ -70,12 +84,12 @@ class PurchaseFirstView(AuthView):
                             ),
                             Container(
                                 content=Column(
-                                    controls=[advantage.to_control() for advantage in advantages],
+                                    controls=advantages,
                                 ),
                             ),
                             Container(
                                 content=Text(
-                                    value=f'{109} {self.client.session.account.currency}'.upper(),
+                                    value='109 BYN',
                                     size=20,
                                     font_family=Fonts.SEMIBOLD,
                                 ),

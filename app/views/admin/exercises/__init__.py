@@ -15,6 +15,6 @@
 #
 
 
-from app.views.admin.exercises.create import ExerciseCreateView
-from app.views.admin.exercises.get import ExerciseView
-from app.views.admin.exercises.get_list import ExerciseListView
+from .create import ExerciseCreateView
+from .get import ExerciseView
+from .get_list import ExerciseListView

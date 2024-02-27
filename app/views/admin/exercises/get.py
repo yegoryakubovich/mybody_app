@@ -88,19 +88,19 @@ class ExerciseView(AdminBaseView):
         )
 
     async def delete_exercise(self, _):
-        await self.set_type(loading=True)
         await self.client.session.api.admin.exercises.delete(
             id_=self.exercise_id,
         )
-        await self.set_type(loading=False)
-        await self.client.change_view(go_back=True, with_restart=True)
+        await self.client.change_view(go_back=True, with_restart=True, delete_current=True)
 
     async def update_exercise(self, _):
+        await self.set_type(loading=True)
         try:
             await self.client.session.api.admin.exercises.update(
                 id_=self.exercise_id,
                 type_=self.dd_exercise_type.value,
             )
+            await self.set_type(loading=False)
             self.snack_bar.open = True
             await self.update_async()
         except ApiException as e:

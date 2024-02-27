@@ -28,7 +28,6 @@ from app.controls.information import Text
 from app.utils import Fonts, Icons
 from app.views.auth.purchase.about import PurchaseFirstView
 from app.views.client.meal import MealView
-from app.views.client.meal.get_week import MealWeekView
 from app.views.client.training.get import TrainingView
 from app.views.main.tabs.base import BaseTab
 from config import settings
@@ -126,9 +125,8 @@ class MealButton(Container):
 
 class HomeTab(BaseTab):
     meals: list[dict] = None
-    trainings: list[dict] = None
+    trainings: dict = None
     exercise: list[dict] = None
-    training: dict = None
     account_service_id: int
     date: str
     user_tz: timezone
@@ -151,17 +149,15 @@ class HomeTab(BaseTab):
                 date=self.date,
             )
         except ApiException:
-            self.trainings = []
+            self.trainings = {}
 
         self.exercise = []
         if self.trainings:
-            self.training = await self.client.session.api.client.trainings.get(
-                id_=self.trainings[0]['id'],
-            )
-            for i, training in enumerate(self.training['exercises']):
-                training_info = await self.client.session.api.client.exercises.get(id_=training['exercise'])
-                # Находим соответствующий продукт в self.exercise['exercise']
-                training_exercise = self.training['exercises'][i]
+            for i, training in enumerate(self.trainings['exercises']):
+                training_info = await self.client.session.api.client.exercises.get(
+                    id_=training['exercise'],
+                )
+                training_exercise = self.trainings['exercises'][i]
                 if training_exercise:
                     training_info['training_exercise'] = training_exercise
                 self.exercise.append(training_info)
@@ -300,8 +296,8 @@ class HomeTab(BaseTab):
         ]
 
     async def training_view(self, _):
-        if self.training and self.training['id']:
-            training_id = self.training['id']
+        if self.trainings and self.trainings['id']:
+            training_id = self.trainings['id']
         else:
             training_id = None
 
