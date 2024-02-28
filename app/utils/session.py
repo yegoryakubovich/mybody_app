@@ -85,6 +85,7 @@ class Session:
                 await self.set_cs(key='language', value=self.language)
         except ApiException:
             await self.set_cs(key='token', value=None)
+            self.token = None
 
         await self.init_bs()
 
