@@ -108,6 +108,7 @@ class QuestionnaireView(AuthView):
 
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key=title['title_text']),
+            is_go_back=True,
             controls=controls + [
                 Row(
                     controls=[
@@ -119,16 +120,10 @@ class QuestionnaireView(AuthView):
                             text_back=await self.client.session.gtv(key='back'),
                             text_next=await self.client.session.gtv(key='next'),
                         ),
-                        FilledButton(
-                            content=Text(
-                                value=await self.client.session.gtv(key='logout'),
-                            ),
-                            on_click=self.logout
-                        ),
-                    ],
+                    ] + self.button,
                     alignment=MainAxisAlignment.SPACE_BETWEEN,
                 ),
-            ] + self.button,
+            ]
         )
 
     async def check_errors(self, field_list, min_len, max_len):

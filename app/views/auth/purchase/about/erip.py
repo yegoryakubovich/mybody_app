@@ -15,9 +15,8 @@
 #
 
 
+from flet_core import Container, Row, colors, Image, margin, alignment
 from pyperclip import copy
-
-from flet_core import Container, Column, Row, MainAxisAlignment, colors, Image, margin
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -36,59 +35,47 @@ class ERIPView(AuthView):
             height=50,
             color=colors.ON_BACKGROUND,
         )
-        clipboard = Container(
-            Row(
-                controls=[
-                    self.tf_clipboard,
-                    Container(
-                        content=Image(
-                            src=Icons.COPY,
-                            height=40,
-                            color=colors.ON_BACKGROUND,
-                        ),
-                        ink=True,
-                        on_click=self.copy_check,
-                        bgcolor=colors.TRANSPARENT,
-                        border_radius=15,
-                    )
-                ],
-            ),
-            margin=margin.only(top=15, bottom=15),
-        )
 
         self.controls = await self.get_controls(
-            title='ЕРИП',
+            title=await self.client.session.gtv(key='erip'),
+            is_go_back=True,
             controls=[
+                Text(
+                    value=await self.client.session.gtv(key='erip_payment'),
+                    size=20,
+                    font_family=Fonts.REGULAR,
+                ),
                 Container(
-                    content=Column(
+                    Row(
                         controls=[
-                            Text(
-                                value=await self.client.session.gtv(key='erip_payment'),
-                                size=20,
-                                font_family=Fonts.REGULAR,
-                            ),
-                            clipboard,
-                            Row(
-                                controls=[
-                                    FilledButton(
-                                        content=Text(
-                                            value=await self.client.session.gtv(key='paid'),
-                                            size=16,
-                                        ),
-                                        horizontal_padding=54,
-                                        on_click=self.payment,
-                                    ),
-                                    FilledButton(
-                                        content=Text(
-                                            value=await self.client.session.gtv(key='back'),
-                                        ),
-                                        on_click=self.go_back,
-                                    ),
-                                ],
-                                alignment=MainAxisAlignment.SPACE_BETWEEN,
-                            ),
+                            self.tf_clipboard,
+                            Container(
+                                content=Image(
+                                    src=Icons.COPY,
+                                    height=40,
+                                    color=colors.ON_BACKGROUND,
+                                ),
+                                ink=True,
+                                on_click=self.copy_check,
+                                bgcolor=colors.TRANSPARENT,
+                                border_radius=15,
+                            )
                         ],
                     ),
+                    margin=margin.only(top=15, bottom=15),
+                ),
+                Container(
+                    FilledButton(
+                        content=Text(
+                            value=await self.client.session.gtv(key='paid'),
+                            size=16,
+                        ),
+                        width=640,
+                        horizontal_padding=54,
+                        on_click=self.payment,
+                    ),
+                    expand=True,
+                    alignment=alignment.bottom_center,
                 ),
             ],
         )

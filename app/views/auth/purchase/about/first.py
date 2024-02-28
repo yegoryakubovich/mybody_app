@@ -17,35 +17,13 @@
 
 import asyncio
 
-from flet_core import Container, Column, alignment, border, margin, Row, Image, ProgressRing, MainAxisAlignment
+from flet_core import Container, Column, alignment, Row, Image, ProgressRing, MainAxisAlignment
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.layout import AuthView
 from app.utils import Fonts, Icons
 from app.views.auth.purchase.about.payment import PaymentView
-
-
-class Advantage:
-    def __init__(self, icon_path, text):
-        self.icon_path = icon_path
-        self.text = text
-
-    def to_control(self):
-        return Row(
-            controls=[
-                Image(
-                    src=self.icon_path,
-                    width=15,
-                    height=15,
-                ),
-                Text(
-                    value=self.text,
-                    size=15,
-                    font_family=Fonts.MEDIUM,
-                ),
-            ]
-        )
 
 
 class PurchaseFirstView(AuthView):
@@ -57,13 +35,13 @@ class PurchaseFirstView(AuthView):
                 controls=[
                     Image(
                         src=self.ICONS[i],
-                        width=15,
-                        height=15,
+                        width=25,
+                        height=25,
                     ),
                     Text(
                         value=await self.client.session.gtv(key=f"you_get_{i + 1}"),
                         size=15,
-                        font_family=Fonts.MEDIUM,
+                        font_family=Fonts.SEMIBOLD,
                     ),
                 ]
             )
@@ -73,47 +51,22 @@ class PurchaseFirstView(AuthView):
             controls=[
                 Container(
                     content=Column(
-                        controls=[
-                            Container(
-                                content=Text(
-                                    value=f'{await self.client.session.gtv(key="course")}' + ' ' + 'My Body',
-                                    size=20,
-                                    font_family=Fonts.SEMIBOLD,
-                                ),
-                                alignment=alignment.top_center
-                            ),
-                            Container(
-                                content=Column(
-                                    controls=advantages,
-                                ),
-                            ),
-                            Container(
-                                content=Text(
-                                    value='109 BYN',
-                                    size=20,
-                                    font_family=Fonts.SEMIBOLD,
-                                ),
-                                alignment=alignment.top_center
-                            ),
-                            Container(
-                                content=FilledButton(
-                                    content=Text(
-                                        value=await self.client.session.gtv(key='buy'),
-                                        size=16,
-                                    ),
-                                    on_click=self.change_view,
-                                ),
-                                alignment=alignment.top_center,
-                            ),
-                        ]
+                        controls=advantages,
                     ),
-                    alignment=alignment.top_center,
-                    border=border.all(2, '#008F12'),
-                    border_radius=6,
-                    padding=20,
-                    margin=margin.symmetric(horizontal=20)
                 ),
-            ],
+                Container(
+                    content=FilledButton(
+                        content=Text(
+                            value=await self.client.session.gtv(key='buy'),
+                            size=16,
+                        ),
+                        width=640,
+                        on_click=self.change_view,
+                    ),
+                    expand=True,
+                    alignment=alignment.bottom_center,
+                ),
+            ]
         )
 
     async def change_view(self, _):

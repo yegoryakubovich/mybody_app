@@ -28,10 +28,9 @@ from app.utils import Fonts, Icons
 class AuthView(View):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.scroll = ScrollMode.AUTO
 
     async def go_back(self, _):
-        await self.client.change_view(go_back=True)
+        await self.client.change_view(go_back=True, with_restart=True, delete_current=True)
 
     async def get_controls(
             self,
@@ -95,11 +94,13 @@ class AuthView(View):
                                 controls=body_controls,
                                 width=640,
                             ),
-                            alignment=alignment.center
+                            alignment=alignment.center,
+                            expand=True,
                         ),
                     ],
                 ),
                 padding=10,
+                expand=True,
             ),
         ]
         return controls

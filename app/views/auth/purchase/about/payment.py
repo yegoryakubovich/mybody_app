@@ -15,76 +15,81 @@
 #
 
 
-from flet_core import Container, Column, Row, MainAxisAlignment
+from flet_core import Container, Column, Row, alignment, Image, MainAxisAlignment, TextButton
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.layout import AuthView
-from app.utils import Fonts
+from app.utils import Fonts, Icons
 from app.views.auth.purchase.about.erip import ERIPView
+from app.views.main.tabs.account import Setting
 from config import settings
 
 
 class PaymentView(AuthView):
     async def build(self):
+        payment = [
+            Setting(name='erip', icon=Icons.PRIVACY_POLICY, on_click=self.erip),
+            Setting(name='card', icon=Icons.SUPPORT, url=settings.url_payment_card)
+        ]
+        advantages = [
+            Row(
+                controls=[
+                    Container(
+                        content=Image(
+                            src=setting.icon,
+                            width=40,
+                            height=40,
+                        ),
+                        url=setting.url,
+                        on_click=setting.on_click,
+                    ),
+                    Text(
+                        value=await self.client.session.gtv(key=setting.name),
+                        size=20,
+                        font_family=Fonts.REGULAR,
+                    ),
+                ]
+            )
+            for setting in payment
+        ]
+
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='payment'),
             controls=[
+                Row(
+                    controls=[
+                        Text(
+                            value=await self.client.session.gtv(key='payment'),
+                            size=20,
+                            font_family=Fonts.SEMIBOLD,
+                        ),
+                        TextButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='logout'),
+                                size=16,
+                            ),
+                            on_click=self.logout
+                        ),
+                    ],
+                    alignment=MainAxisAlignment.SPACE_BETWEEN,
+                ),
                 Container(
                     content=Column(
-                        controls=[
-                            Text(
-                                value=await self.client.session.gtv(key='payment_text_one'),
-                                size=20,
-                                font_family=Fonts.REGULAR,
-                            ),
-                            Row(
-                                controls=[
-                                    FilledButton(
-                                        content=Text(
-                                            value='ЕРИП',
-                                            size=16,
-                                        ),
-                                        width=150,
-                                        on_click=self.erip,
-                                    ),
-                                    FilledButton(
-                                        content=Text(
-                                            value=await self.client.session.gtv(key='card'),
-                                            size=16,
-                                        ),
-                                        width=150,
-                                        url=settings.url_payment_card,
-                                    ),
-                                ],
-                            ),
-                            Text(
-                                value=await self.client.session.gtv(key='payment_text_two'),
-                                size=20,
-                                font_family=Fonts.REGULAR,
-                            ),
-                            Row(
-                                controls=[
-                                    FilledButton(
-                                        content=Text(
-                                            value=await self.client.session.gtv(key='paid'),
-                                            size=16,
-                                        ),
-                                        horizontal_padding=54,
-                                        on_click=self.change_view,
-                                    ),
-                                    FilledButton(
-                                        content=Text(
-                                            value=await self.client.session.gtv(key='logout'),
-                                        ),
-                                        on_click=self.logout
-                                    ),
-                                ],
-                                alignment=MainAxisAlignment.SPACE_BETWEEN,
-                            )
-                        ],
-                        spacing=10
+                        controls=advantages,
                     ),
+                    margin=20,
+                ),
+                Container(
+                    content=FilledButton(
+                        content=Text(
+                            value=await self.client.session.gtv(key='paid'),
+                            size=16,
+                        ),
+                        width=640,
+                        on_click=self.change_view,
+                    ),
+                    expand=True,
+                    alignment=alignment.bottom_center,
                 ),
             ],
         )
@@ -100,3 +105,4 @@ class PaymentView(AuthView):
         await self.client.session.set_cs(key='token', value=None)
         from app.views.auth.init import InitView
         await self.client.change_view(view=InitView(), delete_current=True)
+

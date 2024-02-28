@@ -38,7 +38,6 @@ class Session:
     api: MyBodyApiClient
     registration: Registration
     account_service: Any
-
     bs_error: Any
     bs_info: Any
     datepicker: Any
@@ -59,7 +58,6 @@ class Session:
         from app.controls.information.bottom_sheet import BottomSheet
         from app.controls.input.file_picker import FilePicker
         from app.controls.input.date_picker import DatePicker
-
         self.bs_error = BottomSheet()
         self.bs_info = BottomSheet()
         self.filepicker = FilePicker()
