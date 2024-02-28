@@ -144,9 +144,6 @@ class AdminView(AdminBaseView):
     async def coming_soon(self):
         pass
 
-    async def go_back(self, _):
-        await self.client.change_view(go_back=True)
-
     async def get_articles(self, _):
         await self.client.change_view(view=ArticleListView())
 

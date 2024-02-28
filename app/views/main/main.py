@@ -46,7 +46,7 @@ TABS = [
 
 class MainView(View):
     tabs: list[BottomNavigationTab]
-    tab_selected: BottomNavigationTab
+    tab_selected: BottomNavigationTab = None
     tab_default: BottomNavigationTab
     body: ListView
 
@@ -73,7 +73,7 @@ class MainView(View):
             )
             for tab in TABS
         ]
-        self.tab_default = self.tabs[0]
+        self.tab_default = self.tabs[0] if not self.tab_selected else self.tab_selected
 
         self.controls = [
             # Header
