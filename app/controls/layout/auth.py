@@ -36,7 +36,8 @@ class AuthView(View):
             self,
             controls: list,
             title: str = None,
-            is_go_back: Any = False,
+            go_back: Any = False,
+            with_expand: bool = False,
     ) -> list:
 
         body_controls = []
@@ -50,7 +51,7 @@ class AuthView(View):
             border_radius=6,
             ink=True,
             on_click=self.go_back,
-        ) if is_go_back else None
+        ) if go_back else None
 
         if title:
             title_control = Container(
@@ -95,12 +96,12 @@ class AuthView(View):
                                 width=640,
                             ),
                             alignment=alignment.center,
-                            expand=True,
+                            expand=with_expand,
                         ),
                     ],
                 ),
                 padding=10,
-                expand=True,
+                expand=with_expand,
             ),
         ]
         return controls

@@ -299,7 +299,7 @@ class MealReportView(ClientBaseView):
                 await self.client.session.api.client.images.create(
                     model='meal_report',
                     model_id=id_meal_report,
-                    file=self.data_io,  # FIXME
+                    file=self.data_io.read(),  # FIXME
                 )
             await self.set_type(loading=False)
             await self.client.change_view(go_back=True, with_restart=True, delete_current=True)

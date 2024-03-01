@@ -88,19 +88,14 @@ class RegistrationFirstView(AuthView):
         )
 
     async def change_view(self, _):
-        check_username_error = await self.client.session.gtv(key='error_check_username')
-        # check_password_error = await self.client.session.gtv(key='error_check_password')
-
-        fields = [(self.tf_username, 6, 32), (self.tf_password, 8, 32)]
-        for field, min_len, max_len in fields:
-            if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
-                return
+        await self.set_type(loading=True)
 
         try:
             await self.client.session.api.client.accounts.check_username(username=self.tf_username.value)
         except ApiException as e:
             self.tf_username.error_text = e.message
             await self.update_async()
+            await self.set_type(loading=False)
             return
 
         try:
@@ -108,6 +103,7 @@ class RegistrationFirstView(AuthView):
         except ApiException as e:
             self.tf_password.error_text = e.message
             await self.update_async()
+            await self.set_type(loading=False)
             return
 
         # Save in Registration
@@ -118,6 +114,8 @@ class RegistrationFirstView(AuthView):
         currencies = await self.client.session.api.client.currencies.get_list()
         countries = await self.client.session.api.client.countries.get_list()
         timezones = await self.client.session.api.client.timezones.get_list()
+
+        await self.set_type(loading=False)
 
         await self.client.change_view(
             view=RegistrationSecondView(

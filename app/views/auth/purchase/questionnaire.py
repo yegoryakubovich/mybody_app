@@ -108,7 +108,7 @@ class QuestionnaireView(AuthView):
 
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key=title['title_text']),
-            is_go_back=True,
+            go_back=True,
             controls=controls + [
                 Row(
                     controls=[

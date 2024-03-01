@@ -37,8 +37,9 @@ class ERIPView(AuthView):
         )
 
         self.controls = await self.get_controls(
+            with_expand=True,
             title=await self.client.session.gtv(key='erip'),
-            is_go_back=True,
+            go_back=True,
             controls=[
                 Text(
                     value=await self.client.session.gtv(key='erip_payment'),

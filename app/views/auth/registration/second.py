@@ -13,8 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-
+from flet_core import ScrollMode
 from flet_core.dropdown import Option
 
 from app.controls.button import FilledButton
@@ -37,7 +36,7 @@ class RegistrationSecondView(AuthView):
         self.countries = countries
         self.currencies = currencies
         self.timezones = timezones
-        super().__init__(**kwargs)
+        super().__init__(**kwargs, scroll=ScrollMode.AUTO)
 
     async def build(self):
         country_options = [

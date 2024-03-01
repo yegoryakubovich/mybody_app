@@ -55,6 +55,7 @@ class PaymentView(AuthView):
         ]
 
         self.controls = await self.get_controls(
+            with_expand=True,
             controls=[
                 Row(
                     controls=[
