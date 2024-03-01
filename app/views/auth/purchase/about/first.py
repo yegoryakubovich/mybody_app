@@ -38,16 +38,19 @@ class PurchaseFirstView(AuthView):
                         width=25,
                         height=25,
                     ),
-                    Text(
-                        value=await self.client.session.gtv(key=f"you_get_{i + 1}"),
-                        size=15,
-                        font_family=Fonts.SEMIBOLD,
-                    ),
+                    Container(
+                        content=Text(
+                            value=await self.client.session.gtv(key=f"you_get_{i + 1}"),
+                            size=18,
+                            font_family=Fonts.SEMIBOLD,
+                        ),
+                    )
                 ]
             )
             for i in range(5)
         ]
         self.controls = await self.get_controls(
+            with_expand=True,
             controls=[
                 Container(
                     content=Column(
@@ -95,4 +98,4 @@ class PurchaseFirstView(AuthView):
         )
         await self.update_async()
         await asyncio.sleep(1)
-        await self.client.change_view(view=PaymentView())
+        await self.client.change_view(view=PaymentView(), delete_current=True)

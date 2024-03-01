@@ -43,9 +43,9 @@ class AuthenticationView(AuthView):
                 password=self.tf_password.value,
             )
             await self.set_type(loading=False)
-        except ApiException as e:
+        except ApiException as code:
             await self.set_type(loading=False)
-            return await self.client.session.error(error=e)
+            return await self.client.session.error(code=code)
         
         # Get result, set in CS
         token = session.token
@@ -63,7 +63,7 @@ class AuthenticationView(AuthView):
 
     async def go_language(self, _):
         from app.views.auth import LanguageView
-        await self.client.change_view(view=LanguageView())
+        await self.client.change_view(view=LanguageView(), delete_current=True)
 
     async def build(self):
         self.tf_username = TextField(

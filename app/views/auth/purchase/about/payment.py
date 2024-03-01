@@ -97,10 +97,10 @@ class PaymentView(AuthView):
 
     async def change_view(self, _):
         from app import InitView
-        await self.client.change_view(view=InitView())
+        await self.client.change_view(view=InitView(), delete_current=True)
 
     async def erip(self, _):
-        await self.client.change_view(view=ERIPView())
+        await self.client.change_view(view=ERIPView(), delete_current=True)
 
     async def logout(self, _):
         await self.client.session.set_cs(key='token', value=None)

@@ -22,7 +22,7 @@ from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField
 from app.controls.layout import AuthView
-from app.utils import Fonts, Error
+from app.utils import Fonts
 from app.utils.registration import Registration
 from app.views.auth.registration.second import RegistrationSecondView
 

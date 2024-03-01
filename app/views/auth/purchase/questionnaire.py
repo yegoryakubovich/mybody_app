@@ -35,14 +35,13 @@ class QuestionnaireView(AuthView):
     service = list[dict]
     page_account: int = 1
     total_pages: int = 1
-    answers: dict = {}
-    dd_answers: List[Dropdown] = []
-    tf_answers: List[TextField] = []
     service_id_str: str
 
-    def __init__(self, gender):
+    def __init__(self, gender, dd_answers, tf_answers):
         super().__init__()
         self.gender = gender
+        self.dd_answers = dd_answers
+        self.tf_answers = tf_answers
 
     async def build(self):
         await self.set_type(loading=True)
@@ -51,7 +50,6 @@ class QuestionnaireView(AuthView):
             id_=self.services[0]['id_str'],
         )
         await self.set_type(loading=False)
-
         titles = json.loads(self.service.questions)
 
         if self.gender == 'Men':
@@ -75,7 +73,7 @@ class QuestionnaireView(AuthView):
                         key=value,
                     ) for value in question['values_texts']
                 ]
-                initial_value = self.answers.get(question['key'], value_options[0].key)
+                initial_value = self.client.session.answers.get(question['key'], value_options[0].key)
                 dd_answer = Dropdown(
                     label=await self.client.session.gtv(key='answer'),
                     value=initial_value,
@@ -85,7 +83,7 @@ class QuestionnaireView(AuthView):
                 self.dd_answers.append(dd_answer)
                 controls.append(dd_answer)
             else:
-                initial_value = self.answers.get(question['key'], '')
+                initial_value = self.client.session.answers.get(question['key'])
                 tf_answer = TextField(
                     label=await self.client.session.gtv(key='answer'),
                     value=initial_value,
@@ -155,15 +153,15 @@ class QuestionnaireView(AuthView):
             service=self.services[0]['id_str'],
             answers=answers_json,
         )
-        await self.client.change_view(view=PurchaseFirstView())
+        await self.client.change_view(view=PurchaseFirstView(), delete_current=True)
 
     async def next_page(self, _):
         if not await self.check_errors(self.tf_answers, 1, 1024):
             return
-        self.answers = {
+        self.client.session.answers = {
             tf.key_question.split('_')[0]: tf.value for tf in self.tf_answers
         }
-        self.answers.update({dd.key: dd.value for dd in self.dd_answers})
+        self.client.session.answers.update({dd.key: dd.value for dd in self.dd_answers})
         if self.page_account < self.total_pages:
             self.page_account += 1
             await self.restart()
@@ -175,10 +173,10 @@ class QuestionnaireView(AuthView):
                 return
         if self.page_account > 1:
             self.tf_answers = [tf for tf in self.tf_answers if tf.value]
-            self.answers = {
+            self.client.session.answers = {
                 tf.key_question.split('_')[0]: tf.value for tf in self.tf_answers
             }
-            self.answers.update({dd.key: dd.value for dd in self.dd_answers})
+            self.client.session.answers.update({dd.key: dd.value for dd in self.dd_answers})
             self.page_account -= 1
             await self.restart()
 

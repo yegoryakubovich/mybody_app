@@ -69,6 +69,6 @@ class AccountTrainingReportCreateView(AdminBaseView):
                 delete_current=True,
                 with_restart=True,
             )
-        except ApiException as e:
+        except ApiException as code:
             await self.set_type(loading=False)
-            return await self.client.session.error(error=e)
+            return await self.client.session.error(code=code)

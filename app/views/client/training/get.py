@@ -279,6 +279,6 @@ class TrainingView(ClientBaseView):
             )
             await self.set_type(loading=False)
             await self.restart()
-        except ApiException as e:
+        except ApiException as code:
             await self.set_type(loading=False)
-            return await self.client.session.error(error=e)
+            return await self.client.session.error(code=code)

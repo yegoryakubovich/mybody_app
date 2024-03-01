@@ -102,12 +102,15 @@ class RegistrationSecondView(AuthView):
         )
 
     async def change_view(self, _):
+        await self.set_type(loading=True)
         fields = [(self.tf_firstname, 2, 32), (self.tf_lastname, 2, 32)]
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
+                await self.set_type(loading=False)
                 return
         if self.tf_surname.value and (len(self.tf_surname.value) < 2 or len(self.tf_surname.value) > 32):
             self.tf_surname.error_text = await self.client.session.gtv(key='error_count_letter')
+            await self.set_type(loading=False)
             await self.update_async()
         self.client.session.registration.firstname = self.tf_firstname.value
         self.client.session.registration.lastname = self.tf_lastname.value
@@ -115,4 +118,5 @@ class RegistrationSecondView(AuthView):
         self.client.session.registration.country = self.dd_country.value
         self.client.session.registration.currency = self.dd_currency.value
         self.client.session.registration.timezone = self.dd_timezone.value
-        await self.client.change_view(view=AgreementRegistrationView())
+        await self.set_type(loading=False)
+        await self.client.change_view(view=AgreementRegistrationView(), delete_current=True)

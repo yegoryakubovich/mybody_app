@@ -42,15 +42,16 @@ class Session:
     bs_info: Any
     datepicker: Any
     filepicker: Any
+    answers: dict | None
 
     def __init__(self, client: Client):
         self.client = client
         self.page = client.page
         self.account = None
 
-    async def error(self, error: ApiException):
+    async def error(self, code: ApiException):
         await self.bs_error.open_(
-            title=error.message,
+            title=await self.client.session.gtv(key=f'error_{code}'),
             icon=Icons.ERROR
         )
 

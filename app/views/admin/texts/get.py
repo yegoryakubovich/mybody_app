@@ -132,9 +132,9 @@ class TextView(AdminBaseView):
             )
             self.snack_bar.open = True
             await self.update_async()
-        except ApiException as e:
+        except ApiException as code:
             await self.set_type(loading=False)
-            return await self.client.session.error(error=e)
+            return await self.client.session.error(code=code)
 
     async def create_translation(self, _):
         await self.client.change_view(view=TextTranslationCreateView(key=self.key))

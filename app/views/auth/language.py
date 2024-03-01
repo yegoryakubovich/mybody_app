@@ -47,7 +47,7 @@ class LanguageView(AuthView):
 
         await self.client.session.set_cs(key='language', value=language)
         from .init import InitView
-        await self.client.change_view(view=InitView())
+        await self.client.change_view(view=InitView(), delete_current=True)
 
     async def build(self):
         self.languages = await self.client.session.api.client.languages.get_list()

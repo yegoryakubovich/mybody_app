@@ -237,6 +237,6 @@ class ServiceCreateView(AdminBaseView):
                 questions=questions,
             )
             await self.client.change_view(view=ServiceView(service_id_str=service_id_str), delete_current=True)
-        except ApiException as e:
+        except ApiException as code:
             await self.set_type(loading=False)
-            return await self.client.session.error(error=e)
+            return await self.client.session.error(code=code)

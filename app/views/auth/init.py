@@ -41,14 +41,14 @@ class InitView(AuthView):
 
         # If not language
         if not self.client.session.language:
-            await self.client.change_view(view=LanguageView())
+            await self.client.change_view(view=LanguageView(), delete_current=True)
             return
 
         await self.get_text_pack(language=self.client.session.language)
 
         # If not token
         if not self.client.session.token:
-            await self.client.change_view(view=AuthenticationView())
+            await self.client.change_view(view=AuthenticationView(), delete_current=True)
             return
 
         # Get account service
@@ -61,7 +61,7 @@ class InitView(AuthView):
         if account_service:
             self.client.session.account_service = account_service
         else:
-            await self.client.change_view(view=GenderSelectionView())
+            await self.client.change_view(view=GenderSelectionView(), delete_current=True)
             return
 
         await self.client.change_view(view=MainView())

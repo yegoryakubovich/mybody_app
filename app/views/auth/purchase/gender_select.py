@@ -30,7 +30,17 @@ class GenderSelectionView(AuthView):
 
     async def change_view(self, _):
         from app.views.auth.purchase import QuestionnaireView
-        await self.client.change_view(QuestionnaireView(gender=self.dd_gender.value))
+        dd_answers = []
+        tf_answers = []
+        self.client.session.answers = {}
+        await self.client.change_view(
+            QuestionnaireView(
+                gender=self.dd_gender.value,
+                dd_answers=dd_answers,
+                tf_answers=tf_answers,
+            ),
+            delete_current=True
+        )
 
     async def logout(self, _):
         await self.client.session.set_cs(key='token', value=None)

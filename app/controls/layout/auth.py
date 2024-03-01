@@ -17,7 +17,7 @@
 
 from typing import Any
 
-from flet_core import Image, Container, padding, alignment, Column, ScrollMode, colors, Row
+from flet_core import Image, Container, padding, alignment, Column, colors, Row
 from flet_manager.utils import get_svg
 
 from app.controls.information import Text
@@ -28,9 +28,12 @@ from app.utils import Fonts, Icons
 class AuthView(View):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+        self.del_answers = False
 
     async def go_back(self, _):
-        await self.client.change_view(go_back=True, with_restart=True, delete_current=True)
+        if self.del_answers:
+            del self.client.session.answers
+        await self.client.change_view(go_back=True)
 
     async def get_controls(
             self,
@@ -38,10 +41,11 @@ class AuthView(View):
             title: str = None,
             go_back: Any = False,
             with_expand: bool = False,
+            del_answers: bool = False,
     ) -> list:
 
         body_controls = []
-
+        self.del_answers = del_answers
         back_control = Container(
             content=Image(
                 src=Icons.BACK,

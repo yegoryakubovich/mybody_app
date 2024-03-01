@@ -95,6 +95,6 @@ class AccountTrainingExerciseCreateView(AdminBaseView):
                 rest=self.tf_rest.value,
             )
             await self.client.change_view(go_back=True, delete_current=True, with_restart=True)
-        except ApiException as e:
+        except ApiException as code:
             await self.set_type(loading=False)
-            return await self.client.session.error(error=e)
+            return await self.client.session.error(code=code)

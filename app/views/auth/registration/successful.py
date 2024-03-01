@@ -29,7 +29,7 @@ class RegistrationSuccessfulView(AuthView):
         self.client.session = Session(client=self.client)
         view = await self.client.session.init()
         await self.set_type(loading=False)
-        await self.client.change_view(view=view)
+        await self.client.change_view(view=view, delete_current=True)
 
     async def change_view(self, _):
         await self.set_type(loading=True)
@@ -48,7 +48,7 @@ class RegistrationSuccessfulView(AuthView):
 
         # Change view
         await self.set_type(loading=False)
-        await self.client.change_view(view=GenderSelectionView())
+        await self.client.change_view(view=GenderSelectionView(), delete_current=True)
 
     async def build(self):
         self.controls = await self.get_controls(

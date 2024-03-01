@@ -83,7 +83,7 @@ class ERIPView(AuthView):
 
     async def payment(self, _):
         from app import InitView
-        await self.client.change_view(view=InitView())
+        await self.client.change_view(view=InitView(), delete_current=True)
 
     async def copy_check(self, _):
         copy(self.tf_clipboard.value)

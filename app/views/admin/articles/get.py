@@ -116,9 +116,9 @@ class ArticleView(AdminBaseView):
                 id_=self.article_id,
             )
             await self.client.change_view(go_back=True, with_restart=True)
-        except ApiException as e:
+        except ApiException as code:
             await self.set_type(loading=False)
-            return await self.client.session.error(error=e)
+            return await self.client.session.error(code=code)
 
     async def change_visibility(self, _):
         await self.client.session.api.admin.articles.update(
