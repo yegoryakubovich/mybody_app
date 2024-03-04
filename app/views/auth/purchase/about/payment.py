@@ -17,7 +17,7 @@
 from functools import partial
 
 from flet_core import Container, Row, alignment, Image, MainAxisAlignment, TextButton, PopupMenuButton, \
-    PopupMenuItem, icons, Column
+    PopupMenuItem, icons, Column, border_radius
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -60,8 +60,10 @@ class PaymentView(AuthView):
                             ),
                         ]
                     ),
+                    border_radius=border_radius.all(6),
                     url=setting.url,
                     on_click=setting.on_click,
+                    ink=True,
                 )
                 for setting in payment
             ]
@@ -94,7 +96,7 @@ class PaymentView(AuthView):
                             content=Row(
                                 controls=[
                                     Text(
-                                        value='Выбор валюты',
+                                        value='Выберите валюту',
                                         font_family=Fonts.REGULAR,
                                         size=20,
                                     ),
@@ -139,7 +141,7 @@ class PaymentView(AuthView):
         await self.client.change_view(view=InitView(), delete_current=True)
 
     async def erip(self, _):
-        await self.client.change_view(view=ERIPView(), delete_current=True)
+        await self.client.change_view(view=ERIPView())
 
     async def logout(self, _):
         await self.client.session.set_cs(key='token', value=None)
