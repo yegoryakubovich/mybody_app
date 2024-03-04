@@ -23,6 +23,8 @@ def get_svg(icon_name):
 
 
 class Icons:
+    ERIP = get_svg('erip')
+    CARD = get_svg('card')
     NOT_FOUNT = get_svg('404')
     SUCCESSFUL = get_svg('successful')
     PHONE = get_svg('phone')

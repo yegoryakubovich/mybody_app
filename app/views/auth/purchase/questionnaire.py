@@ -16,9 +16,8 @@
 
 
 import json
-from typing import List
 
-from flet_core import Row, MainAxisAlignment
+from flet_core import Row, MainAxisAlignment, ScrollMode
 from flet_core.dropdown import Option
 
 from app.controls.button import FilledButton
@@ -38,7 +37,7 @@ class QuestionnaireView(AuthView):
     service_id_str: str
 
     def __init__(self, gender, dd_answers, tf_answers):
-        super().__init__()
+        super().__init__(scroll=ScrollMode.AUTO)
         self.gender = gender
         self.dd_answers = dd_answers
         self.tf_answers = tf_answers

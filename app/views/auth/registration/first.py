@@ -111,20 +111,8 @@ class RegistrationFirstView(AuthView):
         self.client.session.registration.username = self.tf_username.value
         self.client.session.registration.password = self.tf_password.value
 
-        currencies = await self.client.session.api.client.currencies.get_list()
-        countries = await self.client.session.api.client.countries.get_list()
-        timezones = await self.client.session.api.client.timezones.get_list()
-
         await self.set_type(loading=False)
-
-        await self.client.change_view(
-            view=RegistrationSecondView(
-                currencies=currencies,
-                countries=countries,
-                timezones=timezones,
-            ),
-        )
-        await self.update_async()
+        await self.client.change_view(view=RegistrationSecondView())
 
     async def go_authentication(self, _):
         from app.views.auth.authentication import AuthenticationView

@@ -14,8 +14,10 @@
 # limitations under the License.
 #
 
+from functools import partial
 
-from flet_core import Container, Column, Row, alignment, Image, MainAxisAlignment, TextButton
+from flet_core import Container, Row, alignment, Image, MainAxisAlignment, TextButton, PopupMenuButton, \
+    PopupMenuItem, icons, Column
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -27,32 +29,44 @@ from config import settings
 
 
 class PaymentView(AuthView):
+    currencies = list[dict]
+    advantages_container = Container()
+
     async def build(self):
-        payment = [
-            Setting(name='erip', icon=Icons.PRIVACY_POLICY, on_click=self.erip),
-            Setting(name='card', icon=Icons.SUPPORT, url=settings.url_payment_card)
-        ]
-        advantages = [
-            Row(
-                controls=[
-                    Container(
-                        content=Image(
-                            src=setting.icon,
-                            width=40,
-                            height=40,
-                        ),
-                        url=setting.url,
-                        on_click=setting.on_click,
+        await self.set_type(loading=True)
+        self.currencies = await self.client.session.api.client.currencies.get_list()
+        await self.set_type(loading=False)
+
+        async def on_currency_selected(currency, _):
+            payment = [
+                Setting(name='erip', icon=Icons.ERIP, on_click=self.erip),
+                Setting(name='card', icon=Icons.CARD, url=settings.url_payment_card)
+            ] if currency == 'byn' else [
+                Setting(name='card', icon=Icons.CARD, url=settings.url_payment_card)
+            ]
+            advantages = [
+                Container(
+                    content=Row(
+                        controls=[
+                            Image(
+                                src=setting.icon,
+                                width=40,
+                                height=40,
+                            ),
+                            Text(
+                                value=await self.client.session.gtv(key=setting.name),
+                                size=20,
+                                font_family=Fonts.REGULAR,
+                            ),
+                        ]
                     ),
-                    Text(
-                        value=await self.client.session.gtv(key=setting.name),
-                        size=20,
-                        font_family=Fonts.REGULAR,
-                    ),
-                ]
-            )
-            for setting in payment
-        ]
+                    url=setting.url,
+                    on_click=setting.on_click,
+                )
+                for setting in payment
+            ]
+            self.advantages_container.content = Column(controls=advantages)
+            await self.update_async()
 
         self.controls = await self.get_controls(
             with_expand=True,
@@ -74,12 +88,37 @@ class PaymentView(AuthView):
                     ],
                     alignment=MainAxisAlignment.SPACE_BETWEEN,
                 ),
-                Container(
-                    content=Column(
-                        controls=advantages,
-                    ),
-                    margin=20,
+                Row(
+                    controls=[
+                        Container(
+                            content=Row(
+                                controls=[
+                                    Text(
+                                        value='Выбор валюты',
+                                        font_family=Fonts.REGULAR,
+                                        size=20,
+                                    ),
+                                    Image(
+                                        src=Icons.NEXT,
+                                        width=20,
+                                        height=20,
+                                    ),
+                                ]
+                            )
+                        ),
+                        PopupMenuButton(
+                            icon=icons.CURRENCY_RUBLE,
+                            items=[
+                                PopupMenuItem(
+                                    text=currency['id_str'].upper(),
+                                    on_click=partial(on_currency_selected, currency['id_str'])
+                                )
+                                for currency in self.currencies
+                            ],
+                        ),
+                    ],
                 ),
+                self.advantages_container,
                 Container(
                     content=FilledButton(
                         content=Text(

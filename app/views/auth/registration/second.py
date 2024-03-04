@@ -26,61 +26,33 @@ from app.views.auth.registration.agreement import AgreementRegistrationView
 
 class RegistrationSecondView(AuthView):
     dd_country: Dropdown
-    dd_currency: Dropdown
-    dd_timezone: Dropdown
     tf_firstname: TextField
     tf_lastname: TextField
     tf_surname: TextField
+    countries = list[dict]
 
-    def __init__(self, countries, currencies, timezones, **kwargs):
-        self.countries = countries
-        self.currencies = currencies
-        self.timezones = timezones
+    def __init__(self, **kwargs):
         super().__init__(**kwargs, scroll=ScrollMode.AUTO)
 
     async def build(self):
+        self.countries = await self.client.session.api.client.countries.get_list()
+        print(self.countries)
         country_options = [
             Option(
-                text=await self.client.session.gtv(key=i.name_text),
-                key=i.id_str,
-            ) for i in self.countries
+                text=country.name,
+                key=country.id_str,
+            ) for country in self.countries
         ]
-        currency_options = [
-            Option(
-                text=i.id_str.upper(),
-                key=i.id_str,
-            ) for i in self.currencies
+        self.tf_firstname, self.tf_lastname, self.tf_surname = [
+            TextField(
+                label=await self.client.session.gtv(key=key),
+            )
+            for key in ['lastname', 'lastname', 'surname']
         ]
-        timezone_options = [
-            Option(
-                text=f'{i.id_str.title()} ({int(i.deviation/60):+} UTC)' if i.id_str != 'utc' else 'UTC',
-                key=i.id_str,
-            ) for i in self.timezones
-        ]
-
-        self.tf_firstname = TextField(
-            label=await self.client.session.gtv(key='firstname'),
-        )
-        self.tf_lastname = TextField(
-            label=await self.client.session.gtv(key='lastname'),
-        )
-        self.tf_surname = TextField(
-            label=await self.client.session.gtv(key='surname'),
-        )
         self.dd_country = Dropdown(
             label=await self.client.session.gtv(key='country'),
             options=country_options,
             value=country_options[0].key,
-        )
-        self.dd_currency = Dropdown(
-            label=await self.client.session.gtv(key='currency'),
-            options=currency_options,
-            value=currency_options[0].key,
-        )
-        self.dd_timezone = Dropdown(
-            label=await self.client.session.gtv(key='timezone'),
-            options=timezone_options,
-            value=timezone_options[0].key,
         )
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='registration_account_create_view_title'),
@@ -89,8 +61,6 @@ class RegistrationSecondView(AuthView):
                 self.tf_lastname,
                 self.tf_surname,
                 self.dd_country,
-                self.dd_currency,
-                self.dd_timezone,
                 FilledButton(
                     content=Text(
                         value=await self.client.session.gtv(key='next'),
@@ -112,11 +82,16 @@ class RegistrationSecondView(AuthView):
             self.tf_surname.error_text = await self.client.session.gtv(key='error_count_letter')
             await self.set_type(loading=False)
             await self.update_async()
+
+        country = await self.client.session.api.client.countries.get(
+            id_str=self.dd_country.value
+        )
+
         self.client.session.registration.firstname = self.tf_firstname.value
         self.client.session.registration.lastname = self.tf_lastname.value
         self.client.session.registration.surname = self.tf_surname.value
         self.client.session.registration.country = self.dd_country.value
-        self.client.session.registration.currency = self.dd_currency.value
-        self.client.session.registration.timezone = self.dd_timezone.value
+        self.client.session.registration.currency = country['currency']
+        self.client.session.registration.timezone = country['timezone']
         await self.set_type(loading=False)
         await self.client.change_view(view=AgreementRegistrationView(), delete_current=True)
