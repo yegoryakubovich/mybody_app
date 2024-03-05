@@ -58,8 +58,9 @@ class ArticleCreateView(AdminBaseView):
             article_id = await self.client.session.api.admin.articles.create(
                 name=self.tf_name.value,
             )
+            await self.client.session.get_text_pack
             await self.set_type(loading=False)
             await self.client.change_view(view=ArticleView(article_id=article_id), delete_current=True)
-        except ApiException as code:
+        except ApiException as exception:
             await self.set_type(loading=False)
-            return await self.client.session.error(code=code)
+            return await self.client.session.error(exception=exception)

@@ -168,9 +168,9 @@ class AccountMealListAllView(AdminBaseView):
                     )
             await self.set_type(loading=False)
             await self.restart()
-        except ApiException as code:
+        except ApiException as exception:
             await self.set_type(loading=False)
-            return await self.client.session.error(code=code)
+            return await self.client.session.error(exception=exception)
 
     async def meal_view(self, meal_date, _):
         await self.client.change_view(

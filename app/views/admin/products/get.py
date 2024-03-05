@@ -145,9 +145,11 @@ class ProductView(AdminBaseView):
         await self.client.change_view(go_back=True, with_restart=True)
 
     async def update_product(self, _):
+        await self.set_type(loading=True)
         fields = [(self.tf_fats, True), (self.tf_proteins, True), (self.tf_carbohydrates, True)]
         for field, check_int in fields:
             if not await Error.check_field(self, field, check_int):
+                await self.set_type(loading=False)
                 return
         try:
             await self.client.session.api.admin.products.update(
@@ -160,8 +162,10 @@ class ProductView(AdminBaseView):
                 calories=self.tf_calories.value or 0,
                 article_id=self.dd_articles.value or 0,
             )
+            await self.client.session.get_text_pack()
+            await self.set_type(loading=False)
             self.snack_bar.open = True
             await self.update_async()
-        except ApiException as code:
+        except ApiException as exception:
             await self.set_type(loading=False)
-            return await self.client.session.error(code=code)
+            return await self.client.session.error(exception=exception)

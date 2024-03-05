@@ -49,10 +49,11 @@ class Session:
         self.page = client.page
         self.account = None
 
-    async def error(self, code: ApiException):
+    async def error(self, exception: ApiException):
+        title = await self.client.session.gtv(key=f'error_{exception.code}')
         await self.bs_error.open_(
-            title=await self.client.session.gtv(key=f'error_{code}'),
-            icon=Icons.ERROR
+            title=title.format(**exception.kwargs),
+            icon=Icons.ERROR,
         )
 
     async def init_bs(self):

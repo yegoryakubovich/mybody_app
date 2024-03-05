@@ -33,11 +33,11 @@ class RegistrationSuccessfulView(AuthView):
 
     async def change_view(self, _):
         await self.set_type(loading=True)
-
         session = await self.client.session.api.client.sessions.create(
             username=self.client.session.registration.username,
             password=self.client.session.registration.password,
         )
+        await self.set_type(loading=False)
 
         # Get result, set in CS
         token = session.token

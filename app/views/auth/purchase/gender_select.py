@@ -33,9 +33,14 @@ class GenderSelectionView(AuthView):
         dd_answers = []
         tf_answers = []
         self.client.session.answers = {}
+        gender_list = {
+            await self.client.session.gtv(key='men'): 'Men',
+            await self.client.session.gtv(key='women'): 'Women',
+        }
+        gender_value = gender_list[self.dd_gender.value]
         await self.client.change_view(
             QuestionnaireView(
-                gender=self.dd_gender.value,
+                gender=gender_value,
                 dd_answers=dd_answers,
                 tf_answers=tf_answers,
             ),

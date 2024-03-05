@@ -77,8 +77,9 @@ class ExerciseCreateView(AdminBaseView):
                 type_=self.dd_exercise_type.value,
                 name=self.tf_name.value,
             )
+            await self.client.session.get_text_pack()
             await self.set_type(loading=False)
             await self.client.change_view(go_back=True, with_restart=True, delete_current=True)
-        except ApiException as code:
+        except ApiException as exception:
             await self.set_type(loading=False)
-            return await self.client.session.error(code=code)
+            return await self.client.session.error(exception=exception)

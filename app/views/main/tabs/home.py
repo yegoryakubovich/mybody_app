@@ -21,7 +21,7 @@ from typing import Any
 
 from flet_core import Column, Row, Container, MainAxisAlignment, Image, colors
 from mybody_api_client.utils import ApiException
-from pytz import timezone
+from pytz import timezone, FixedOffset
 
 from app.controls.button import ProductChipButton
 from app.controls.information import Text
@@ -131,7 +131,10 @@ class HomeTab(BaseTab):
     user_tz: timezone
 
     async def build(self):
-        self.user_tz = timezone(self.client.session.account.timezone)
+        deviation = await self.client.session.api.client.timezones.get(
+            id_str=self.client.session.account.timezone
+        )
+        self.user_tz = FixedOffset(deviation.deviation)
         self.date = datetime.now(self.user_tz).strftime('%Y-%m-%d')
         self.account_service_id = self.client.session.account_service.id
         self.meals = await self.client.session.api.client.meals.get_list(
@@ -185,7 +188,7 @@ class HomeTab(BaseTab):
             greeting_key = 'good_morning'
         elif 12 <= current_hour < 18:
             greeting_key = 'good_afternoon'
-        elif 18 <= current_hour < 22:
+        elif 18 <= current_hour < 23.59:
             greeting_key = 'good_evening'
         else:
             greeting_key = 'good_night'

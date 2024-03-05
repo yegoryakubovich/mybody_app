@@ -32,12 +32,12 @@ class Tab:
 
 TABS = [
     Tab(
-        name='Home',
+        name='tab_home',
         icon=Icons.PLAN,
         control=HomeTab,
     ),
     Tab(
-        name='Account',
+        name='tab_account',
         icon=Icons.ACCOUNT,
         control=AccountTab,
     ),
@@ -67,7 +67,7 @@ class MainView(View):
         self.body = ListView(expand=True, padding=padding.only(bottom=36))
         self.tabs = [
             BottomNavigationTab(
-                name=tab.name,
+                name=await self.client.session.gtv(key=tab.name),
                 icon=tab.icon,
                 control=tab.control,
             )

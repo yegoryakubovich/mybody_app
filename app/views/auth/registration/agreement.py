@@ -40,8 +40,8 @@ class AgreementRegistrationView(AuthView):
             timezone=self.client.session.registration.timezone,
             currency=self.client.session.registration.currency,
         )
-        await self.client.change_view(view=RegistrationSuccessfulView(), delete_current=True)
         await self.set_type(loading=False)
+        await self.client.change_view(view=RegistrationSuccessfulView(), delete_current=True)
 
     async def build(self):
         self.controls = await self.get_controls(

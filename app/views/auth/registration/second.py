@@ -35,8 +35,9 @@ class RegistrationSecondView(AuthView):
         super().__init__(**kwargs, scroll=ScrollMode.AUTO)
 
     async def build(self):
+        await self.set_type(loading=True)
         self.countries = await self.client.session.api.client.countries.get_list()
-        print(self.countries)
+        await self.set_type(loading=False)
         country_options = [
             Option(
                 text=country.name,

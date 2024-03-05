@@ -58,8 +58,9 @@ class RoleCreateView(AdminBaseView):
             role_id = await self.client.session.api.admin.roles.create(
                 name=self.tf_name.value,
             )
+            await self.client.session.get_text_pack()
             await self.set_type(loading=False)
             await self.client.change_view(view=RoleView(role_id=role_id), delete_current=True)
-        except ApiException as code:
+        except ApiException as exception:
             await self.set_type(loading=False)
-            return await self.client.session.error(code=code)
+            return await self.client.session.error(exception=exception)

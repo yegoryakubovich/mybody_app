@@ -43,9 +43,9 @@ class AuthenticationView(AuthView):
                 password=self.tf_password.value,
             )
             await self.set_type(loading=False)
-        except ApiException as code:
+        except ApiException as exception:
             await self.set_type(loading=False)
-            return await self.client.session.error(code=code)
+            return await self.client.session.error(exception=exception)
         
         # Get result, set in CS
         token = session.token
