@@ -115,3 +115,9 @@ class Session:
 
     async def gtv(self, key):
         return await self.get_text_value(key=key)
+
+    async def get_text_pack(self, language: str = None):
+        if not language:
+            language = self.language
+        self.text_pack = await self.api.client.texts.packs.get(language=language)
+        await self.set_cs(key='text_pack', value=self.text_pack)

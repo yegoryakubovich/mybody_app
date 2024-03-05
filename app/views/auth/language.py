@@ -32,10 +32,6 @@ class LanguageView(AuthView):
         super().__init__()
         self.is_go_back = go_back
 
-    async def get_text_pack(self, language: str):
-        self.client.session.text_pack = await self.client.session.api.client.texts.packs.get(language=language)
-        await self.client.session.set_cs(key='text_pack', value=self.client.session.text_pack)
-
     async def select(self, _):
         language = self.dropdown.value
 
@@ -46,12 +42,13 @@ class LanguageView(AuthView):
             return
 
         await self.client.session.set_cs(key='language', value=language)
+        await self.client.session.get_text_pack(language=language)
         from .init import InitView
         await self.client.change_view(view=InitView(), delete_current=True)
 
     async def build(self):
         self.languages = await self.client.session.api.client.languages.get_list()
-        await self.get_text_pack(language=settings.language_default)
+        await self.client.session.get_text_pack(language=settings.language_default)
 
         options = [
             Option(
