@@ -17,20 +17,13 @@
 
 from flet_core import Text, Image, Container, Column, alignment, MainAxisAlignment, CrossAxisAlignment
 
+from app import InitView
 from app.controls.button import FilledButton
 from app.controls.layout import AuthView
-from app.utils import Fonts, Session, Icons
-from app.views.auth.purchase import GenderSelectionView
+from app.utils import Fonts, Icons
 
 
 class RegistrationSuccessfulView(AuthView):
-    async def init(self, _):
-        await self.set_type(loading=True)
-        self.client.session = Session(client=self.client)
-        view = await self.client.session.init()
-        await self.set_type(loading=False)
-        await self.client.change_view(view=view, delete_current=True)
-
     async def change_view(self, _):
         await self.set_type(loading=True)
         session = await self.client.session.api.client.sessions.create(
@@ -48,7 +41,7 @@ class RegistrationSuccessfulView(AuthView):
 
         # Change view
         await self.set_type(loading=False)
-        await self.client.change_view(view=GenderSelectionView(), delete_current=True)
+        await self.client.change_view(view=InitView(), delete_current=True)
 
     async def build(self):
         self.controls = await self.get_controls(

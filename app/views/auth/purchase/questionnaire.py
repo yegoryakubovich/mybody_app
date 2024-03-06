@@ -140,6 +140,7 @@ class QuestionnaireView(AuthView):
 
         answers_json = json.dumps(answers, ensure_ascii=False)
         answers_json_strip = answers_json.strip()
+
         await self.client.session.api.client.accounts.services.create(
             service=self.services[0]['id_str'],
             answers=answers_json_strip,
