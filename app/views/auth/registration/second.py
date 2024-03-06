@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
 from flet_core import ScrollMode
 from flet_core.dropdown import Option
 
@@ -48,7 +49,7 @@ class RegistrationSecondView(AuthView):
             TextField(
                 label=await self.client.session.gtv(key=key),
             )
-            for key in ['lastname', 'lastname', 'surname']
+            for key in ['firstname', 'lastname', 'surname']
         ]
         self.dd_country = Dropdown(
             label=await self.client.session.gtv(key='country'),

@@ -32,8 +32,12 @@ class PaymentView(AuthView):
     payment_method = list[dict]
     advantages_container = Container()
 
+    def __init__(self, data):
+        super().__init__()
+        self.data = data
+
     async def build(self):
-        data = json.loads(self.client.session.payment.data)
+        data = json.loads(self.data)
         payment = [
             Setting(name='erip', icon=Icons.ERIP, on_click=self.erip),
             Setting(name='card', icon=Icons.CARD, url=data['payment_link'])

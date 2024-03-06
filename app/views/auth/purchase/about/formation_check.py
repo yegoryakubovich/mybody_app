@@ -62,5 +62,5 @@ class FormationCheckView(AuthView):
                 break
             await asyncio.sleep(5)
 
-        await self.client.change_view(view=PaymentView(), delete_current=True),
+        await self.client.change_view(view=PaymentView(data=payment.data), delete_current=True),
 

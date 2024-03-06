@@ -45,7 +45,7 @@ class QuestionnaireView(AuthView):
         await self.set_type(loading=True)
         self.services = await self.client.session.api.client.services.get_list()
         self.service = await self.client.session.api.client.services.get(
-            id_=self.services[0]['id_str'],
+            id_str=self.services[0]['id_str'],
         )
         await self.set_type(loading=False)
         titles = json.loads(self.service.questions)
@@ -138,10 +138,12 @@ class QuestionnaireView(AuthView):
                 answers[key] = 'no answers'
 
         answers_json = json.dumps(answers, ensure_ascii=False)
-        await self.client.session.api.client.accounts.services.create(
+
+        account_service = await self.client.session.api.client.accounts.services.create(
             service=self.services[0]['id_str'],
             answers=answers_json,
         )
+        self.client.session.account_service = account_service
         await self.client.change_view(view=PurchaseFirstView(), delete_current=True)
 
     async def next_page(self, _):

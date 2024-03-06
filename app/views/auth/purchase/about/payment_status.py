@@ -40,10 +40,13 @@ class PaymentStatusView(AuthView):
                                 ),
                                 alignment=alignment.center
                             ),
-                            Text(
-                                value=await self.client.session.gtv(key='checking_status_payment'),
-                                size=20,
-                                font_family=Fonts.REGULAR,
+                            Container(
+                                Text(
+                                    value=await self.client.session.gtv(key='checking_status_payment'),
+                                    size=20,
+                                    font_family=Fonts.REGULAR,
+                                ),
+                                alignment=alignment.center
                             ),
                         ],
                         alignment=MainAxisAlignment.CENTER,

@@ -54,6 +54,7 @@ class PromotionalCodeView(AuthView):
         service_cost_id = await self.client.session.api.client.services.costs.get_list(
             service='mybody'
         )
+
         try:
             payment_id = await self.client.session.api.client.payments.create(
                 account_service_id=self.client.session.account_service.id,

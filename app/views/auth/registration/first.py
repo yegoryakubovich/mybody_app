@@ -22,7 +22,7 @@ from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField
 from app.controls.layout import AuthView
-from app.utils import Fonts
+from app.utils import Fonts, Error
 from app.utils.registration import Registration
 from app.views.auth.registration.second import RegistrationSecondView
 
@@ -89,22 +89,22 @@ class RegistrationFirstView(AuthView):
 
     async def change_view(self, _):
         await self.set_type(loading=True)
-
+        fields = [(self.tf_username, 6, 32), (self.tf_password, 7, 32)]
+        for field, min_len, max_len in fields:
+            if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
+                await self.set_type(loading=False)
+                return
         try:
             await self.client.session.api.client.accounts.check_username(username=self.tf_username.value)
-        except ApiException as e:
-            self.tf_username.error_text = e.message
-            await self.update_async()
+        except ApiException as exception:
             await self.set_type(loading=False)
-            return
+            return await self.client.session.error(exception=exception)
 
         try:
             await self.client.session.api.client.accounts.check_password(password=self.tf_password.value)
-        except ApiException as e:
-            self.tf_password.error_text = e.message
-            await self.update_async()
+        except ApiException as exception:
             await self.set_type(loading=False)
-            return
+            return await self.client.session.error(exception=exception)
 
         # Save in Registration
         self.client.session.registration = Registration()
