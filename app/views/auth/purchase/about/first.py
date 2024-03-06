@@ -15,15 +15,14 @@
 #
 
 
-import asyncio
-
-from flet_core import Container, Column, alignment, Row, Image, ProgressRing, MainAxisAlignment
+from flet_core import Container, Column, alignment, Row, Image
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.layout import AuthView
 from app.utils import Fonts, Icons
 from app.views.auth.purchase.about.payment import PaymentView
+from app.views.auth.purchase.about.payment_method import PaymentMethodView
 
 
 class PurchaseFirstView(AuthView):
@@ -44,8 +43,8 @@ class PurchaseFirstView(AuthView):
                             size=18,
                             font_family=Fonts.SEMIBOLD,
                         ),
-                    )
-                ]
+                    ),
+                ],
             )
             for i in range(5)
         ]
@@ -69,33 +68,8 @@ class PurchaseFirstView(AuthView):
                     expand=True,
                     alignment=alignment.bottom_center,
                 ),
-            ]
+            ],
         )
 
     async def change_view(self, _):
-        progress_ring = ProgressRing(
-            height=20,
-            width=20,
-        )
-        self.controls.clear()
-        self.controls = await self.get_controls(
-            controls=[
-                Container(
-                    content=Row(
-                        controls=[
-                            progress_ring,
-                            Text(
-                                value=await self.client.session.gtv(key='expose_check'),
-                                size=20,
-                                font_family=Fonts.REGULAR,
-                            ),
-                        ],
-                        alignment=MainAxisAlignment.CENTER,
-                    ),
-                    padding=50
-                ),
-            ],
-        )
-        await self.update_async()
-        await asyncio.sleep(1)
-        await self.client.change_view(view=PaymentView(), delete_current=True)
+        await self.client.change_view(view=PaymentMethodView(), delete_current=True)
