@@ -18,9 +18,12 @@
 from app.controls.input import Dropdown
 from app.controls.layout import AuthView
 from app.utils import Session
+from app.utils.payment import Payment
 from app.views.auth.authentication import AuthenticationView
 from app.views.auth.language import LanguageView
 from app.views.auth.purchase import GenderSelectionView
+from app.views.auth.purchase.about import PaymentView, PurchaseFirstView
+from app.views.auth.purchase.about.formation_check import FormationCheckView
 from app.views.main import MainView
 from config import settings
 
@@ -59,5 +62,37 @@ class InitView(AuthView):
         else:
             await self.client.change_view(view=GenderSelectionView(), delete_current=True)
             return
+
+        if not self.client.session.language:
+            await self.client.change_view(view=LanguageView(), delete_current=True)
+            return
+
+        payments = await self.client.session.api.client.payments.get_list(
+            account_service_id=account_service.account_id
+        )
+        if not payments:
+            await self.client.change_view(view=PurchaseFirstView(), delete_current=True)
+            return
+        else:
+            for payment in payments:
+                if payment.state == 'waiting':
+                    self.client.session.payment = Payment()
+                    self.client.session.payment.currency = payment.service_cost.currency
+                    self.client.session.payment.payment_id = payment.id
+                    self.client.session.payment.data = payment.data
+                    await self.client.change_view(view=PaymentView(), delete_current=True)
+                    return
+                elif payment.state == 'creating':
+                    self.client.session.payment = Payment()
+                    self.client.session.payment.payment_id = payment.id
+                    await self.client.change_view(view=FormationCheckView(), delete_current=True)
+                    return
+                elif payment.state == 'paid':
+                    self.client.session.payment = {}
+                    await self.client.change_view(view=MainView())
+                    return
+                else:
+                    await self.client.change_view(view=PurchaseFirstView(), delete_current=True)
+                    return
 
         await self.client.change_view(view=MainView())

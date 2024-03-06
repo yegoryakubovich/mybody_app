@@ -25,17 +25,18 @@ class FAQView(ClientBaseView):
     route = '/client/FAQ/'
 
     async def build(self):
-        self.scroll = ScrollMode.AUTO
-        questions_answers = {
-            await self.client.session.gtv(key='faq_question_1'):
-                await self.client.session.gtv(key='faq_answer_1'),
-            await self.client.session.gtv(key='faq_question_2'):
-                await self.client.session.gtv(key='faq_answer_2'),
-            await self.client.session.gtv(key='faq_question_3'):
-                await self.client.session.gtv(key='faq_answer_3'),
-            await self.client.session.gtv(key='faq_question_4'):
-                await self.client.session.gtv(key='faq_answer_4'),
-        }
+        questions_answers = {}
+        i = 1
+        while True:
+            try:
+                question_key = f'faq_question_{i}'
+                answer_key = f'faq_answer_{i}'
+                question = await self.client.session.gtv(key=question_key)
+                answer = await self.client.session.gtv(key=answer_key)
+                questions_answers[question] = answer
+                i += 1
+            except Exception:
+                break
         expansion_panels = [
             ExpansionPanel(
                 header=ListTile(
@@ -48,6 +49,8 @@ class FAQView(ClientBaseView):
             )
             for question, answer in questions_answers.items()
         ]
+
+        self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
             title='FAQ',
             main_section_controls=[

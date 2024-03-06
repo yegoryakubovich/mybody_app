@@ -48,7 +48,7 @@ class AccountQuestionnaireGetView(AdminBaseView):
                 key = question['key']
                 answer = answers.get(key, '')
                 question_text = Text(
-                    value=await self.client.session.gtv(key=question['name_text']),
+                    value=await self.client.session.gtv(key=question['name']),
                     size=16,
                     font_family=Fonts.SEMIBOLD,
                 )

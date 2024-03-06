@@ -21,7 +21,7 @@ from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import Dropdown
 from app.controls.layout import AuthView
-from app.views.auth.purchase.about.promotional_code import PromotionalCodeView
+from app.views.auth.purchase.about.payment_method_by_currency import PaymentMethodByCurrencyView
 
 
 class PymentMethodSelectCurrencyView(AuthView):
@@ -61,8 +61,5 @@ class PymentMethodSelectCurrencyView(AuthView):
         )
 
     async def change_view(self, _):
-        await self.client.change_view(view=PromotionalCodeView(
-            currency=self.dd_currencies.value,
-        ),
-            delete_current=True,
-        )
+        self.client.session.payment.currency = self.dd_currencies.value
+        await self.client.change_view(view=PaymentMethodByCurrencyView(), delete_current=True)

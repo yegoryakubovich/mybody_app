@@ -48,9 +48,9 @@ class AccountView(AdminBaseView):
         self.services = await self.client.session.api.admin.accounts.services.get_list(
             account_id=self.account_id,
         )
+        print(self.services)
         await self.set_type(loading=False)
 
-        # FIXME
         surname = self.account['surname'] if self.account['surname'] else await self.client.session.gtv(key='absent')
 
         self.clipboard_text_field = TextField(
@@ -157,7 +157,7 @@ class AccountView(AdminBaseView):
                             ],
                             on_click=partial(self.service_view, service['id']),
                         )
-                        for service in self.services
+                        for service in self.services if service['state'] == 'ACTIVE'
                     ],
                 ),
             ],

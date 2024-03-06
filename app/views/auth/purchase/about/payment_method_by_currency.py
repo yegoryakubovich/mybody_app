@@ -26,22 +26,16 @@ from app.views.auth.purchase.about.promotional_code import PromotionalCodeView
 
 class PaymentMethodByCurrencyView(AuthView):
     payment_methods: list[dict]
-    currency_default: str
     dd_currencies: Dropdown
-
-    def __init__(self, currency):
-        super().__init__()
-        self.currency = currency
 
     async def build(self):
         await self.set_type(loading=True)
         self.payment_methods = await self.client.session.api.client.payments.methods.get_list_by_currency(
-            currency=self.currency
+            currency=self.client.session.payment.currency
         )
         await self.set_type(loading=False)
 
         self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='payment'),
             controls=[
                 Container(
                     content=Column(
@@ -62,11 +56,7 @@ class PaymentMethodByCurrencyView(AuthView):
             ],
         )
 
-    async def change_view(self, payment_method_id, payment_method_currency_id, _):
-        await self.client.change_view(view=PromotionalCodeView(
-            currency=self.currency,
-            payment_method=payment_method_id,
-            payment_method_currency_id=payment_method_currency_id,
-        ),
-            delete_current=True,
-        )
+    async def change_view(self, payment_method, payment_method_currency_id, _):
+        self.client.session.payment.payment_method = payment_method
+        self.client.session.payment.payment_method_currency_id = payment_method_currency_id
+        await self.client.change_view(view=PromotionalCodeView(), delete_current=True)

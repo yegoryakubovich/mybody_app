@@ -23,6 +23,7 @@ from mybody_api_client import MyBodyApiClient
 from mybody_api_client.utils import ApiException
 
 from app.utils import Icons
+from app.utils.payment import Payment
 from app.utils.registration import Registration
 from config import settings
 
@@ -37,6 +38,7 @@ class Session:
     text_pack: dict | None
     api: MyBodyApiClient
     registration: Registration
+    payment: Payment
     account_service: Any
     bs_error: Any
     bs_info: Any

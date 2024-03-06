@@ -28,7 +28,7 @@ from app.views.auth.purchase.about.payment_method_select_currency import PymentM
 
 class PaymentMethodView(AuthView):
     currencies: list
-    currency_default: str
+    currency: str
     dd_currencies: Dropdown
 
     async def build(self):
@@ -37,15 +37,15 @@ class PaymentMethodView(AuthView):
         await self.set_type(loading=False)
 
         if self.client.session.account.currency in self.currencies:
-            self.currency_default = self.client.session.account.currency
+            self.currency = self.client.session.account.currency
         else:
-            self.currency_default = 'byn'
+            self.currency = 'byn'
 
         self.controls = await self.get_controls(
             controls=[
                 Text(
                     value=await self.client.session.gtv(
-                        key='convenient_pay') + ' ' + self.currency_default.upper() + '?',
+                        key='convenient_pay') + ' ' + self.currency.upper() + '?',
                     size=30,
                     font_family=Fonts.SEMIBOLD
                 ),
@@ -73,11 +73,8 @@ class PaymentMethodView(AuthView):
         )
 
     async def change_view(self, _):
-        await self.client.change_view(view=PaymentMethodByCurrencyView(
-            currency=self.currency_default,
-        ),
-            delete_current=True,
-        )
+        self.client.session.payment.currency = self.currency
+        await self.client.change_view(view=PaymentMethodByCurrencyView(), delete_current=True,)
 
     async def select_currency(self, _):
         await self.client.change_view(view=PymentMethodSelectCurrencyView(), delete_current=True)

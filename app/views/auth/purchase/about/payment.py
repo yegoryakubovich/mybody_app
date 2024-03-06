@@ -14,6 +14,9 @@
 # limitations under the License.
 #
 
+
+import json
+
 from flet_core import Container, Row, alignment, Image, MainAxisAlignment, TextButton, Column, border_radius, margin
 
 from app.controls.button import FilledButton
@@ -21,28 +24,21 @@ from app.controls.information import Text
 from app.controls.layout import AuthView
 from app.utils import Fonts, Icons
 from app.views.auth.purchase.about.erip import ERIPView
+from app.views.auth.purchase.about.payment_status import PaymentStatusView
 from app.views.main.tabs.account import Setting
-from config import settings
 
 
 class PaymentView(AuthView):
     payment_method = list[dict]
     advantages_container = Container()
 
-    def __init__(self, currency):
-        super().__init__()
-        self.currency = currency
-
     async def build(self):
-        await self.set_type(loading=True)
-        self.payment_method = await self.client.session.api.client.currencies.get_list()
-        await self.set_type(loading=False)
-
+        data = json.loads(self.client.session.payment.data)
         payment = [
             Setting(name='erip', icon=Icons.ERIP, on_click=self.erip),
-            Setting(name='card', icon=Icons.CARD, url=settings.url_payment_card)
-        ] if self.currency == 'byn' else [
-            Setting(name='card', icon=Icons.CARD, url=settings.url_payment_card)
+            Setting(name='card', icon=Icons.CARD, url=data['payment_link'])
+        ] if self.client.session.payment.currency == 'byn' else [
+            Setting(name='card', icon=Icons.CARD, url=data['payment_link'])
         ]
         advantages = [
             Container(
@@ -100,7 +96,7 @@ class PaymentView(AuthView):
                             size=16,
                         ),
                         width=640,
-                        on_click=self.change_view,
+                        on_click=self.payment,
                     ),
                     expand=True,
                     alignment=alignment.bottom_center,
@@ -108,9 +104,8 @@ class PaymentView(AuthView):
             ],
         )
 
-    async def change_view(self, _):
-        from app import InitView
-        await self.client.change_view(view=InitView(), delete_current=True)
+    async def payment(self, _):
+        await self.client.change_view(view=PaymentStatusView(), delete_current=True)
 
     async def erip(self, _):
         await self.client.change_view(view=ERIPView())

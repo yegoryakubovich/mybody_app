@@ -15,6 +15,8 @@
 #
 
 
+import json
+
 from flet_core import Container, Row, colors, Image, margin, alignment
 from pyperclip import copy
 
@@ -23,16 +25,17 @@ from app.controls.information import Text
 from app.controls.input import TextField
 from app.controls.layout import AuthView
 from app.utils import Fonts, Icons
+from app.views.auth.purchase.about.payment_status import PaymentStatusView
 
 
 class ERIPView(AuthView):
     tf_clipboard: TextField
 
     async def build(self):
+        data = json.loads(self.client.session.payment.data)
         self.tf_clipboard = TextField(
             label=await self.client.session.gtv(key='check_number'),
-            value='a',
-            height=50,
+            value=data['erip_id'],
             color=colors.ON_BACKGROUND,
         )
 
@@ -82,8 +85,7 @@ class ERIPView(AuthView):
         )
 
     async def payment(self, _):
-        from app import InitView
-        await self.client.change_view(view=InitView(), delete_current=True)
+        await self.client.change_view(view=PaymentStatusView(), delete_current=True)
 
     async def copy_check(self, _):
         copy(self.tf_clipboard.value)

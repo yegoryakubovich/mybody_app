@@ -21,6 +21,7 @@ from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.layout import AuthView
 from app.utils import Fonts, Icons
+from app.utils.payment import Payment
 from app.views.auth.purchase.about.payment import PaymentView
 from app.views.auth.purchase.about.payment_method import PaymentMethodView
 
@@ -72,4 +73,5 @@ class PurchaseFirstView(AuthView):
         )
 
     async def change_view(self, _):
+        self.client.session.payment = Payment()
         await self.client.change_view(view=PaymentMethodView(), delete_current=True)

@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
 from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
@@ -20,16 +21,11 @@ from app.controls.information import Text
 from app.controls.input import TextField
 from app.controls.layout import AuthView
 from app.utils import Fonts
+from app.views.auth.purchase.about.formation_check import FormationCheckView
 
 
 class PromotionalCodeView(AuthView):
     tf_promotional_code: TextField
-
-    def __init__(self, currency, payment_method, payment_method_currency_id):
-        super().__init__()
-        self.currency = currency
-        self.payment_method = payment_method
-        self.payment_method_currency_id = payment_method_currency_id
 
     async def build(self):
         self.tf_promotional_code = TextField(
@@ -59,15 +55,16 @@ class PromotionalCodeView(AuthView):
             service='mybody'
         )
         try:
-            check = await self.client.session.api.client.payments.create(
+            payment_id = await self.client.session.api.client.payments.create(
                 account_service_id=self.client.session.account_service.id,
                 service_cost_id=service_cost_id[0]['id'],
-                payment_method=self.payment_method,
-                payment_method_currency_id=1,
+                payment_method=self.client.session.payment.payment_method,
+                payment_method_currency_id=self.client.session.payment.payment_method_currency_id,
                 promo_code=self.tf_promotional_code.value or None,
             )
-            print(check)
-            await self.set_type(loading=True)
+            self.client.session.payment.payment_id = payment_id
+            await self.set_type(loading=False)
+            await self.client.change_view(view=FormationCheckView(), delete_current=True )
         except ApiException as exception:
             await self.set_type(loading=False)
             return await self.client.session.error(exception=exception)
