@@ -26,7 +26,7 @@ from pytz import timezone, FixedOffset
 from app.controls.button import ProductChipButton
 from app.controls.information import Text
 from app.utils import Fonts, Icons
-from app.views.client.meal import MealView
+from app.views.client.meal import MealView, MealWeekView
 from app.views.client.training.get import TrainingView
 from app.views.main.tabs.base import BaseTab
 from config import settings
@@ -311,8 +311,7 @@ class HomeTab(BaseTab):
         )
 
     async def meal_week_view(self, _):
-        from app.views.auth.purchase.about import PurchaseFirstView
-        await self.client.change_view(view=PurchaseFirstView())
+        await self.client.change_view(view=MealWeekView(account_service_id=self.account_service_id))
 
     async def meal_view(self, meal_id, _):
         await self.client.change_view(view=MealView(meal_id=meal_id))
