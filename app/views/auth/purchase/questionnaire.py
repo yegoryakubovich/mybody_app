@@ -26,6 +26,7 @@ from app.controls.layout import AuthView
 from app.controls.navigation.pagination import PaginationWidget
 from app.utils import Fonts, Error
 from app.views.auth.purchase.about import PurchaseFirstView
+from config import settings
 
 
 class QuestionnaireView(AuthView):
@@ -138,11 +139,16 @@ class QuestionnaireView(AuthView):
                 answers[key] = 'no answers'
 
         answers_json = json.dumps(answers, ensure_ascii=False)
-
-        account_service = await self.client.session.api.client.accounts.services.create(
+        answers_json_strip = answers_json.strip()
+        await self.client.session.api.client.accounts.services.create(
             service=self.services[0]['id_str'],
-            answers=answers_json,
+            answers=answers_json_strip,
         )
+        account_services = await self.client.session.api.client.accounts.services.get_list()
+        account_service = None
+        for as_ in account_services:
+            if as_.service_id == settings.service_id:
+                account_service = as_
         self.client.session.account_service = account_service
         await self.client.change_view(view=PurchaseFirstView(), delete_current=True)
 

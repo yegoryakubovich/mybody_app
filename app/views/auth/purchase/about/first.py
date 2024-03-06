@@ -22,7 +22,6 @@ from app.controls.information import Text
 from app.controls.layout import AuthView
 from app.utils import Fonts, Icons
 from app.utils.payment import Payment
-from app.views.auth.purchase.about.payment import PaymentView
 from app.views.auth.purchase.about.payment_method import PaymentMethodView
 
 
