@@ -1,6 +1,6 @@
 uvicorn==0.27.0.post1
 flet_manager==0.3.11
-mybody_api_client==0.5.7
+mybody_api_client==0.5.8
 pydantic_settings==2.1.0
 pytz
 pyperclip
