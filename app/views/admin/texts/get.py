@@ -17,7 +17,7 @@
 
 from functools import partial
 
-from flet_core import Row, Column, ScrollMode
+from flet_core import Row, Column, ScrollMode, colors
 from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
@@ -102,11 +102,13 @@ class TextView(AdminBaseView):
                                     value=language['language'],
                                     size=15,
                                     font_family=Fonts.REGULAR,
+                                    color=colors.ON_PRIMARY,
                                 ),
                                 Text(
                                     value=language['value'],
                                     size=10,
                                     font_family=Fonts.MEDIUM,
+                                    color=colors.ON_PRIMARY,
                                 ),
                             ],
                             on_click=partial(self.translation_view, language),

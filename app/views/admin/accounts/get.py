@@ -64,7 +64,6 @@ class AccountView(AdminBaseView):
             focused_border_color=colors.PRIMARY_CONTAINER,
             border_color=colors.PRIMARY_CONTAINER,
             read_only=True,
-
         )
 
         self.clipboard = Container(

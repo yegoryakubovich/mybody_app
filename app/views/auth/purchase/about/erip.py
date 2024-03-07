@@ -36,6 +36,7 @@ class ERIPView(AuthView):
             label=await self.client.session.gtv(key='check_number'),
             value=data['erip_id'],
             color=colors.ON_BACKGROUND,
+            read_only=True,
         )
 
         self.controls = await self.get_controls(

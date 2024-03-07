@@ -17,7 +17,7 @@
 
 from functools import partial
 
-from flet_core import ScrollMode
+from flet_core import ScrollMode, colors
 
 from app.controls.information import Text
 from app.controls.information.card import Card
@@ -59,6 +59,7 @@ class AccountMealListView(AdminBaseView):
                             value=await self.client.session.gtv(key=meal['type']),
                             size=18,
                             font_family=Fonts.SEMIBOLD,
+                            color=colors.ON_PRIMARY,
                         ),
                     ],
                     on_click=partial(self.meal_view, meal['id']),

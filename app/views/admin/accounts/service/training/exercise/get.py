@@ -58,7 +58,7 @@ class AccountTrainingExerciseView(AdminBaseView):
             ) for exercise in self.exercises
         ]
         self.dd_exercise = Dropdown(
-            label=await self.client.session.gtv(key='exercise'),
+            label=await self.client.session.gtv(key='exercises'),
             value=self.exercise['training_exercise']['exercise'],
             options=exercise_options,
         )
@@ -67,7 +67,7 @@ class AccountTrainingExerciseView(AdminBaseView):
                 label=await self.client.session.gtv(key=key),
                 value=self.exercise['training_exercise'][key],
             )
-            for key in ['priority', 'value', 'rest']
+            for key in ['priority', 'quantity', 'rest']
         ]
 
         self.controls = await self.get_controls(

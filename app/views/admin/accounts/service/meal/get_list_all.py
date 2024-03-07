@@ -18,7 +18,7 @@
 from collections import defaultdict
 from functools import partial
 
-from flet_core import ScrollMode, Row, Container, Image, MainAxisAlignment, AlertDialog, TextButton
+from flet_core import ScrollMode, Row, Container, Image, MainAxisAlignment, AlertDialog, TextButton, colors
 from mybody_api_client.utils import ApiException
 
 from app.controls.information import Text
@@ -102,6 +102,7 @@ class AccountMealListAllView(AdminBaseView):
                                     value=date,
                                     size=18,
                                     font_family=Fonts.SEMIBOLD,
+                                    color=colors.ON_PRIMARY,
                                 ),
                                 Container(
                                     content=Row(
@@ -109,20 +110,21 @@ class AccountMealListAllView(AdminBaseView):
                                             Image(
                                                 src=Icons.CREATE,
                                                 height=10,
-                                                color='#FFFFFF',
+                                                color=colors.ON_BACKGROUND,
                                             ),
                                             Text(
                                                 value=await self.client.session.gtv(key='create_duplicate'),
                                                 size=13,
                                                 font_family=Fonts.SEMIBOLD,
-                                                color='#FFFFFF',
+                                                color=colors.ON_BACKGROUND,
+                                                no_wrap=False,
                                             ),
                                         ],
                                         spacing=4,
                                     ),
                                     padding=7,
                                     border_radius=24,
-                                    bgcolor='#008F12',
+                                    bgcolor=colors.BACKGROUND,
                                     on_click=partial(self.open_dlg, date),
                                 ),
                             ],

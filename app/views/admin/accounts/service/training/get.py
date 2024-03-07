@@ -17,7 +17,7 @@
 
 from functools import partial
 
-from flet_core import Row
+from flet_core import Row, colors
 from flet_core.dropdown import Dropdown
 from mybody_api_client.utils import ApiException
 
@@ -111,6 +111,7 @@ class AccountTrainingView(AdminBaseView):
                                     value=await self.client.session.gtv(key=exercise['name_text']),
                                     size=18,
                                     font_family=Fonts.SEMIBOLD,
+                                    color=colors.ON_PRIMARY,
                                 ),
                             ],
                             on_click=partial(self.exercise_view, exercise),

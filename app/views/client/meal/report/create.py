@@ -71,7 +71,7 @@ class MealReportView(ClientBaseView):
             on_change=self.save_user_comment,
         )
         self.dd_product = Dropdown(
-            label=await self.client.session.gtv(key='product'),
+            label=await self.client.session.gtv(key='products'),
             value=product_options[0].key,
             options=product_options,
         )
@@ -287,13 +287,16 @@ class MealReportView(ClientBaseView):
 
     async def create_report(self, _):
         await self.set_type(loading=True)
-        product_list = [{"id": product[0]['id'], "value": int(product[1])} for product in self.added_products]
-        product_list_json = json.dumps(product_list, ensure_ascii=False)
+        if len(self.added_products) > 0:
+            product_list = [{"id": product[0]['id'], "value": int(product[1])} for product in self.added_products]
+            product_list_json = json.dumps(product_list, ensure_ascii=False)
+        else:
+            product_list_json = None
         try:
             id_meal_report = await self.client.session.api.client.meals.reports.create(
                 meal_id=self.meal_id,
                 comment=self.tf_comment.value or None,
-                products=product_list_json or None,
+                products=product_list_json,
             )
             if self.data_io:
                 await self.client.session.api.client.images.create(

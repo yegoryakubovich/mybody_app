@@ -17,7 +17,7 @@
 
 from functools import partial
 
-from flet_core import ScrollMode, AlertDialog, Row, Container, Image, MainAxisAlignment, TextButton
+from flet_core import ScrollMode, AlertDialog, Row, Container, Image, MainAxisAlignment, TextButton, colors
 from mybody_api_client.utils import ApiException
 
 from app.controls.information import Text
@@ -48,7 +48,6 @@ class AccountTrainingListView(AdminBaseView):
         await self.set_type(loading=True)
         self.trainings = await self.client.session.api.admin.trainings.get_list(
             account_service_id=self.account_service_id,
-            date=self.date,
         )
         await self.set_type(loading=False)
 
@@ -94,6 +93,7 @@ class AccountTrainingListView(AdminBaseView):
                                     value=training['date'],
                                     size=18,
                                     font_family=Fonts.SEMIBOLD,
+                                    color=colors.ON_PRIMARY,
                                 ),
                                 Container(
                                     content=Row(
@@ -101,20 +101,20 @@ class AccountTrainingListView(AdminBaseView):
                                             Image(
                                                 src=Icons.CREATE,
                                                 height=10,
-                                                color='#FFFFFF',
+                                                color=colors.ON_BACKGROUND,
                                             ),
                                             Text(
                                                 value=await self.client.session.gtv(key='create_duplicate'),
                                                 size=13,
                                                 font_family=Fonts.SEMIBOLD,
-                                                color='#FFFFFF',
+                                                color=colors.ON_BACKGROUND,
                                             ),
                                         ],
                                         spacing=4,
                                     ),
                                     padding=7,
                                     border_radius=24,
-                                    bgcolor='#008F12',
+                                    bgcolor=colors.BACKGROUND,
                                     on_click=partial(self.open_dlg, training['date']),
                                 ),
                             ],

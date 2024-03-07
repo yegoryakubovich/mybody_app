@@ -18,7 +18,7 @@
 from functools import partial
 import json
 
-from flet_core import Row, ScrollMode
+from flet_core import Row, ScrollMode, colors
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -43,7 +43,7 @@ class ServiceView(AdminBaseView):
     async def build(self):
         await self.set_type(loading=True)
         self.service = await self.client.session.api.client.services.get(
-            id_=self.service_id_str
+            id_str=self.service_id_str
         )
         questions = json.loads(self.service["questions"])
         await self.set_type(loading=False)
@@ -81,9 +81,10 @@ class ServiceView(AdminBaseView):
                         Card(
                             controls=[
                                 Text(
-                                    value=question['title_text'],
+                                    value=question['title'],
                                     size=15,
                                     font_family=Fonts.REGULAR,
+                                    color=colors.ON_PRIMARY,
                                 ),
                             ],
                             on_click=partial(self.question_view, question),

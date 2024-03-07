@@ -17,7 +17,7 @@
 
 from functools import partial
 
-from flet_core import ScrollMode
+from flet_core import ScrollMode, colors
 
 from app.controls.information import Text
 from app.controls.information.card import Card
@@ -55,11 +55,13 @@ class TextListView(AdminBaseView):
                             value=await self.client.session.gtv(key=text['key']),
                             size=18,
                             font_family=Fonts.SEMIBOLD,
+                            color=colors.ON_PRIMARY,
                         ),
                         Text(
                             value=text['key'],
                             size=10,
                             font_family=Fonts.MEDIUM,
+                            color=colors.ON_PRIMARY,
                         ),
                     ],
                     on_click=partial(self.text_view, text['key']),

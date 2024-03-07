@@ -17,7 +17,7 @@
 
 from functools import partial
 
-from flet_core import Row, ScrollMode
+from flet_core import Row, ScrollMode, colors
 from flet_core.dropdown import Option, Dropdown
 from mybody_api_client.utils import ApiException
 
@@ -143,6 +143,7 @@ class AccountMealView(AdminBaseView):
                                     value=await self.client.session.gtv(key=product['name_text']),
                                     size=18,
                                     font_family=Fonts.SEMIBOLD,
+                                    color=colors.ON_PRIMARY,
                                 ),
                             ],
                             on_click=partial(

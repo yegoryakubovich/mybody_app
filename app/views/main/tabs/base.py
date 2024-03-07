@@ -15,7 +15,7 @@
 #
 
 
-from flet_core import Column
+from flet_core import Column, colors
 from flet_manager.utils import Client
 
 from app.controls.information.loading import Loading
@@ -40,7 +40,7 @@ class BaseTab(Column):
         if loading:
             self.controls_last = self.controls
             self.controls = [
-                Loading(infinity=True, color='#008F12'),
+                Loading(infinity=True, color=colors.PRIMARY),
             ]
             await self.update_async()
         else:

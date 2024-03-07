@@ -17,7 +17,7 @@
 
 from functools import partial
 
-from flet_core import Row, ScrollMode, PopupMenuButton, PopupMenuItem, IconButton, icons
+from flet_core import Row, ScrollMode, PopupMenuButton, PopupMenuItem, IconButton, icons, colors
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -77,7 +77,8 @@ class ServiceQuestionView(AdminBaseView):
                                 ),
                                 IconButton(
                                     icon=icons.DELETE,
-                                    on_click=partial(self.remove_textfield, question)
+                                    on_click=partial(self.remove_textfield, question),
+                                    icon_color=colors.ON_BACKGROUND,
                                 ),
                             ],
                         )
@@ -88,7 +89,8 @@ class ServiceQuestionView(AdminBaseView):
                                      tf,
                                      IconButton(
                                          icon=icons.DELETE,
-                                         on_click=partial(self.remove_textfield, tf)
+                                         on_click=partial(self.remove_textfield, tf),
+                                         icon_color=colors.ON_BACKGROUND,
                                      ),
                                  ],
                              )
@@ -100,11 +102,13 @@ class ServiceQuestionView(AdminBaseView):
                                               IconButton(
                                                   icon=icons.ADD,
                                                   on_click=self.add_dropdown_field,
+                                                  icon_color=colors.ON_BACKGROUND,
                                               ),
                                           ] + (
                                               [IconButton(
                                                   icon=icons.DELETE,
                                                   on_click=partial(self.remove_dropdown_field, dropdown),
+                                                  icon_color=colors.ON_BACKGROUND,
                                               )] if len(self.dropdown_values[-1]) > 1 else []
                                           ),
                              ) for dropdown in self.dropdown_values[-1]]
@@ -123,6 +127,7 @@ class ServiceQuestionView(AdminBaseView):
                                              PopupMenuItem(text='dropdown', on_click=partial(
                                                  self.set_question_type, 'dropdown')),
                                          ],
+                                         icon=icons.ADD,
                                      ),
                                  ],
                              ),

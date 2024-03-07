@@ -17,7 +17,7 @@
 
 from functools import partial
 
-from flet_core import Text, ScrollMode
+from flet_core import Text, ScrollMode, colors
 
 from app.controls.information.card import Card
 from app.controls.layout import AdminBaseView
@@ -46,11 +46,13 @@ class ExerciseListView(AdminBaseView):
                             value=await self.client.session.gtv(key=exercise['name_text']),
                             size=18,
                             font_family=Fonts.SEMIBOLD,
+                            color=colors.ON_PRIMARY,
                         ),
                         Text(
                             value=await self.client.session.gtv(key=exercise['type']),
                             size=10,
                             font_family=Fonts.MEDIUM,
+                            color=colors.ON_PRIMARY,
                         ),
                     ],
                     on_click=partial(self.exercise_view, exercise['id']),
