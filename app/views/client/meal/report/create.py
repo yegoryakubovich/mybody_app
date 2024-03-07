@@ -241,7 +241,8 @@ class MealReportView(ClientBaseView):
 
     async def on_upload_progress(self, e: FilePickerUploadEvent):
         if e.progress < 1.0:
-            print(f"Загрузка файла {e.file_name} {e.progress:}")  # FIXME
+            pass
+            # print(f"Загрузка файла {e.file_name} {e.progress:}")  # FIXME
         else:
             # Проверяем, существует ли файл
             path = f'uploads/{e.file_name}'
@@ -255,7 +256,8 @@ class MealReportView(ClientBaseView):
                 os.remove(path)
                 await self.restart()
             else:
-                print(f"Файл {e.file_name} еще не загружен.")  # FIXME
+                pass
+                # print(f"Файл {e.file_name} еще не загружен.")  # FIXME
 
     async def save_user_comment(self, event):
         self.user_comment = event.data
@@ -302,7 +304,7 @@ class MealReportView(ClientBaseView):
                 await self.client.session.api.client.images.create(
                     model='meal_report',
                     model_id=id_meal_report,
-                    file=self.data_io.read(),  # FIXME
+                    file=self.data_io.read(),
                 )
             await self.set_type(loading=False)
             await self.client.change_view(go_back=True, with_restart=True, delete_current=True)

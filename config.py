@@ -28,7 +28,6 @@ class Settings(BaseSettings):
     url: str
     url_telegram: str
     privacy_policy_article_id: int
-    url_payment_card: str
 
     model_config = SettingsConfigDict(env_file='.env')
 

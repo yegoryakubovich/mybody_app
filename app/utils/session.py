@@ -113,7 +113,11 @@ class Session:
     async def get_text_value(self, key):
         if key:
             try:
-                return self.text_pack[key]
+                value = self.text_pack.get(key, None)
+                if not value:
+                    return f'404 {key}'
+                else:
+                    return value
             except KeyError:
                 return f'404 {key}'
         else:
