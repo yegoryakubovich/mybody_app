@@ -15,6 +15,8 @@
 #
 
 
+import asyncio
+
 from flet_core import Container, Image, alignment, padding, BoxShadow, Row, colors
 from flet_manager.utils import get_svg
 from flet_manager.views import BaseView
@@ -129,9 +131,9 @@ class View(BaseView):
             self.controls = [
                 Loading(infinity=True, color='#008F12'),
             ]
-            await self.update_async()
+            await asyncio.sleep(0)
         else:
             loading_control = self.controls[0]
             loading_control.infinity = False
             self.controls = self.controls_last
-            await self.update_async()
+            await asyncio.sleep(0)

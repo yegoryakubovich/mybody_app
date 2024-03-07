@@ -15,9 +15,6 @@
 #
 
 
-from typing import Optional
-
-
 class Payment:
     payment_method: str
     payment_method_currency_id: int

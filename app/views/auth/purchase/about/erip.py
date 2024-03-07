@@ -18,7 +18,6 @@
 import json
 
 from flet_core import Container, Row, colors, Image, margin, alignment
-from pyperclip import copy
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -88,4 +87,4 @@ class ERIPView(AuthView):
         await self.client.change_view(view=PaymentStatusView(), delete_current=True)
 
     async def copy_check(self, _):
-        copy(self.tf_clipboard.value)
+        await self.client.session.set_clipboard(self.tf_clipboard.value)

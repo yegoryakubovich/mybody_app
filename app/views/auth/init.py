@@ -80,7 +80,7 @@ class InitView(AuthView):
                     self.client.session.payment.currency = payment.service_cost.currency
                     self.client.session.payment.payment_id = payment.id
                     self.client.session.payment.data = payment.data
-                    await self.client.change_view(view=PaymentView(data=payment.data), delete_current=True)
+                    await self.client.change_view(view=PaymentView(), delete_current=True)
                     return
                 elif payment.state == 'creating':
                     self.client.session.payment = Payment()

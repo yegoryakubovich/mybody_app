@@ -16,6 +16,7 @@
 
 
 from flet_core import Text, Image, Container, Column, alignment, MainAxisAlignment, CrossAxisAlignment
+from mybody_api_client.utils import ApiException
 
 from app import InitView
 from app.controls.button import FilledButton
@@ -24,24 +25,25 @@ from app.utils import Fonts, Icons
 
 
 class RegistrationSuccessfulView(AuthView):
+
     async def change_view(self, _):
         await self.set_type(loading=True)
-        session = await self.client.session.api.client.sessions.create(
-            username=self.client.session.registration.username,
-            password=self.client.session.registration.password,
-        )
-        await self.set_type(loading=False)
+        try:
+            session = await self.client.session.api.client.sessions.create(
+                username=self.client.session.registration.username,
+                password=self.client.session.registration.password,
+            )
 
-        # Get result, set in CS
-        token = session.token
-        await self.client.session.set_cs(key='token', value=token)
+            token = session.token
+            await self.client.session.set_cs(key='token', value=token)
 
-        # Clean Registration
-        self.client.session.registration = None
+            self.client.session.registration = None
 
-        # Change view
-        await self.set_type(loading=False)
-        await self.client.change_view(view=InitView(), delete_current=True)
+            await self.set_type(loading=False)
+            await self.client.change_view(view=InitView(), delete_current=True)
+        except ApiException as exception:
+            await self.set_type(loading=False)
+            return await self.client.session.error(exception=exception)
 
     async def build(self):
         self.controls = await self.get_controls(

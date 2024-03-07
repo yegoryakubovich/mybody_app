@@ -18,7 +18,6 @@
 from functools import partial
 
 from flet_core import Row, colors, MaterialState, Container, Image, padding, margin, InputBorder, TextStyle
-from pyperclip import copy
 
 from app.controls.button import FilledButton
 from app.controls.information import Text, Card
@@ -191,5 +190,5 @@ class AccountView(AdminBaseView):
         await self.update_async()
 
     async def copy_password(self, _):
-        copy(self.clipboard_text_field.value)
+        await self.client.session.set_clipboard(self.clipboard_text_field.value)
 
