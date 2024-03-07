@@ -16,13 +16,14 @@
 
 
 from flet_core import Column
+from mybody_api_client.utils import ApiException
 
+from app import InitView
 from app.controls.button import FilledButton, ListItemButton
 from app.controls.information import Text
 from app.controls.layout import AuthView
 from app.utils import Fonts, Icons
 from app.utils.article import get_url_article, UrlTypes
-from app.views.auth.registration.successful import RegistrationSuccessfulView
 from config import settings
 
 
@@ -40,8 +41,22 @@ class AgreementRegistrationView(AuthView):
             timezone=self.client.session.registration.timezone,
             currency=self.client.session.registration.currency,
         )
-        await self.set_type(loading=False)
-        await self.client.change_view(view=RegistrationSuccessfulView(), delete_current=True)
+        try:
+            session = await self.client.session.api.client.sessions.create(
+                username=self.client.session.registration.username,
+                password=self.client.session.registration.password,
+            )
+
+            token = session.token
+            await self.client.session.set_cs(key='token', value=token)
+
+            self.client.session.registration = None
+
+            await self.set_type(loading=False)
+            await self.client.change_view(view=InitView(), delete_current=True)
+        except ApiException as exception:
+            await self.set_type(loading=False)
+            return await self.client.session.error(exception=exception)
 
     async def build(self):
         self.controls = await self.get_controls(

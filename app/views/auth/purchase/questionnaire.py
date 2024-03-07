@@ -19,6 +19,7 @@ import json
 
 from flet_core import Row, MainAxisAlignment, ScrollMode
 from flet_core.dropdown import Option
+from mybody_api_client.utils import ApiException
 
 from app.controls.information import Text
 from app.controls.input import TextField, Dropdown
@@ -141,10 +142,14 @@ class QuestionnaireView(AuthView):
         answers_json = json.dumps(answers, ensure_ascii=False)
         answers_json_strip = answers_json.strip()
 
-        await self.client.session.api.client.accounts.services.create(
-            service=self.services[0]['id_str'],
-            answers=answers_json_strip,
-        )
+        try:
+            await self.client.session.api.client.accounts.services.create(
+                service=self.services[0]['id_str'],
+                answers=answers_json_strip,
+            )
+        except ApiException as exception:
+            return await self.client.session.error(exception=exception)
+
         account_services = await self.client.session.api.client.accounts.services.get_list()
         account_service = None
         for as_ in account_services:
