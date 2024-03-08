@@ -26,7 +26,7 @@ from app.views.auth.purchase.about.payment_method import PaymentMethodView
 
 
 class PurchaseFirstView(AuthView):
-    ICONS = [Icons.ADMIN_PRODUCTS, Icons.ABOUT, Icons.ADMIN_EXERCISES, Icons.PRIVACY_POLICY, Icons.SUPPORT]
+    ICONS = [Icons.ADMIN_ROLES, Icons.ABOUT, Icons.ADMIN_EXERCISES, Icons.PRIVACY_POLICY, Icons.SUPPORT]
 
     async def build(self):
         advantages = [
@@ -34,15 +34,17 @@ class PurchaseFirstView(AuthView):
                 controls=[
                     Image(
                         src=self.ICONS[i],
-                        width=25,
-                        height=25,
+                        width=40,
+                        height=40,
                     ),
                     Container(
                         content=Text(
                             value=await self.client.session.gtv(key=f"you_get_{i + 1}"),
-                            size=18,
+                            size=30,
                             font_family=Fonts.SEMIBOLD,
                         ),
+                        expand=True,
+                        width=None,
                     ),
                 ],
             )

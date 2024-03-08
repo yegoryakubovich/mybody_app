@@ -13,14 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
 from functools import partial
 
-from flet_core import Column, Container, margin, border_radius
+from flet_core import Column, Container, margin, border_radius, Row, Image
 
 from app.controls.information import Text
 from app.controls.input import Dropdown
 from app.controls.layout import AuthView
-from app.utils import Fonts
+from app.utils import Fonts, Icons
 from app.views.auth.purchase.about.promotional_code import PromotionalCodeView
 
 
@@ -40,10 +41,19 @@ class PaymentMethodByCurrencyView(AuthView):
                 Container(
                     content=Column(
                         controls=[
-                            Text(
-                                value=method['name'],
-                                size=25,
-                                font_family=Fonts.REGULAR
+                            Row(
+                                controls=[
+                                    Image(
+                                        src=Icons.CURRENCY,
+                                        width=40,
+                                        height=40,
+                                    ),
+                                    Text(
+                                        value=method['name'],
+                                        size=25,
+                                        font_family=Fonts.REGULAR
+                                    )
+                                ]
                             )
                         ],
                     ),
