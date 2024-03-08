@@ -22,7 +22,7 @@ import os
 from functools import partial
 
 from flet_core import ScrollMode, AlertDialog, Container, Column, FilePickerUploadFile, Image, Row, \
-    MainAxisAlignment, TextButton, IconButton, icons, FilePickerUploadEvent
+    MainAxisAlignment, TextButton, IconButton, icons, FilePickerUploadEvent, colors
 from flet_core.dropdown import Option
 from mybody_api_client.utils import ApiException
 
@@ -176,11 +176,13 @@ class MealReportView(ClientBaseView):
                     value=await self.client.session.gtv(key='client_meal_report_text_guide_view'),
                     size=20,
                     font_family=Fonts.REGULAR,
+                    color=colors.ON_BACKGROUND,
                 ),
                 Text(
                     value=await self.client.session.gtv(key='products'),
                     size=25,
                     font_family=Fonts.BOLD,
+                    color=colors.ON_BACKGROUND,
                 ),
                 *self.added_product_controls,
                 FilledButton(
@@ -193,22 +195,26 @@ class MealReportView(ClientBaseView):
                     value=await self.client.session.gtv(key='comment'),
                     size=25,
                     font_family=Fonts.BOLD,
+                    color=colors.ON_BACKGROUND,
                 ),
                 Text(
                     value=await self.client.session.gtv(key='client_meal_report_text_comment_guide_view'),
                     size=20,
                     font_family=Fonts.REGULAR,
+                    color=colors.ON_BACKGROUND,
                 ),
                 self.tf_comment,
                 Text(
                     value=await self.client.session.gtv(key='photos'),
                     size=25,
                     font_family=Fonts.BOLD,
+                    color=colors.ON_BACKGROUND,
                 ),
                 Text(
                     value=await self.client.session.gtv(key='client_meal_report_text_photo_guide_view'),
                     size=20,
                     font_family=Fonts.REGULAR,
+                    color=colors.ON_BACKGROUND,
                 ),
                 *self.added_photo_controls,
                 self.add_photo_button,

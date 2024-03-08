@@ -129,7 +129,8 @@ class AccountMealView(AdminBaseView):
                             ),
                             on_click=self.view_report
                         ),
-                    ]
+                    ],
+                    wrap=True,
                 )
             ],
             sections=[

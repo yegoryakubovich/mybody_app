@@ -17,7 +17,7 @@
 
 from typing import Callable
 
-from flet_core import Container, Row, colors
+from flet_core import Container, Row, colors, ButtonStyle
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -39,6 +39,11 @@ class PaginationWidget(Container):
                     content=Text(value=text_back),
                     on_click=self.on_previous,
                     disabled=self.current_page <= 1,
+                    style=ButtonStyle(
+                        color={
+
+                        }
+                    )
                 ),
                 Text(
                     value=f'{self.current_page}/{self.total_pages}',
