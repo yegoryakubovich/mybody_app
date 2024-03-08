@@ -14,14 +14,15 @@
 # limitations under the License.
 #
 
+
 from functools import partial
 
-from flet_core import Column, Container, margin, border_radius, Row, Image
+from flet_core import Column
 
-from app.controls.information import Text
+from app.controls.button import ListItemButton
 from app.controls.input import Dropdown
 from app.controls.layout import AuthView
-from app.utils import Fonts, Icons
+from app.utils import Icons
 from app.views.auth.purchase.about.promotional_code import PromotionalCodeView
 
 
@@ -32,37 +33,24 @@ class PaymentMethodByCurrencyView(AuthView):
     async def build(self):
         await self.set_type(loading=True)
         self.payment_methods = await self.client.session.api.client.payments.methods.get_list_by_currency(
-            currency=self.client.session.payment.currency
+            currency=self.client.session.payment.currency,
         )
         await self.set_type(loading=False)
 
         self.controls = await self.get_controls(
             controls=[
-                Container(
-                    content=Column(
-                        controls=[
-                            Row(
-                                controls=[
-                                    Image(
-                                        src=Icons.CURRENCY,
-                                        width=40,
-                                        height=40,
-                                    ),
-                                    Text(
-                                        value=method['name'],
-                                        size=25,
-                                        font_family=Fonts.REGULAR
-                                    )
-                                ]
-                            )
-                        ],
-                    ),
-                    border_radius=border_radius.all(8),
-                    on_click=partial(self.change_view, method['id_str'],  method['payment_method_currency_id']),
-                    ink=True,
-                    margin=margin.symmetric(horizontal=20),
-                    padding=5,
-                ) for method in self.payment_methods
+                Column(
+                    controls=[
+                        ListItemButton(
+                            icon=Icons.CURRENCY,
+                            name=method['name'],
+                            on_click=partial(
+                                self.change_view, method['id_str'],
+                                method['payment_method_currency_id']
+                            ),
+                        ) for method in self.payment_methods
+                    ],
+                ),
             ],
         )
 

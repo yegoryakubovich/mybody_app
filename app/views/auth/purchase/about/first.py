@@ -15,12 +15,12 @@
 #
 
 
-from flet_core import Container, Column, alignment, Row, Image
+from flet_core import Container, Column, alignment
 
-from app.controls.button import FilledButton
+from app.controls.button import FilledButton, ListItemButton
 from app.controls.information import Text
 from app.controls.layout import AuthView
-from app.utils import Fonts, Icons
+from app.utils import Icons
 from app.utils.payment import Payment
 from app.views.auth.purchase.about.payment_method import PaymentMethodView
 
@@ -30,33 +30,17 @@ class PurchaseFirstView(AuthView):
 
     async def build(self):
         advantages = [
-            Row(
-                controls=[
-                    Image(
-                        src=self.ICONS[i],
-                        width=40,
-                        height=40,
-                    ),
-                    Container(
-                        content=Text(
-                            value=await self.client.session.gtv(key=f"you_get_{i + 1}"),
-                            size=30,
-                            font_family=Fonts.SEMIBOLD,
-                        ),
-                        expand=True,
-                        width=None,
-                    ),
-                ],
+            ListItemButton(
+                icon=self.ICONS[i],
+                name=await self.client.session.gtv(key=f"you_get_{i + 1}"),
             )
             for i in range(5)
         ]
         self.controls = await self.get_controls(
             with_expand=True,
             controls=[
-                Container(
-                    content=Column(
-                        controls=advantages,
-                    ),
+                Column(
+                    controls=advantages,
                 ),
                 Container(
                     content=FilledButton(

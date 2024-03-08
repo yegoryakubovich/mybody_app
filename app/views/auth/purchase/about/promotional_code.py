@@ -51,11 +51,10 @@ class PromotionalCodeView(AuthView):
 
     async def change_view(self, _):
         await self.set_type(loading=True)
-        service_cost_id = await self.client.session.api.client.services.costs.get_list(
-            service='mybody'
-        )
-
         try:
+            service_cost_id = await self.client.session.api.client.services.costs.get_list(
+                service='mybody',
+            )
             payment_id = await self.client.session.api.client.payments.create(
                 account_service_id=self.client.session.account_service.id,
                 service_cost_id=service_cost_id[0]['id'],

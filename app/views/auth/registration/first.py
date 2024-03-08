@@ -31,6 +31,38 @@ class RegistrationFirstView(AuthView):
     tf_username: TextField
     tf_password: TextField
 
+    async def change_view(self, _):
+        fields = [(self.tf_username, 5, 32), (self.tf_password, 7, 32)]
+        for field, min_len, max_len in fields:
+            if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
+                return
+
+        await self.set_type(loading=True)
+        try:
+            await self.client.session.api.client.accounts.check_username(username=self.tf_username.value)
+        except ApiException as exception:
+            await self.set_type(loading=False)
+            return await self.client.session.error(exception=exception)
+
+        await self.set_type(loading=True)
+        try:
+            await self.client.session.api.client.accounts.check_password(password=self.tf_password.value)
+        except ApiException as exception:
+            await self.set_type(loading=False)
+            return await self.client.session.error(exception=exception)
+
+        # Save in Registration
+        self.client.session.registration = Registration()
+        self.client.session.registration.username = self.tf_username.value.replace(' ', '')
+        self.client.session.registration.password = self.tf_password.value.replace(' ', '')
+
+        await self.set_type(loading=False)
+        await self.client.change_view(view=RegistrationSecondView(), delete_current=True)
+
+    async def go_authentication(self, _):
+        from app.views.auth.authentication import AuthenticationView
+        await self.client.change_view(view=AuthenticationView(), delete_current=True)
+
     async def build(self):
         self.tf_username = TextField(
             label=await self.client.session.gtv(key='username'),
@@ -84,37 +116,5 @@ class RegistrationFirstView(AuthView):
                     ],
                     spacing=20,
                 ),
-            ]
+            ],
         )
-
-    async def change_view(self, _):
-        fields = [(self.tf_username, 5, 32), (self.tf_password, 7, 32)]
-        for field, min_len, max_len in fields:
-            if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
-                return
-
-        await self.set_type(loading=True)
-        try:
-            await self.client.session.api.client.accounts.check_username(username=self.tf_username.value)
-        except ApiException as exception:
-            await self.set_type(loading=False)
-            return await self.client.session.error(exception=exception)
-
-        await self.set_type(loading=True)
-        try:
-            await self.client.session.api.client.accounts.check_password(password=self.tf_password.value)
-        except ApiException as exception:
-            await self.set_type(loading=False)
-            return await self.client.session.error(exception=exception)
-
-        # Save in Registration
-        self.client.session.registration = Registration()
-        self.client.session.registration.username = self.tf_username.value.replace(' ', '')
-        self.client.session.registration.password = self.tf_password.value.replace(' ', '')
-
-        await self.set_type(loading=False)
-        await self.client.change_view(view=RegistrationSecondView())
-
-    async def go_authentication(self, _):
-        from app.views.auth.authentication import AuthenticationView
-        await self.client.change_view(view=AuthenticationView(), delete_current=True)

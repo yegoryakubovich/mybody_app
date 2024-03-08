@@ -130,6 +130,10 @@ class View(BaseView):
                 Loading(infinity=True, color='#008F12'),
             ]
         else:
-            loading_control = self.controls[0]
-            loading_control.infinity = False
-            self.controls = self.controls_last
+            if self.controls:
+                loading_control = self.controls[0]
+                loading_control.infinity = False
+                self.controls = self.controls_last
+            else:
+                self.controls = []
+

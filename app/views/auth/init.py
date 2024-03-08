@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+from mybody_api_client.utils import ApiException
 
 from app.controls.input import Dropdown
 from app.controls.layout import AuthView
@@ -67,9 +67,15 @@ class InitView(AuthView):
             await self.client.change_view(view=LanguageView(), delete_current=True)
             return
 
-        payments = await self.client.session.api.client.payments.get_list(
-            account_service_id=account_service.id
-        )
+        await self.set_type(loading=True)
+        try:
+            payments = await self.client.session.api.client.payments.get_list(
+                account_service_id=account_service.id
+            )
+        except ApiException as exception:
+            await self.set_type(loading=False)
+            return await self.client.session.error(exception=exception)
+
         if not payments:
             await self.client.change_view(view=PurchaseFirstView(), delete_current=True)
             return
@@ -89,7 +95,7 @@ class InitView(AuthView):
                     return
                 elif payment.state == 'paid':
                     self.client.session.payment = {}
-                    await self.client.change_view(view=MainView())
+                    await self.client.change_view(view=MainView(), delete_current=True)
                     return
                 else:
                     await self.client.change_view(view=PurchaseFirstView(), delete_current=True)

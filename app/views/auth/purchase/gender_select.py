@@ -44,7 +44,6 @@ class GenderSelectionView(AuthView):
                 dd_answers=dd_answers,
                 tf_answers=tf_answers,
             ),
-            delete_current=True
         )
 
     async def logout(self, _):

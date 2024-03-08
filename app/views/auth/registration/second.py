@@ -16,6 +16,7 @@
 
 from flet_core import ScrollMode
 from flet_core.dropdown import Option
+from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
@@ -35,10 +36,38 @@ class RegistrationSecondView(AuthView):
     def __init__(self, **kwargs):
         super().__init__(**kwargs, scroll=ScrollMode.AUTO)
 
+    async def change_view(self, _):
+        fields = [(self.tf_firstname, 2, 32), (self.tf_lastname, 2, 32)]
+        for field, min_len, max_len in fields:
+            if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
+                return
+        if self.tf_surname.value and (len(self.tf_surname.value) < 2 or len(self.tf_surname.value) > 32):
+            self.tf_surname.error_text = await self.client.session.gtv(key='error_count_letter')
+            await self.update_async()
+            return
+
+        await self.set_type(loading=True)
+        try:
+            country = await self.client.session.api.client.countries.get(
+                id_str=self.dd_country.value
+            )
+            self.client.session.registration.firstname = self.tf_firstname.value
+            self.client.session.registration.lastname = self.tf_lastname.value
+            self.client.session.registration.surname = self.tf_surname.value
+            self.client.session.registration.country = self.dd_country.value
+            self.client.session.registration.currency = country['currency']
+            self.client.session.registration.timezone = country['timezone']
+            await self.set_type(loading=False)
+            await self.client.change_view(view=AgreementRegistrationView(), delete_current=True)
+        except ApiException as exception:
+            await self.set_type(loading=False)
+            return await self.client.session.error(exception=exception)
+
     async def build(self):
         await self.set_type(loading=True)
         self.countries = await self.client.session.api.client.countries.get_list()
         await self.set_type(loading=False)
+
         country_options = [
             Option(
                 text=country.name,
@@ -72,27 +101,3 @@ class RegistrationSecondView(AuthView):
                 ),
             ],
         )
-
-    async def change_view(self, _):
-        fields = [(self.tf_firstname, 2, 32), (self.tf_lastname, 2, 32)]
-        for field, min_len, max_len in fields:
-            if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
-                return
-        if self.tf_surname.value and (len(self.tf_surname.value) < 2 or len(self.tf_surname.value) > 32):
-            self.tf_surname.error_text = await self.client.session.gtv(key='error_count_letter')
-            await self.update_async()
-            return
-
-        country = await self.client.session.api.client.countries.get(
-            id_str=self.dd_country.value
-        )
-
-        await self.set_type(loading=True)
-        self.client.session.registration.firstname = self.tf_firstname.value
-        self.client.session.registration.lastname = self.tf_lastname.value
-        self.client.session.registration.surname = self.tf_surname.value
-        self.client.session.registration.country = self.dd_country.value
-        self.client.session.registration.currency = country['currency']
-        self.client.session.registration.timezone = country['timezone']
-        await self.set_type(loading=False)
-        await self.client.change_view(view=AgreementRegistrationView(), delete_current=True)

@@ -142,12 +142,14 @@ class QuestionnaireView(AuthView):
         answers_json = json.dumps(answers, ensure_ascii=False)
         answers_json_strip = answers_json.strip()
 
+        await self.set_type(loading=True)
         try:
             await self.client.session.api.client.accounts.services.create(
                 service=self.services[0]['id_str'],
                 answers=answers_json_strip,
             )
         except ApiException as exception:
+            await self.set_type(loading=False)
             return await self.client.session.error(exception=exception)
 
         account_services = await self.client.session.api.client.accounts.services.get_list()
@@ -156,7 +158,9 @@ class QuestionnaireView(AuthView):
             if as_.service_id == settings.service_id:
                 account_service = as_
         self.client.session.account_service = account_service
-        await self.client.change_view(view=PurchaseFirstView(), delete_current=True)
+        while len(self.page.views) > 0:
+            self.page.views.pop()
+        await self.client.change_view(view=PurchaseFirstView())
 
     async def next_page(self, _):
         if not await self.check_errors(self.tf_answers, 1, 1024):
@@ -186,4 +190,4 @@ class QuestionnaireView(AuthView):
     async def logout(self, _):
         await self.client.session.set_cs(key='token', value=None)
         from app.views.auth.init import InitView
-        await self.client.change_view(view=InitView(), delete_current=True)
+        await self.client.change_view(view=InitView())

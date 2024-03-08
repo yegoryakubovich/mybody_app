@@ -30,18 +30,19 @@ from config import settings
 class AgreementRegistrationView(AuthView):
     async def change_view(self, _):
         await self.set_type(loading=True)
-        await self.client.session.api.client.accounts.create(
-            username=self.client.session.registration.username,
-            password=self.client.session.registration.password,
-            firstname=self.client.session.registration.firstname,
-            lastname=self.client.session.registration.lastname,
-            surname=self.client.session.registration.surname or None,
-            country=self.client.session.registration.country,
-            language=self.client.session.language,
-            timezone=self.client.session.registration.timezone,
-            currency=self.client.session.registration.currency,
-        )
         try:
+            await self.client.session.api.client.accounts.create(
+                username=self.client.session.registration.username,
+                password=self.client.session.registration.password,
+                firstname=self.client.session.registration.firstname,
+                lastname=self.client.session.registration.lastname,
+                surname=self.client.session.registration.surname or None,
+                country=self.client.session.registration.country,
+                language=self.client.session.language,
+                timezone=self.client.session.registration.timezone,
+                currency=self.client.session.registration.currency,
+            )
+
             session = await self.client.session.api.client.sessions.create(
                 username=self.client.session.registration.username,
                 password=self.client.session.registration.password,

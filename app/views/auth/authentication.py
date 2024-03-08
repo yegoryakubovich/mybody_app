@@ -37,8 +37,8 @@ class AuthenticationView(AuthView):
         # Create session
         try:
             session = await self.client.session.api.client.sessions.create(
-                username=self.tf_username.value,
-                password=self.tf_password.value,
+                username=self.tf_username.value.replace(' ', ''),
+                password=self.tf_password.value.replace(' ', ''),
             )
             await self.set_type(loading=False)
         except ApiException as exception:

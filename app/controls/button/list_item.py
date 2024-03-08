@@ -35,6 +35,8 @@ class ListItemButton(Container):
                         font_family=Fonts.REGULAR,
                         size=20,
                         color=colors.ON_BACKGROUND,
+                        expand=True,
+                        width=None,
                     ),
                 ],
                 spacing=12,

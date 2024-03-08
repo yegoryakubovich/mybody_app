@@ -17,9 +17,9 @@
 
 import json
 
-from flet_core import Container, Row, alignment, Image, MainAxisAlignment, TextButton, Column, border_radius, margin
+from flet_core import Container, Row, alignment, MainAxisAlignment, TextButton, Column, margin
 
-from app.controls.button import FilledButton
+from app.controls.button import FilledButton, ListItemButton
 from app.controls.information import Text
 from app.controls.layout import AuthView
 from app.utils import Fonts, Icons
@@ -41,32 +41,14 @@ class PaymentView(AuthView):
             Setting(name='card', icon=Icons.CARD, url=data['payment_link'])
         ]
         advantages = [
-            Container(
-                content=Row(
-                    controls=[
-                        Image(
-                            src=setting.icon,
-                            width=40,
-                            height=40,
-                        ),
-                        Text(
-                            value=await self.client.session.gtv(key=setting.name),
-                            size=20,
-                            font_family=Fonts.REGULAR,
-                        ),
-                    ]
-                ),
-                border_radius=border_radius.all(8),
-                url=setting.url,
+            ListItemButton(
+                icon=setting.icon,
+                name=await self.client.session.gtv(key=setting.name),
                 on_click=setting.on_click,
-                ink=True,
-                margin=margin.symmetric(horizontal=20),
-                padding=5,
+                url=setting.url,
             )
             for setting in payment
         ]
-        self.advantages_container.content = Column(controls=advantages)
-        await self.update_async()
 
         self.controls = await self.get_controls(
             with_expand=True,
@@ -88,7 +70,12 @@ class PaymentView(AuthView):
                     ],
                     alignment=MainAxisAlignment.SPACE_BETWEEN,
                 ),
-                self.advantages_container,
+                Container(
+                    content=Column(
+                        controls=advantages,
+                    ),
+                    margin=margin.symmetric(horizontal=20),
+                ),
                 Container(
                     content=FilledButton(
                         content=Text(
@@ -113,5 +100,4 @@ class PaymentView(AuthView):
     async def logout(self, _):
         await self.client.session.set_cs(key='token', value=None)
         from app.views.auth.init import InitView
-        await self.client.change_view(view=InitView(), delete_current=True)
-
+        await self.client.change_view(view=InitView())
