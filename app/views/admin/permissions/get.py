@@ -37,6 +37,7 @@ class PermissionView(AdminBaseView):
 
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key=self.permission['name_text']),
+            text_key=self.permission['name_text'],
             main_section_controls=[
                 FilledButton(
                     content=Text(

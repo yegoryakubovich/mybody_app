@@ -65,6 +65,7 @@ class ExerciseView(AdminBaseView):
         )
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key=self.exercise['name_text']),
+            text_key=self.exercise['name_text'],
             main_section_controls=[
                 self.dd_exercise_type,
                 self.snack_bar,

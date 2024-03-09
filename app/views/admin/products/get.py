@@ -110,6 +110,7 @@ class ProductView(AdminBaseView):
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key=self.product['name_text']),
+            text_key=self.product['name_text'],
             main_section_controls=[
                 self.dd_type,
                 self.dd_units,
@@ -161,7 +162,6 @@ class ProductView(AdminBaseView):
                 calories=self.tf_calories.value or 0,
                 article_id=self.dd_articles.value or 0,
             )
-            await self.client.session.get_text_pack()
             await self.set_type(loading=False)
             self.snack_bar.open = True
             await self.update_async()

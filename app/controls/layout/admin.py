@@ -104,6 +104,7 @@ class AdminBaseView(View):
             self,
             title: str,
             main_section_controls: list,
+            text_key: str = None,
             sections: list[Section] = None,
             on_create_click: Any = None,
             back_with_restart: bool = True,
@@ -111,6 +112,7 @@ class AdminBaseView(View):
 
         title_control = await self.get_title(
             title=title,
+            text_key=text_key,
             on_create_click=on_create_click,
             back_with_restart=back_with_restart,
         )

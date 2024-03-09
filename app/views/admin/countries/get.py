@@ -91,6 +91,7 @@ class CountryView(AdminBaseView):
         )
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key=self.country['name_text']),
+            text_key=self.country['name_text'],
             main_section_controls=[
                 self.dd_language,
                 self.dd_currency,

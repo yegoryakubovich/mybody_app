@@ -13,7 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
+from functools import partial
 
 from flet_core import Container, Image, alignment, padding, BoxShadow, Row, colors
 from flet_manager.utils import get_svg
@@ -21,6 +21,7 @@ from flet_manager.views import BaseView
 
 from app.controls.information import Text
 from app.controls.information.loading import Loading
+from app.controls.navigation.icon_text_button import IconTextButton
 from app.utils import Fonts, Icons
 
 
@@ -58,11 +59,16 @@ class View(BaseView):
             title: str,
             go_back_button=True,
             on_create_click=None,
-            back_with_restart=False
+            back_with_restart=False,
+            text_key: str = None,
     ):
 
         async def go_back(_):
             await self.client.change_view(go_back=True, with_restart=back_with_restart)
+
+        async def go_text(text_key_, _):
+            from app.views.admin.texts import TextView
+            await self.client.change_view(view=TextView(key=text_key_), delete_current=True)
 
         controls = []
         # Go back button
@@ -89,6 +95,13 @@ class View(BaseView):
                         ),
                     ],
                     wrap=True,
+                )
+            )
+
+        if text_key:
+            controls.append(
+                IconTextButton(
+                    on_click=partial(go_text, text_key),
                 )
             )
 

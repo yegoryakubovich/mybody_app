@@ -19,8 +19,7 @@ from flet_core import IconButton, icons
 
 
 class IconTextButton(IconButton):
-    def __init__(self, key=None, **kwargs):
+    def __init__(self, on_click, **kwargs):
         super().__init__(**kwargs)
-        self.icon = icons.TEXT_FIELDS,
-        self.key = key
-
+        self.icon = icons.TEXT_FIELDS
+        self.on_click = on_click

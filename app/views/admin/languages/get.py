@@ -37,6 +37,7 @@ class LanguageView(AdminBaseView):
 
         self.controls = await self.get_controls(
             title=self.language['name'],
+            text_key=self.language['name'],
             main_section_controls=[
                 FilledButton(
                     content=Text(
