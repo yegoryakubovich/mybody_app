@@ -47,14 +47,13 @@ class ArticleCreateView(AdminBaseView):
         )
 
     async def create_article(self, _):
-        await self.set_type(loading=True)
         from app.views.admin.articles.get import ArticleView
         fields = [(self.tf_name, 1, 1024)]
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
-                await self.set_type(loading=False)
                 return
         try:
+            await self.set_type(loading=True)
             article_id = await self.client.session.api.admin.articles.create(
                 name=self.tf_name.value,
             )

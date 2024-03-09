@@ -54,8 +54,8 @@ class AccountTrainingCreateView(AdminBaseView):
 
     async def create_training(self, _):
         from app.views.admin.accounts.service.training.get import AccountTrainingView
-        await self.set_type(loading=True)
         try:
+            await self.set_type(loading=True)
             training_id = await self.client.session.api.admin.trainings.create(
                 account_service_id=self.account_service_id,
                 date=self.tf_date.value,

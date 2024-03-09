@@ -122,8 +122,8 @@ class CountryView(AdminBaseView):
         await self.client.change_view(go_back=True, with_restart=True)
 
     async def update_country(self, _):
-        await self.set_type(loading=True)
         try:
+            await self.set_type(loading=True)
             await self.client.session.api.admin.countries.update(
                 id_str=self.country_id_str,
                 language=self.dd_language.value,

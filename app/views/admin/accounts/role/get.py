@@ -46,8 +46,8 @@ class AccountRoleView(AdminBaseView):
         )
 
     async def delete_role(self, _):
-        await self.set_type(loading=True)
         try:
+            await self.set_type(loading=True)
             await self.client.session.api.admin.accounts.roles.delete(
                 id_=self.role_id,
             )

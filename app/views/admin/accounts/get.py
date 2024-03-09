@@ -49,7 +49,7 @@ class AccountView(AdminBaseView):
         )
         await self.set_type(loading=False)
 
-        surname = self.account['surname'] if self.account['surname'] else await self.client.session.gtv(key='absent')
+        surname = self.account['surname'] if self.account['surname'] else await self.client.session.gtv(key='not_indicated')
 
         self.clipboard_text_field = TextField(
             label=await self.client.session.gtv(key='admin_new_user_password'),
@@ -114,8 +114,8 @@ class AccountView(AdminBaseView):
                     color=colors.ON_BACKGROUND,
                 ),
                 Text(
-                    value=f"{await self.client.session.gtv(key='country')}: {self.account['country']}\n"
-                          f"{await self.client.session.gtv(key='language')}: {self.account['language']}\n",
+                    value=f"{await self.client.session.gtv(key='country')}: {self.account['country'].upper()}\n"
+                          f"{await self.client.session.gtv(key='language')}: {self.account['language'].upper()}\n",
                     size=15,
                     font_family=Fonts.MEDIUM,
                     color=colors.ON_BACKGROUND,

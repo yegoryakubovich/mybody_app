@@ -40,34 +40,44 @@ class AccountMealProductCreateView(AdminBaseView):
         self.products = await self.client.session.api.client.products.get_list()
         await self.set_type(loading=False)
 
-        product_options = [
-            Option(
-                text=await self.client.session.gtv(key=product['name_text']),
-                key=product['id']
-            ) for product in self.products
-        ]
-        self.tf_quantity = TextField(
-            label=await self.client.session.gtv(key='quantity'),
-        )
-        self.dd_product = Dropdown(
-            label=await self.client.session.gtv(key='type'),
-            value=product_options[0].key,
-            options=product_options,
-        )
-        self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='admin_account_meal_product_create_view_title'),
-            main_section_controls=[
-                self.dd_product,
-                self.tf_quantity,
-                FilledButton(
-                    content=Text(
-                        value=await self.client.session.gtv(key='create'),
-                        size=16,
+        if not self.products:
+            self.controls = await self.get_controls(
+                title=await self.client.session.gtv(key='admin_account_meal_product_create_view_title'),
+                main_section_controls=[
+                    Text(
+                        value=await self.client.session.gtv(key='no_product')
                     ),
-                    on_click=self.create_meal_product,
-                ),
+                ],
+            )
+        else:
+            product_options = [
+                Option(
+                    text=await self.client.session.gtv(key=product['name_text']),
+                    key=product['id']
+                ) for product in self.products
             ]
-        )
+            self.tf_quantity = TextField(
+                label=await self.client.session.gtv(key='quantity'),
+            )
+            self.dd_product = Dropdown(
+                label=await self.client.session.gtv(key='type'),
+                value=product_options[0].key,
+                options=product_options,
+            )
+            self.controls = await self.get_controls(
+                title=await self.client.session.gtv(key='admin_account_meal_product_create_view_title'),
+                main_section_controls=[
+                    self.dd_product,
+                    self.tf_quantity,
+                    FilledButton(
+                        content=Text(
+                            value=await self.client.session.gtv(key='create'),
+                            size=16,
+                        ),
+                        on_click=self.create_meal_product,
+                    ),
+                ]
+            )
 
     async def create_meal_product(self, _):
         from app.views.admin.accounts.service.meal.get import AccountMealView

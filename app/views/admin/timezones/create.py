@@ -52,13 +52,12 @@ class TimezoneCreateView(AdminBaseView):
          )
 
     async def create_timezone(self, _):
-        await self.set_type(loading=True)
         fields = [(self.tf_id_str, 1, 16, False), (self.tf_deviation, 1, 16, True)]
         for field, min_len, max_len, check_int in fields:
             if not await Error.check_field(self, field, check_int=check_int, min_len=min_len, max_len=max_len):
-                await self.set_type(loading=False)
                 return
         try:
+            await self.set_type(loading=True)
             await self.client.session.api.admin.timezones.create(
                 id_str=self.tf_id_str.value,
                 deviation=self.tf_deviation.value,

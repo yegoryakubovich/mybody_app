@@ -28,15 +28,15 @@ class FAQView(ClientBaseView):
         questions_answers = {}
         i = 1
         while True:
-            try:
-                question_key = f'faq_question_{i}'
-                answer_key = f'faq_answer_{i}'
-                question = await self.client.session.gtv(key=question_key)
-                answer = await self.client.session.gtv(key=answer_key)
-                questions_answers[question] = answer
-                i += 1
-            except Exception:
+            question_key = f'faq_question_{i}'
+            answer_key = f'faq_answer_{i}'
+            question = await self.client.session.gtv(key=question_key)
+            answer = await self.client.session.gtv(key=answer_key)
+            if '404' in question or '404' in answer:
                 break
+            questions_answers[question] = answer
+            i += 1
+
         expansion_panels = [
             ExpansionPanel(
                 header=ListTile(
@@ -57,6 +57,7 @@ class FAQView(ClientBaseView):
                 ExpansionPanelList(
                     controls=expansion_panels,
                     divider_color=colors.BACKGROUND,
+                    expand_icon_color=colors.ON_PRIMARY,
                 ),
             ],
         )

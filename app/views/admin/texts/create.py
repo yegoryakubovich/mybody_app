@@ -54,13 +54,12 @@ class TextCreateView(AdminBaseView):
          )
 
     async def create_text(self, _):
-        await self.set_type(loading=True)
         fields = [(self.tf_key, 2, 128), (self.tf_value_default, 1, 1024)]
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
-                await self.set_type(loading=False)
                 return
         try:
+            await self.set_type(loading=True)
             key = await self.client.session.api.admin.texts.create(
                 value_default=self.tf_value_default.value,
                 key=self.tf_key.value,

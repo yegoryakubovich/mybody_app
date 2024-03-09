@@ -93,48 +93,54 @@ class AccountMealListAllView(AdminBaseView):
             title=await self.client.session.gtv(key='admin_account_meal_get_list_view_title'),
             on_create_click=self.create_meal,
             main_section_controls=[
-                self.dlg_modal, ] + [
-                Card(
-                    controls=[
-                        Row(
-                            controls=[
-                                Text(
-                                    value=date,
-                                    size=18,
-                                    font_family=Fonts.SEMIBOLD,
-                                    color=colors.ON_PRIMARY,
-                                ),
-                                Container(
-                                    content=Row(
-                                        controls=[
-                                            Image(
-                                                src=Icons.CREATE,
-                                                height=10,
-                                                color=colors.ON_BACKGROUND,
-                                            ),
-                                            Text(
-                                                value=await self.client.session.gtv(key='create_duplicate'),
-                                                size=13,
-                                                font_family=Fonts.SEMIBOLD,
-                                                color=colors.ON_BACKGROUND,
-                                                no_wrap=False,
-                                            ),
-                                        ],
-                                        spacing=4,
-                                    ),
-                                    padding=7,
-                                    border_radius=24,
-                                    bgcolor=colors.BACKGROUND,
-                                    on_click=partial(self.open_dlg, date),
-                                ),
-                            ],
-                            alignment=MainAxisAlignment.SPACE_BETWEEN,
-                        ),
-                    ],
-                    on_click=partial(self.meal_view, date),
-                )
-                for date in sorted_dates
-            ],
+                  self.dlg_modal, ] + [
+                  Card(
+                      controls=[
+                          Row(
+                              controls=[
+                                           Text(
+                                               value=date,
+                                               size=18,
+                                               font_family=Fonts.SEMIBOLD,
+                                               color=colors.ON_PRIMARY,
+                                           ),
+                                       ] + (
+                                           [
+                                               Container(
+                                                   content=Row(
+                                                       controls=[
+                                                           Image(
+                                                               src=Icons.CREATE,
+                                                               height=10,
+                                                               color=colors.ON_BACKGROUND,
+                                                           ),
+                                                           Text(
+                                                               value=await self.client.session.gtv(
+                                                                   key='create_duplicate'),
+                                                               size=13,
+                                                               font_family=Fonts.SEMIBOLD,
+                                                               color=colors.ON_BACKGROUND,
+                                                               no_wrap=False,
+                                                           ),
+                                                       ],
+                                                       spacing=4,
+                                                   ),
+                                                   padding=7,
+                                                   border_radius=24,
+                                                   bgcolor=colors.BACKGROUND,
+                                                   on_click=partial(self.open_dlg, date),
+                                               ),
+                                           ] if any(
+                                               'products' in meal and meal['products'] for meal in
+                                               meals_by_date[date]) else []
+                                       ),
+                              alignment=MainAxisAlignment.SPACE_BETWEEN,
+                          ),
+                      ],
+                      on_click=partial(self.meal_view, date),
+                  )
+                  for date in sorted_dates
+              ],
         )
 
     async def close_dlg(self, _):

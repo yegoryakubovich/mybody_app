@@ -94,8 +94,8 @@ class ExerciseView(AdminBaseView):
         await self.client.change_view(go_back=True, with_restart=True, delete_current=True)
 
     async def update_exercise(self, _):
-        await self.set_type(loading=True)
         try:
+            await self.set_type(loading=True)
             await self.client.session.api.admin.exercises.update(
                 id_=self.exercise_id,
                 type_=self.dd_exercise_type.value,

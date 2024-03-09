@@ -66,8 +66,8 @@ class AccountRoleCreateView(AdminBaseView):
         )
 
     async def create_article(self, _):
-        await self.set_type(loading=True)
         try:
+            await self.set_type(loading=True)
             await self.client.session.api.admin.accounts.roles.create(
                 account_id=self.account_id,
                 role_id=self.dd_role.value,

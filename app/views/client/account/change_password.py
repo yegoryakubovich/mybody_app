@@ -33,7 +33,6 @@ class ChangePasswordView(ClientBaseView):
     controls_container: Container
 
     async def build(self):
-        # self.client.session.account
         self.current_password_tf = TextField(
             label=await self.client.session.gtv(key='change_password_enter_current_password'),
             password=True,

@@ -154,8 +154,8 @@ class AccountTrainingView(AdminBaseView):
         )
 
     async def update_training(self, _):
-        await self.set_type(loading=True)
         try:
+            await self.set_type(loading=True)
             update_data = {
                 "id_": self.training_id,
             }

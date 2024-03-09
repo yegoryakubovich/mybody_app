@@ -84,47 +84,53 @@ class AccountTrainingListView(AdminBaseView):
             title=await self.client.session.gtv(key='admin_account_training_get_list_view_title'),
             on_create_click=self.create_training,
             main_section_controls=[
-                self.dlg_modal, ] + [
-                Card(
-                    controls=[
-                        Row(
-                            controls=[
-                                Text(
-                                    value=training['date'],
-                                    size=18,
-                                    font_family=Fonts.SEMIBOLD,
-                                    color=colors.ON_PRIMARY,
-                                ),
-                                Container(
-                                    content=Row(
-                                        controls=[
-                                            Image(
-                                                src=Icons.CREATE,
-                                                height=10,
-                                                color=colors.ON_BACKGROUND,
-                                            ),
-                                            Text(
-                                                value=await self.client.session.gtv(key='create_duplicate'),
-                                                size=13,
-                                                font_family=Fonts.SEMIBOLD,
-                                                color=colors.ON_BACKGROUND,
-                                            ),
-                                        ],
-                                        spacing=4,
-                                    ),
-                                    padding=7,
-                                    border_radius=24,
-                                    bgcolor=colors.BACKGROUND,
-                                    on_click=partial(self.open_dlg, training['date']),
-                                ),
-                            ],
-                            alignment=MainAxisAlignment.SPACE_BETWEEN,
-                        ),
-                    ],
-                    on_click=partial(self.training_view, training['id']),
-                )
-                for training in sorted(self.trainings, key=lambda x: x['date'], reverse=True)
-            ],
+                  self.dlg_modal, ] + [
+                  Card(
+                      controls=[
+                          Row(
+                              controls=[
+                                       Text(
+                                           value=training['date'],
+                                           size=18,
+                                           font_family=Fonts.SEMIBOLD,
+                                           color=colors.ON_PRIMARY,
+                                       ),
+                                   ] + (
+                                       [
+                                           Container(
+                                               content=Row(
+                                                   controls=[
+                                                       Image(
+                                                           src=Icons.CREATE,
+                                                           height=10,
+                                                           color=colors.ON_BACKGROUND,
+                                                       ),
+                                                       Text(
+                                                           value=await self.client.session.gtv(
+                                                               key='create_duplicate'),
+                                                           size=13,
+                                                           font_family=Fonts.SEMIBOLD,
+                                                           color=colors.ON_BACKGROUND,
+                                                       ),
+                                                   ],
+                                                   spacing=4,
+                                               ),
+                                               padding=7,
+                                               border_radius=24,
+                                               bgcolor=colors.BACKGROUND,
+                                               on_click=partial(self.open_dlg,
+                                                                training['date']),
+                                           ),
+                                       ] if 'exercises' in training and training[
+                                           'exercises'] else []
+                                   ),
+                              alignment=MainAxisAlignment.SPACE_BETWEEN,
+                          ),
+                      ],
+                      on_click=partial(self.training_view, training['id']),
+                  )
+                  for training in sorted(self.trainings, key=lambda x: x['date'], reverse=True)
+              ],
         )
 
     async def close_dlg(self, _):
@@ -145,14 +151,14 @@ class AccountTrainingListView(AdminBaseView):
                 account_service_id=self.account_service_id,
             ),
         )
-    
+
     async def create_duplicate_training(self, _):
         await self.set_type(loading=True)
-        duplicate_training = await self.client.session.api.admin.trainings.get_list(
-            account_service_id=self.account_service_id,
-            date=self.duplicate_date,
-        )
         try:
+            duplicate_training = await self.client.session.api.admin.trainings.get_by_date(
+                account_service_id=self.account_service_id,
+                date=self.duplicate_date,
+            )
             for training in duplicate_training:
                 training_id = await self.client.session.api.admin.trainings.create(
                     account_service_id=self.account_service_id,

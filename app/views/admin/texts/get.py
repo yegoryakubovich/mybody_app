@@ -126,8 +126,8 @@ class TextView(AdminBaseView):
         await self.client.change_view(go_back=True, with_restart=True)
 
     async def update_text(self, _):
-        await self.set_type(loading=True)
         try:
+            await self.set_type(loading=True)
             await self.client.session.api.admin.texts.update(
                 key=self.text['key'],
                 value_default=self.tf_value_default.value,

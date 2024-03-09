@@ -112,6 +112,7 @@ class ArticleView(AdminBaseView):
 
     async def delete_article(self, _):
         try:
+            await self.set_type(loading=True)
             await self.client.session.api.admin.articles.delete(
                 id_=self.article_id,
             )

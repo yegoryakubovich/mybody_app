@@ -52,13 +52,12 @@ class PermissionCreateView(AdminBaseView):
          )
 
     async def create_permission(self, _):
-        await self.set_type(loading=True)
         fields = [(self.tf_id_str, 2, 32), (self.tf_name, 2, 1024)]
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
-                await self.set_type(loading=False)
                 return
         try:
+            await self.set_type(loading=True)
             await self.client.session.api.admin.permissions.create(
                 id_str=self.tf_id_str.value,
                 name=self.tf_name.value,

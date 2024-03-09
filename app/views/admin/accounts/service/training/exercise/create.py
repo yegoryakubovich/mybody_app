@@ -43,39 +43,49 @@ class AccountTrainingExerciseCreateView(AdminBaseView):
         self.exercises = await self.client.session.api.client.exercises.get_list()
         await self.set_type(loading=False)
 
-        exercise_options = [
-            Option(
-                text=await self.client.session.gtv(key=exercise['name_text']),
-                key=exercise['id']
-            ) for exercise in self.exercises
-        ]
-        self.dd_exercise = Dropdown(
-            label=await self.client.session.gtv(key='exercise'),
-            value=exercise_options[0].key,
-            options=exercise_options,
-        )
-        self.tf_priority, self.tf_quantity, self.tf_rest = [
-            TextField(
-                label=await self.client.session.gtv(key=key),
-            )
-            for key in ['priority', 'quantity', 'rest']
-        ]
-        self.controls = await self.get_controls(
-            title=await self.client.session.gtv(key='admin_account_training_exercise_create_view_title'),
-            main_section_controls=[
-                self.dd_exercise,
-                self.tf_priority,
-                self.tf_quantity,
-                self.tf_rest,
-                FilledButton(
-                    content=Text(
-                        value=await self.client.session.gtv(key='create'),
-                        size=16,
+        if not self.exercises:
+            self.controls = await self.get_controls(
+                title=await self.client.session.gtv(key='admin_account_training_exercise_create_view_title'),
+                main_section_controls=[
+                    Text(
+                        value=await self.client.session.gtv(key='no_exercises')
                     ),
-                    on_click=self.create_training_exercise,
-                ),
+                ],
+            )
+        else:
+            exercise_options = [
+                Option(
+                    text=await self.client.session.gtv(key=exercise['name_text']),
+                    key=exercise['id']
+                ) for exercise in self.exercises
             ]
-        )
+            self.dd_exercise = Dropdown(
+                label=await self.client.session.gtv(key='exercise'),
+                value=exercise_options[0].key,
+                options=exercise_options,
+            )
+            self.tf_priority, self.tf_quantity, self.tf_rest = [
+                TextField(
+                    label=await self.client.session.gtv(key=key),
+                )
+                for key in ['priority', 'quantity', 'rest']
+            ]
+            self.controls = await self.get_controls(
+                title=await self.client.session.gtv(key='admin_account_training_exercise_create_view_title'),
+                main_section_controls=[
+                    self.dd_exercise,
+                    self.tf_priority,
+                    self.tf_quantity,
+                    self.tf_rest,
+                    FilledButton(
+                        content=Text(
+                            value=await self.client.session.gtv(key='create'),
+                            size=16,
+                        ),
+                        on_click=self.create_training_exercise,
+                    ),
+                ]
+            )
 
     async def create_training_exercise(self, _):
         fields = [(self.tf_priority, 1, 3, True), (self.tf_quantity, 1, 3, True), (self.tf_rest, 1, 3, True)]

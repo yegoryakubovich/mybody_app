@@ -92,11 +92,6 @@ class AccountListView(AdminBaseView):
     async def account_view(self, account_id, _):
         await self.client.change_view(view=AccountView(account_id=account_id))
 
-    async def search(self, _):
-        await self.client.session.api.account.search(
-            username=self.tf_search.value,
-        )
-
     async def next_page(self, _):
         if self.page_account < self.total_pages:
             self.page_account += 1

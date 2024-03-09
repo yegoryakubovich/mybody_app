@@ -13,6 +13,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+
+
 from flet_core import ScrollMode
 from flet_core.dropdown import Option
 from mybody_api_client.utils import ApiException
@@ -103,13 +105,12 @@ class CountryCreateView(AdminBaseView):
         )
 
     async def create_country(self, _):
-        await self.set_type(loading=True)
         fields = [(self.tf_id_str, 2, 16), (self.tf_name, 1, 1024)]
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
-                await self.set_type(loading=False)
                 return
         try:
+            await self.set_type(loading=True)
             await self.client.session.api.admin.countries.create(
                 id_str=self.tf_id_str.value,
                 name=self.tf_name.value,

@@ -47,14 +47,13 @@ class RoleCreateView(AdminBaseView):
         )
 
     async def create_role(self, _):
-        await self.set_type(loading=True)
         from app.views.admin.roles import RoleView
         fields = [(self.tf_name, 2, 1024)]
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
-                await self.set_type(loading=False)
                 return
         try:
+            await self.set_type(loading=True)
             role_id = await self.client.session.api.admin.roles.create(
                 name=self.tf_name.value,
             )
