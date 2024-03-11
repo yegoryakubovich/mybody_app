@@ -40,8 +40,7 @@ class ProductCreateView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.articles = await self.client.session.api.client.articles.get_list(
-        )
+        self.articles = await self.client.session.api.client.articles.get_list()
         await self.set_type(loading=False)
         nutrients_type_dict = {
             await self.client.session.gtv(key='proteins'): 'proteins',
@@ -114,7 +113,7 @@ class ProductCreateView(AdminBaseView):
 
     async def create_product(self, _):
         from app.views.admin.products.get import ProductView
-        fields = [(self.tf_name, 1, 32)]
+        fields = [(self.tf_name, 2, 1024)]
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
                 return

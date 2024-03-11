@@ -21,7 +21,9 @@ from flet_core import Text, ScrollMode, colors
 
 from app.controls.information.card import Card
 from app.controls.layout import AdminBaseView
+from app.controls.navigation.pagination import PaginationWidget
 from app.utils import Fonts
+from app.utils.pagination import paginate_items, total_page
 from app.views.admin.exercises.create import ExerciseCreateView
 from app.views.admin.exercises.get import ExerciseView
 
@@ -29,11 +31,16 @@ from app.views.admin.exercises.get import ExerciseView
 class ExerciseListView(AdminBaseView):
     route = '/admin/exercise/list/get'
     exercises: list[dict]
+    page_text: int = 1
+    total_pages: int
 
     async def build(self):
         await self.set_type(loading=True)
         self.exercises = await self.client.session.api.client.exercises.get_list()
         await self.set_type(loading=False)
+
+        self.total_pages = total_page(self.exercises)
+        self.exercises = paginate_items(self.exercises, self.page_text)
 
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
@@ -58,7 +65,16 @@ class ExerciseListView(AdminBaseView):
                     on_click=partial(self.exercise_view, exercise['id']),
                 )
                 for exercise in self.exercises
-            ],
+            ] + [
+                PaginationWidget(
+                    current_page=self.page_text,
+                    total_pages=self.total_pages,
+                    on_back=self.previous_page,
+                    on_next=self.next_page,
+                    text_back=await self.client.session.gtv(key='back'),
+                    text_next=await self.client.session.gtv(key='next'),
+                ),
+            ]
          )
 
     async def create_exercise(self, _):
@@ -66,3 +82,13 @@ class ExerciseListView(AdminBaseView):
 
     async def exercise_view(self, exercise_id, _):
         await self.client.change_view(view=ExerciseView(exercise_id=exercise_id))
+
+    async def next_page(self, _):
+        if self.page_text < self.total_pages:
+            self.page_text += 1
+            await self.restart()
+
+    async def previous_page(self, _):
+        if self.page_text > 1:
+            self.page_text -= 1
+            await self.restart()

@@ -55,6 +55,7 @@ class Session:
         await self.page.set_clipboard_async(value)
 
     async def error(self, exception: ApiException):
+        print(exception)
         title = await self.client.session.gtv(key=f'error_{exception.code}')
         await self.bs_error.open_(
             title=title.format(**exception.kwargs),

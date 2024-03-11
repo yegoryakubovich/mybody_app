@@ -26,6 +26,7 @@ from app.controls.information.search_bar import SearchBar
 from app.controls.layout import AdminBaseView
 from app.controls.navigation.pagination import PaginationWidget
 from app.utils import Fonts
+from app.utils.pagination import paginate_items, total_page
 from app.views.admin.products.create import ProductCreateView
 from app.views.admin.products.get import ProductView
 
@@ -37,8 +38,7 @@ class ProductListView(AdminBaseView):
     anchor: SearchBar
     text: Text
     page_product: int = 1
-    total_pages: int = 1
-    items_per_page: int = 6
+    total_pages: int
 
     async def build(self):
         await self.set_type(loading=True)
@@ -47,9 +47,8 @@ class ProductListView(AdminBaseView):
         )
         await self.set_type(loading=False)
 
-        self.total_pages = (len(self.products) - 1) // self.items_per_page + 1
-        self.products = self.products[(
-            self.page_product - 1) * self.items_per_page: self.page_product * self.items_per_page]
+        self.total_pages = total_page(self.products)
+        self.products = paginate_items(self.products, self.page_product)
 
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
@@ -142,11 +141,9 @@ class ProductListView(AdminBaseView):
     async def next_page(self, _):
         if self.page_product < self.total_pages:
             self.page_product += 1
-            await self.build()
-            await self.update_async()
+            await self.restart()
 
     async def previous_page(self, _):
         if self.page_product > 1:
             self.page_product -= 1
-            await self.build()
-            await self.update_async()
+            await self.restart()

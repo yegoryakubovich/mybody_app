@@ -24,6 +24,7 @@ from app.controls.information.card import Card
 from app.controls.layout import AdminBaseView
 from app.controls.navigation.pagination import PaginationWidget
 from app.utils import Fonts
+from app.utils.pagination import total_page, paginate_items
 from .create import TextCreateView
 from .get import TextView
 
@@ -32,17 +33,15 @@ class TextListView(AdminBaseView):
     route = '/admin/text/list/get'
     texts: list[dict]
     page_text: int = 1
-    total_pages: int = 1
-    items_per_page: int = 6
+    total_pages: int
 
     async def build(self):
         await self.set_type(loading=True)
         self.texts = await self.client.session.api.admin.texts.get_list()
         await self.set_type(loading=False)
 
-        self.total_pages = (len(self.texts) - 1) // self.items_per_page + 1
-        self.texts = self.texts[(
-            self.page_text - 1) * self.items_per_page: self.page_text * self.items_per_page]
+        self.total_pages = total_page(self.texts)
+        self.texts = paginate_items(self.texts, self.page_text)
 
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
@@ -88,11 +87,9 @@ class TextListView(AdminBaseView):
     async def next_page(self, _):
         if self.page_text < self.total_pages:
             self.page_text += 1
-            await self.build()
-            await self.update_async()
+            await self.restart()
 
     async def previous_page(self, _):
         if self.page_text > 1:
             self.page_text -= 1
-            await self.build()
-            await self.update_async()
+            await self.restart()

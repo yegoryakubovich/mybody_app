@@ -105,7 +105,7 @@ class CountryCreateView(AdminBaseView):
         )
 
     async def create_country(self, _):
-        fields = [(self.tf_id_str, 2, 16), (self.tf_name, 1, 1024)]
+        fields = [(self.tf_id_str, 2, 32), (self.tf_name, 2, 32)]
         for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
                 return
