@@ -37,10 +37,11 @@ class Meal:
     nutrients: list[int]
     meal_report_id: int = None
     on_click: Any
+    color: str = None
 
     def __init__(self, name: str, nutrients: list[int], on_click: Any, meal_report_id: int = None):
         self.name = name
-        self.nutrition = nutrients
+        self.nutrients = nutrients
         self.meal_report_id = meal_report_id
         self.on_click = on_click
 
@@ -61,11 +62,14 @@ class MealButton(Container):
             nutrients: list[int],
             on_click: Any,
             meal_report_id: int = None,
+            color: str = None,
+            bgcolor: str = None,
     ):
         super().__init__()
         self.meal_report_id = meal_report_id
         self.on_click = on_click
         self.height = 50
+        self.bgcolor = bgcolor
         self.border_radius = 10
         self.padding = 10
         images = [
@@ -77,10 +81,11 @@ class MealButton(Container):
             value=name,
             size=18,
             font_family=Fonts.SEMIBOLD,
+            color=color
         )
-        self.nutrient_texts = list(map(lambda value: Text(value=value, font_family=Fonts.REGULAR), nutrients))
-        self.images = list(map(lambda src: Image(src=src, width=15), images))
-        self.arrow_image = Image(src=Icons.NEXT, width=15)
+        self.nutrient_texts = list(map(lambda value: Text(value=value, font_family=Fonts.REGULAR, color=color), nutrients))
+        self.images = list(map(lambda src: Image(src=src, width=15, color=color), images))
+        self.arrow_image = Image(src=Icons.NEXT, width=15, color=color)
         self.content = Row(
             controls=[
                 Container(content=self.name_text, expand=7),
@@ -100,26 +105,6 @@ class MealButton(Container):
             expand=True,
             alignment=MainAxisAlignment.SPACE_BETWEEN,
         )
-        self.update_color(meal_report_id)
-
-    def update_color(self, meal_report_id):
-        if meal_report_id:
-            color = colors.ON_PRIMARY_CONTAINER
-            bgcolor = colors.PRIMARY_CONTAINER
-        else:
-            color = colors.ON_PRIMARY
-            bgcolor = colors.PRIMARY
-
-        self.bgcolor = bgcolor
-        self.update_text_and_image_color(color)
-
-    def update_text_and_image_color(self, color):
-        self.name_text.color = color
-        self.arrow_image.color = color
-        for text in self.nutrient_texts:
-            text.color = color
-        for image in self.images:
-            image.color = color
 
 
 class HomeTab(BaseTab):
@@ -167,14 +152,32 @@ class HomeTab(BaseTab):
                 self.exercise.append(training_info)
                 self.exercise.sort(key=lambda x: x['training_exercise']['priority'])
 
-        meals = [
-            Meal(
+        meals_buttons = []
+        current_meal_with_report = False
+        next_meal_after_report = False
+
+        for meal in self.meals:
+            if meal['meal_report_id']:
+                meal_color = colors.ON_PRIMARY_CONTAINER
+                meal_bgcolor = colors.PRIMARY_CONTAINER
+                current_meal_with_report = True
+            elif not meal['meal_report_id'] and current_meal_with_report and not next_meal_after_report:
+                meal_color = colors.ON_PRIMARY
+                meal_bgcolor = colors.PRIMARY
+                next_meal_after_report = True
+            else:
+                meal_color = colors.ON_BACKGROUND
+                meal_bgcolor = colors.SURFACE
+
+            meal_button = MealButton(
                 name=await self.client.session.gtv(key=meal['type']),
                 nutrients=[meal['proteins'], meal['fats'], meal['carbohydrates']],
-                meal_report_id=meal['meal_report_id'],
                 on_click=partial(self.meal_view, meal['id']),
-            ) for meal in self.meals
-        ]
+                meal_report_id=meal['meal_report_id'],
+                color=meal_color,
+                bgcolor=meal_bgcolor
+            )
+            meals_buttons.append(meal_button)
 
         trainings = [
             Training(
@@ -230,15 +233,8 @@ class HomeTab(BaseTab):
                             font_family=Fonts.BOLD,
                             color=colors.ON_BACKGROUND,
                         ),
-                        any(meals) and Column(
-                            controls=[
-                                MealButton(
-                                    name=meal.name,
-                                    nutrients=meal.nutrition,
-                                    on_click=meal.on_click,
-                                    meal_report_id=meal.meal_report_id,
-                                ) for meal in meals
-                            ],
+                        any(meals_buttons) and Column(
+                            controls=meals_buttons
                         ) or Text(
                             value=await self.client.session.gtv(key='meal_planning_stage'),
                             size=15,
