@@ -48,6 +48,7 @@ class BottomSheet(BottomSheetFlet):
                                          Container(
                                              content=Image(
                                                  src=icon,
+                                                 color=colors.PRIMARY,
                                              ),
                                              margin=margin.only(bottom=16),
                                          ),
@@ -55,12 +56,14 @@ class BottomSheet(BottomSheetFlet):
                                              value=title,
                                              font_family=Fonts.SEMIBOLD,
                                              size=28,
+                                             color=colors.ON_BACKGROUND,
                                          ),
                                          Text(
                                              value=description,
                                              font_family=Fonts.REGULAR,
                                              size=16,
                                              text_align=TextAlign.CENTER,
+                                             color=colors.ON_BACKGROUND,
                                          ),
                                      ] + (
                                          [

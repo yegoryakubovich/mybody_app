@@ -27,15 +27,15 @@ class ProductChipButton(ElevatedButton):
             value=text,
             font_family=Fonts.MEDIUM,
             text_align=TextAlign.CENTER,
-            color=colors.ON_PRIMARY,
+            color=colors.ON_PRIMARY_CONTAINER,
         )
         self.style = ButtonStyle(
             shape={MaterialState.DEFAULT: RoundedRectangleBorder(radius=10)},
             overlay_color={
-                MaterialState.DEFAULT: colors.PRIMARY,
+                MaterialState.DEFAULT: colors.SURFACE,
             },
         )
-        self.bgcolor = colors.PRIMARY
+        self.bgcolor = colors.PRIMARY_CONTAINER
         self.elevation = 0
         self.height = 25
         self.on_click = on_click

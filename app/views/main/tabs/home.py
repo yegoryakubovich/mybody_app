@@ -104,13 +104,11 @@ class MealButton(Container):
 
     def update_color(self, meal_report_id):
         if meal_report_id:
-            print('yes')
-            color = colors.BACKGROUND
-            bgcolor = colors.PRIMARY
-        else:
-            print('no')
-            color = colors.ON_PRIMARY
+            color = colors.ON_PRIMARY_CONTAINER
             bgcolor = colors.PRIMARY_CONTAINER
+        else:
+            color = colors.ON_PRIMARY
+            bgcolor = colors.PRIMARY
 
         self.bgcolor = bgcolor
         self.update_text_and_image_color(color)
@@ -293,6 +291,7 @@ class HomeTab(BaseTab):
                             value=await self.client.session.gtv(key='training_planning_stage'),
                             size=15,
                             font_family=Fonts.MEDIUM,
+                            color=colors.ON_BACKGROUND,
                         )
 
                     ],
