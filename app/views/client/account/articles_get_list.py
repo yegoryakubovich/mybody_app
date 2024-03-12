@@ -15,7 +15,7 @@
 #
 
 
-from flet_core import Text
+from flet_core import Text, colors
 
 from app.controls.information.card import Card
 from app.controls.layout import ClientBaseView
@@ -43,6 +43,7 @@ class ArticleListView(ClientBaseView):
                                 value=await self.client.session.gtv(key=article['name_text']),
                                 size=18,
                                 font_family=Fonts.SEMIBOLD,
+                                color=colors.ON_BACKGROUND,
                             ),
                         ],
                         url=get_url_article(
@@ -59,6 +60,7 @@ class ArticleListView(ClientBaseView):
                     value=await self.client.session.gtv(key='not_articles'),
                     size=18,
                     font_family=Fonts.SEMIBOLD,
+                    color=colors.ON_BACKGROUND,
                 )
             )
 

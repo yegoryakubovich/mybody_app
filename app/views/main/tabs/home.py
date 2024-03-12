@@ -262,7 +262,7 @@ class HomeTab(BaseTab):
                                                         Text(
                                                             value=training.name,
                                                             size=10,
-                                                            color=colors.ON_PRIMARY,
+                                                            color=colors.ON_PRIMARY_CONTAINER,
                                                             font_family=Fonts.REGULAR,
                                                         ),
                                                     ],
@@ -284,7 +284,7 @@ class HomeTab(BaseTab):
                                 alignment=MainAxisAlignment.SPACE_BETWEEN
                             ),
                             padding=10,
-                            bgcolor=colors.PRIMARY,
+                            bgcolor=colors.PRIMARY_CONTAINER,
                             border_radius=10,
                             on_click=self.training_view
                         ) or Text(
