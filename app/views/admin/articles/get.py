@@ -92,7 +92,7 @@ class ArticleView(AdminBaseView):
             sections=[
                 Section(
                     title=await self.client.session.gtv(key='translations'),
-                    on_create_click=self.create_translation,
+                    create_button=self.create_translation,
                     controls=[
                         Card(
                             controls=[

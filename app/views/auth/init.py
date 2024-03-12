@@ -67,11 +67,12 @@ class InitView(AuthView):
             await self.client.change_view(view=LanguageView(), delete_current=True)
             return
 
-        await self.set_type(loading=True)
         try:
+            await self.set_type(loading=True)
             payments = await self.client.session.api.client.payments.get_list(
                 account_service_id=account_service.id
             )
+            await self.set_type(loading=False)
         except ApiException as exception:
             await self.set_type(loading=False)
             return await self.client.session.error(exception=exception)

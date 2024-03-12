@@ -45,7 +45,7 @@ class ExerciseListView(AdminBaseView):
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='admin_exercise_get_list_view_title'),
-            on_create_click=self.create_exercise,
+            create_button=self.create_exercise,
             main_section_controls=[
                 Card(
                     controls=[

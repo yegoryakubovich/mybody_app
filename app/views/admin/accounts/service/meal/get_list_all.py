@@ -91,7 +91,7 @@ class AccountMealListAllView(AdminBaseView):
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='admin_account_meal_get_list_view_title'),
-            on_create_click=self.create_meal,
+            create_button=self.create_meal,
             main_section_controls=[
                   self.dlg_modal, ] + [
                   Card(

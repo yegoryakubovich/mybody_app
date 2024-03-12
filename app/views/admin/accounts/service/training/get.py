@@ -103,7 +103,7 @@ class AccountTrainingView(AdminBaseView):
             sections=[
                 Section(
                     title=await self.client.session.gtv(key='exercises'),
-                    on_create_click=self.create_training_exercise,
+                    create_button=self.create_training_exercise,
                     controls=[
                         Card(
                             controls=[

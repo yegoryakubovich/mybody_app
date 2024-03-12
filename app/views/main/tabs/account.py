@@ -15,7 +15,6 @@
 #
 
 
-import webbrowser
 from functools import partial
 from typing import Any
 
@@ -51,10 +50,6 @@ class Section:
     def __init__(self, name: str, settings_: list[Setting]):
         self.name = name
         self.settings = settings_
-
-
-async def support(_):
-    webbrowser.open(settings.url_telegram)
 
 
 class AccountTab(BaseTab):
@@ -178,50 +173,50 @@ class AccountTab(BaseTab):
         ]
 
         self.controls = [
-                            Container(
-                                content=Column(
-                                    controls=[
-                                        CircleAvatar(
-                                            content=Image(
-                                                src=Icons.ACCOUNT,
-                                                color=colors.PRIMARY,
-                                            ),
-                                            bgcolor=colors.ON_PRIMARY,
-                                            radius=38,
-                                        ),
-                                        Text(
-                                            value=f'{firstname} {lastname}',
-                                            font_family=Fonts.SEMIBOLD,
-                                            size=30,
-                                            color=colors.ON_BACKGROUND,
-                                        ),
-                                        Text(
-                                            value=f'@{username}',
-                                            font_family=Fonts.SEMIBOLD,
-                                            size=12,
-                                            color=colors.ON_BACKGROUND,
-                                        ),
-                                    ],
-                                    spacing=0,
-                                    horizontal_alignment=CrossAxisAlignment.CENTER,
-                                ),
-                                padding=padding.only(top=24),
-                                alignment=alignment.center,
+            Container(
+                content=Column(
+                    controls=[
+                        CircleAvatar(
+                            content=Image(
+                                src=Icons.ACCOUNT,
+                                color=colors.PRIMARY,
                             ),
-                        ] + sections_controls + [
-                            Container(
-                                content=Text(
-                                    value=f'{await self.client.session.gtv(key="version")} {settings.version}',
-                                    font_family=Fonts.REGULAR,
-                                    size=16,
-                                    color=colors.ON_BACKGROUND,
-                                ),
-                                alignment=alignment.center,
-                                on_click=self.go_admin,
-                                padding=padding.symmetric(vertical=4),
-                                ink=True,
-                            ),
-                        ]
+                            bgcolor=colors.ON_PRIMARY,
+                            radius=38,
+                        ),
+                        Text(
+                            value=f'{firstname} {lastname}',
+                            font_family=Fonts.SEMIBOLD,
+                            size=30,
+                            color=colors.ON_BACKGROUND,
+                        ),
+                        Text(
+                            value=f'@{username}',
+                            font_family=Fonts.SEMIBOLD,
+                            size=12,
+                            color=colors.ON_BACKGROUND,
+                        ),
+                    ],
+                    spacing=0,
+                    horizontal_alignment=CrossAxisAlignment.CENTER,
+                ),
+                padding=padding.only(top=24),
+                alignment=alignment.center,
+            ),
+        ] + sections_controls + [
+            Container(
+                content=Text(
+                    value=f'{await self.client.session.gtv(key="version")} {settings.version}',
+                    font_family=Fonts.REGULAR,
+                    size=16,
+                    color=colors.ON_BACKGROUND,
+                ),
+                alignment=alignment.center,
+                on_click=self.go_admin,
+                padding=padding.symmetric(vertical=4),
+                ink=True,
+            ),
+        ]
 
     async def go_admin(self, _):
         if 'admin' in self.client.session.account.permissions:

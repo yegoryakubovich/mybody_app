@@ -38,7 +38,7 @@ class RoleListView(AdminBaseView):
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='admin_role_get_list_view_title'),
-            on_create_click=self.create_role,
+            create_button=self.create_role,
             main_section_controls=[
                 Card(
                     controls=[

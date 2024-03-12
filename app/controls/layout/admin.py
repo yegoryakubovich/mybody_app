@@ -27,15 +27,15 @@ from app.utils import Fonts, Icons
 class Section:
     title: str
     controls: list
-    on_create_click: Any = None
+    create_button: Any = None
 
-    def __init__(self, title: str, controls: list, on_create_click: Any = None, ):
+    def __init__(self, title: str, controls: list, create_button: Any = None, ):
         self.title = title
         self.controls = controls
-        self.on_create_click = on_create_click
+        self.create_button = create_button
 
     @staticmethod
-    async def get_title(title: str, on_create_click=None):
+    async def get_title(title: str, create_button: Any = None):
         controls = [
             Text(
                 value=title,
@@ -45,7 +45,7 @@ class Section:
             ),
         ]
 
-        if on_create_click:
+        if create_button:
             controls.append(
                 Container(
                     content=Row(
@@ -67,7 +67,7 @@ class Section:
                     padding=7,
                     border_radius=24,
                     bgcolor='#008F12',
-                    on_click=on_create_click,
+                    on_click=create_button,
                 ),
             )
 
@@ -77,7 +77,7 @@ class Section:
         )
 
     async def get_controls(self) -> list:
-        title_control = await self.get_title(title=self.title, on_create_click=self.on_create_click)
+        title_control = await self.get_title(title=self.title, create_button=self.create_button)
 
         controls = [
             Container(
@@ -104,17 +104,15 @@ class AdminBaseView(View):
             self,
             title: str,
             main_section_controls: list,
-            text_key: str = None,
             sections: list[Section] = None,
-            on_create_click: Any = None,
-            back_with_restart: bool = True,
+            text_key: str = None,
+            create_button: Any = None,
     ) -> list:
 
         title_control = await self.get_title(
             title=title,
             text_key=text_key,
-            on_create_click=on_create_click,
-            back_with_restart=back_with_restart,
+            create_button=create_button,
         )
 
         main_content = [

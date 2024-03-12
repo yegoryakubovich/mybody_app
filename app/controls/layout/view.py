@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 from functools import partial
+from typing import Any
 
 from flet_core import Container, Image, alignment, padding, BoxShadow, Row, colors
 from flet_manager.utils import get_svg
@@ -56,23 +57,20 @@ class View(BaseView):
 
     async def get_title(
             self,
-            title: str,
-            go_back_button=True,
-            on_create_click=None,
-            back_with_restart=False,
+            title: str = None,
+            create_button: Any = None,
             text_key: str = None,
     ):
 
         async def go_back(_):
-            await self.client.change_view(go_back=True, with_restart=back_with_restart)
+            await self.client.change_view(go_back=True, with_restart=True)
 
         async def go_text(text_key_, _):
             from app.views.admin.texts import TextView
             await self.client.change_view(view=TextView(key=text_key_), delete_current=True)
 
         controls = []
-        # Go back button
-        if go_back_button:
+        if title:
             controls.append(
                 Row(
                     controls=[
@@ -91,11 +89,11 @@ class View(BaseView):
                             size=36,
                             font_family=Fonts.SEMIBOLD,
                             color=colors.ON_BACKGROUND,
-                            no_wrap=False,
+                            width=None,
+                            expand=True,
                         ),
                     ],
-                    wrap=True,
-                )
+                ),
             )
 
         if text_key:
@@ -105,7 +103,7 @@ class View(BaseView):
                 )
             )
 
-        if on_create_click:
+        if create_button:
             controls.append(
                 Container(
                     content=Row(
@@ -127,7 +125,7 @@ class View(BaseView):
                     padding=7,
                     border_radius=24,
                     bgcolor='#008F12',
-                    on_click=on_create_click,
+                    on_click=create_button,
                 ),
             )
 
@@ -140,13 +138,18 @@ class View(BaseView):
         if loading:
             self.controls_last = self.controls
             self.controls = [
-                Loading(infinity=True, color='#008F12'),
+                Loading(infinity=True, color=colors.PRIMARY),
             ]
+            if self.page:
+                await self.update_async()
         else:
             if self.controls:
                 loading_control = self.controls[0]
                 loading_control.infinity = False
                 self.controls = self.controls_last
+                if self.page:
+                    await self.update_async()
             else:
                 self.controls = []
-
+                if self.page:
+                    await self.update_async()

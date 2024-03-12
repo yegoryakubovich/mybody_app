@@ -60,7 +60,7 @@ class RoleView(AdminBaseView):
             sections=[
                 Section(
                     title=await self.client.session.gtv(key='permissions'),
-                    on_create_click=self.create_permission,
+                    create_button=self.create_permission,
                     controls=[
                         Card(
                             controls=[

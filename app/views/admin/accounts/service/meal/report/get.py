@@ -105,7 +105,7 @@ class AccountMealReportView(AdminBaseView):
             )
             controls.append(button)
 
-            on_create_click = None
+            create_button = None
         else:
             not_report_text = Text(
                 value=await self.client.session.gtv(key='not_report'),
@@ -114,11 +114,11 @@ class AccountMealReportView(AdminBaseView):
             )
             controls.append(not_report_text)
 
-            on_create_click = self.create_training_report
+            create_button = self.create_training_report
 
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='report'),
-            on_create_click=on_create_click,
+            create_button=create_button,
             main_section_controls=controls,
         )
 

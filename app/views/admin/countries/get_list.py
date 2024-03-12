@@ -38,7 +38,7 @@ class CountryListView(AdminBaseView):
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='admin_country_get_list_view_title'),
-            on_create_click=self.create_country,
+            create_button=self.create_country,
             main_section_controls=[
                 Card(
                     controls=[

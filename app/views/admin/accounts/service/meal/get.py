@@ -136,7 +136,7 @@ class AccountMealView(AdminBaseView):
             sections=[
                 Section(
                     title=await self.client.session.gtv(key='products'),
-                    on_create_click=self.create_meal_product,
+                    create_button=self.create_meal_product,
                     controls=[
                         Card(
                             controls=[

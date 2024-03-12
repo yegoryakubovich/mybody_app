@@ -24,7 +24,6 @@ from app.controls.layout import View
 
 
 class BaseTab(Column):
-    title = 'My Body'
     controls_last: list = []
 
     def __init__(self, client: Client, view: View, **kwargs):
@@ -33,8 +32,7 @@ class BaseTab(Column):
         self.view = view
 
     async def build(self):
-        self.controls = [
-        ]
+        self.controls = []
 
     async def set_type(self, loading: bool = False):
         if loading:
@@ -42,12 +40,19 @@ class BaseTab(Column):
             self.controls = [
                 Loading(infinity=True, color=colors.PRIMARY),
             ]
-            await self.update_async()
+            if self.page:
+                await self.update_async()
         else:
-            loading_control = self.controls[0]
-            loading_control.infinity = False
-            self.controls = self.controls_last
-            await self.update_async()
+            if self.controls:
+                loading_control = self.controls[0]
+                loading_control.infinity = False
+                self.controls = self.controls_last
+                if self.page:
+                    await self.update_async()
+            else:
+                self.controls = []
+                if self.page:
+                    await self.update_async()
 
     async def on_load(self):
         await self.view.client.page.update_async()

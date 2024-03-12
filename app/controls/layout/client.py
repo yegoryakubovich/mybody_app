@@ -17,8 +17,7 @@
 
 from typing import Any
 
-from flet_core import Row, Container, Image, MainAxisAlignment, Column, margin
-from flet_manager.utils import get_svg
+from flet_core import Row, Container, MainAxisAlignment, Column, margin
 
 from app.controls.information import Text
 from app.controls.layout.view import View
@@ -28,15 +27,14 @@ from app.utils import Fonts
 class ClientSection:
     title: str
     controls: list
-    on_create_click: Any = None
+    create_button: Any = None
 
-    def __init__(self, title: str, controls: list, on_create_click: Any = None, ):
+    def __init__(self, title: str, controls: list):
         self.title = title
         self.controls = controls
-        self.on_create_click = on_create_click
 
     @staticmethod
-    async def get_title(title: str, on_create_click=None):
+    async def get_title(title: str):
         controls = [
             Text(
                 value=title,
@@ -45,39 +43,13 @@ class ClientSection:
             ),
         ]
 
-        if on_create_click:
-            controls.append(
-                Container(
-                    content=Row(
-                        controls=[
-                            Image(
-                                src=get_svg(path='assets/icons/addition.svg'),
-                                height=10,
-                                color='#FFFFFF',
-                            ),
-                            Text(
-                                value='Create',
-                                size=13,
-                                font_family=Fonts.SEMIBOLD,
-                                color='#FFFFFF',
-                            ),
-                        ],
-                        spacing=4,
-                    ),
-                    padding=7,
-                    border_radius=24,
-                    bgcolor='#008F12',
-                    on_click=on_create_click,
-                ),
-            )
-
         return Row(
             controls=controls,
             alignment=MainAxisAlignment.SPACE_BETWEEN,
         )
 
     async def get_controls(self) -> list:
-        title_control = await self.get_title(title=self.title, on_create_click=self.on_create_click)
+        title_control = await self.get_title(title=self.title)
 
         controls = [
             Container(
@@ -105,14 +77,10 @@ class ClientBaseView(View):
             title: str,
             main_section_controls: list,
             sections: list[ClientSection] = None,
-            on_create_click: Any = None,
-            back_with_restart: bool = False,
     ) -> list:
 
         title_control = await self.get_title(
             title=title,
-            on_create_click=on_create_click,
-            back_with_restart=back_with_restart,
         )
 
         main_content = [

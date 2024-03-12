@@ -64,6 +64,7 @@ class MealView(ClientBaseView):
         self.meal_id = meal_id
 
     async def build(self):
+        await self.set_type(loading=True)
         self.meal = await self.client.session.api.client.meals.get(
             id_=self.meal_id,
         )
@@ -75,7 +76,8 @@ class MealView(ClientBaseView):
             if meal_product:
                 product_info['meal_product'] = meal_product
             self.products.append(product_info)
-
+        await self.set_type(loading=False
+                            )
         products_by_type = defaultdict(list)
         for product in self.products:
             meal = Meal(

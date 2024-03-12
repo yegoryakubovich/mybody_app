@@ -104,9 +104,11 @@ class MealButton(Container):
 
     def update_color(self, meal_report_id):
         if meal_report_id:
+            print('yes')
             color = colors.BACKGROUND
             bgcolor = colors.PRIMARY
         else:
+            print('no')
             color = colors.ON_PRIMARY
             bgcolor = colors.PRIMARY_CONTAINER
 
@@ -131,8 +133,9 @@ class HomeTab(BaseTab):
     user_tz: timezone
 
     async def build(self):
+        await self.set_type(loading=True)
         deviation = await self.client.session.api.client.timezones.get(
-            id_str=self.client.session.account.timezone
+            id_str=self.client.session.account.timezone,
         )
         self.user_tz = FixedOffset(deviation.deviation)
         self.date = datetime.now(self.user_tz).strftime('%Y-%m-%d')
@@ -143,7 +146,7 @@ class HomeTab(BaseTab):
         )
         self.meals = sorted(
             self.meals,
-            key=lambda meal: int(meal['type'].split('_')[1])
+            key=lambda meal: int(meal['type'].split('_')[1]),
         )
         try:
             self.trainings = await self.client.session.api.client.trainings.get_by_date(
@@ -152,6 +155,7 @@ class HomeTab(BaseTab):
             )
         except ApiException:
             self.trainings = {}
+        await self.set_type(loading=False)
 
         self.exercise = []
         if self.trainings:

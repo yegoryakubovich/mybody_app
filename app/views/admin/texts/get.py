@@ -94,7 +94,7 @@ class TextView(AdminBaseView):
             sections=[
                 Section(
                     title=await self.client.session.gtv(key='translation'),
-                    on_create_click=self.create_translation,
+                    create_button=self.create_translation,
                     controls=[
                         Card(
                             controls=[

@@ -51,7 +51,7 @@ class AccountMealListView(AdminBaseView):
         self.scroll = ScrollMode.AUTO
         self.controls = await self.get_controls(
             title=self.meal_date,
-            on_create_click=self.create_meal,
+            create_button=self.create_meal,
             main_section_controls=[
                 Card(
                     controls=[

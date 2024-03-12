@@ -56,7 +56,7 @@ class AccountTrainingReportView(AdminBaseView):
                 ),
                 on_click=self.delete_training_report,
             )
-            on_create_click = None
+            create_button = None
             controls = [self.tf_comment, button]
         else:
             self.tf_not_report = Text(
@@ -64,12 +64,12 @@ class AccountTrainingReportView(AdminBaseView):
                 size=20,
                 font_family=Fonts.MEDIUM,
             )
-            on_create_click = self.create_training_report
+            create_button = self.create_training_report
             controls = [self.tf_not_report]
 
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='report'),
-            on_create_click=on_create_click,
+            create_button=create_button,
             main_section_controls=controls,
         )
 
