@@ -17,7 +17,7 @@
 
 import json
 
-from flet_core import Container, Row, alignment, MainAxisAlignment, TextButton, Column, margin
+from flet_core import Container, Row, alignment, MainAxisAlignment, TextButton, Column, margin, colors
 
 from app.controls.button import FilledButton, ListItemButton
 from app.controls.information import Text
@@ -86,6 +86,19 @@ class PaymentView(AuthView):
                         on_click=self.payment,
                     ),
                     expand=True,
+                    alignment=alignment.bottom_center,
+                ),
+                Container(
+                    content=FilledButton(
+                        content=Text(
+                            value=await self.client.session.gtv(key='cancel_payment'),
+                            size=16,
+                            color=colors.ON_BACKGROUND
+                        ),
+                        width=640,
+                        bgcolor=colors.SURFACE,
+                        on_click=self.payment,
+                    ),
                     alignment=alignment.bottom_center,
                 ),
             ],

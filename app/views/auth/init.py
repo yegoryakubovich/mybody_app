@@ -70,18 +70,22 @@ class InitView(AuthView):
         try:
             await self.set_type(loading=True)
             payments = await self.client.session.api.client.payments.get_list(
-                account_service_id=account_service.id
+                account_service_id=account_service.id,
             )
             await self.set_type(loading=False)
         except ApiException as exception:
             await self.set_type(loading=False)
             return await self.client.session.error(exception=exception)
 
-        if not payments:
-            await self.client.change_view(view=PurchaseFirstView(), delete_current=True)
+        if self.client.session.account_service['state'] == 'ACTIVE':
+            await self.client.change_view(view=MainView(), delete_current=True)
             return
         else:
-            for payment in payments:
+            if not payments:
+                await self.client.change_view(view=PurchaseFirstView(), delete_current=True)
+                return
+            else:
+                payment = payments[-1]
                 if payment.state == 'waiting':
                     self.client.session.payment = Payment()
                     self.client.session.payment.currency = payment.service_cost.currency
@@ -100,6 +104,5 @@ class InitView(AuthView):
                     return
                 else:
                     await self.client.change_view(view=PurchaseFirstView(), delete_current=True)
-                    return
 
         await self.client.change_view(view=MainView())

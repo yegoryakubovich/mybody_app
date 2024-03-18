@@ -32,6 +32,7 @@ from .roles import RoleListView
 from .services import ServiceListView
 from .texts.get_list import TextListView
 from .timezones.get_list import TimezoneListView
+from .url import UrlListView
 from ...controls.button import ListItemButton
 from ...utils import Icons
 
@@ -120,6 +121,11 @@ class AdminView(AdminBaseView):
                 icon=Icons.ADMIN_SERVICES,
                 on_click=self.get_services,
             ),
+            Setting(
+                name='admin_url_get_list_view_title',
+                icon=Icons.ADMIN_SERVICES,
+                on_click=self.get_urls,
+            ),
         ]
 
         main_sections_controls = [
@@ -176,3 +182,6 @@ class AdminView(AdminBaseView):
 
     async def get_roles(self, _):
         await self.client.change_view(view=RoleListView())
+
+    async def get_urls(self, _):
+        await self.client.change_view(view=UrlListView())
