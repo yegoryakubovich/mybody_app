@@ -28,11 +28,11 @@ from app.views.admin.url.get import UrlView
 
 class UrlListView(AdminBaseView):
     route = '/admin/url/list/get'
-    url: list[dict]
+    urls: list[dict]
 
     async def build(self):
         await self.set_type(loading=True)
-        self.url = await self.client.session.api.client.url.get_list()
+        self.urls = await self.client.session.api.client.urls.get_list()
         await self.set_type(loading=False)
 
         self.scroll = ScrollMode.AUTO
@@ -51,7 +51,7 @@ class UrlListView(AdminBaseView):
                     ],
                     on_click=partial(self.url_view, url['id']),
                 )
-                for url in self.url
+                for url in self.urls
             ],
          )
 

@@ -15,14 +15,21 @@
 #
 
 
+from flet_core import Row
+from mybody_api_client.utils import ApiException
+
 from app.controls.button import FilledButton
-from app.controls.information import Text
+from app.controls.information import Text, SnackBar
+from app.controls.input import TextField
 from app.controls.layout import AdminBaseView
 
 
 class UrlView(AdminBaseView):
     route = '/admin/url/get'
     url = dict
+    tf_name: TextField
+    tf_redirect: TextField
+    snack_bar: SnackBar
 
     def __init__(self, url_id):
         super().__init__()
@@ -30,25 +37,65 @@ class UrlView(AdminBaseView):
 
     async def build(self):
         await self.set_type(loading=True)
-        self.url = await self.client.session.api.client.url.get(
-            id_str=self.url_id
+        self.url = await self.client.session.api.client.urls.get(
+            id_=self.url_id,
         )
         await self.set_type(loading=False)
 
+        self.tf_name = TextField(
+            label=await self.client.session.gtv(key='name'),
+            value=self.url['name'],
+        )
+        self.tf_redirect = TextField(
+            label=await self.client.session.gtv(key='redirect'),
+            value=self.url['redirect'],
+        )
+        self.snack_bar = SnackBar(
+            content=Text(
+                value=await self.client.session.gtv(key='successful'),
+            ),
+        )
         self.controls = await self.get_controls(
             title=self.url['name'],
             main_section_controls=[
-                FilledButton(
-                    content=Text(
-                        value=await self.client.session.gtv(key='delete'),
-                    ),
-                    on_click=self.delete_url,
+                self.tf_name,
+                self.tf_redirect,
+                Row(
+                    controls=[
+                        FilledButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='save'),
+                            ),
+                            on_click=self.update_url,
+                        ),
+                        FilledButton(
+                            content=Text(
+                                value=await self.client.session.gtv(key='delete'),
+                            ),
+                            on_click=self.delete_url,
+                        ),
+                    ],
                 ),
             ],
          )
 
     async def delete_url(self, _):
-        await self.client.session.api.admin.url.delete(
-            id_str=self.url_id,
+        await self.client.session.api.admin.urls.delete(
+            id_=self.url_id,
         )
         await self.client.change_view(go_back=True, with_restart=True)
+
+    async def update_url(self, _):
+        try:
+            await self.set_type(loading=True)
+            await self.client.session.api.admin.urls.update(
+                id_=self.url_id,
+                name=self.tf_name.value,
+                redirect=self.tf_redirect.value,
+            )
+            await self.set_type(loading=False)
+            self.snack_bar.open = True
+            await self.update_async()
+        except ApiException as exception:
+            await self.set_type(loading=False)
+            return await self.client.session.error(exception=exception)

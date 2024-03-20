@@ -36,6 +36,7 @@ class UrlCreateView(AdminBaseView):
         self.tf_redirect = TextField(
             label=await self.client.session.gtv(key='redirect'),
         )
+
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='admin_url_create_view_title'),
             main_section_controls=[
@@ -53,12 +54,12 @@ class UrlCreateView(AdminBaseView):
 
     async def create_url(self, _):
         fields = [(self.tf_name, 1, 64), (self.tf_redirect, 1, 1024)]
-        for field, min_len, max_len, check_int in fields:
+        for field, min_len, max_len in fields:
             if not await Error.check_field(self, field, min_len=min_len, max_len=max_len):
                 return
         try:
             await self.set_type(loading=True)
-            await self.client.session.api.admin.url.create(
+            await self.client.session.api.admin.urls.create(
                 name=self.tf_name.value,
                 redirect=self.tf_redirect.value,
             )

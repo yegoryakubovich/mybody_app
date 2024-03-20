@@ -36,6 +36,7 @@ class AuthenticationView(AuthView):
                 return
         # Create session
         try:
+            await self.set_type(loading=True)
             session = await self.client.session.api.client.sessions.create(
                 username=self.tf_username.value.replace(' ', ''),
                 password=self.tf_password.value.replace(' ', ''),

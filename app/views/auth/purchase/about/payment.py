@@ -18,6 +18,7 @@
 import json
 
 from flet_core import Container, Row, alignment, MainAxisAlignment, TextButton, Column, margin, colors
+from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton, ListItemButton
 from app.controls.information import Text
@@ -97,7 +98,7 @@ class PaymentView(AuthView):
                         ),
                         width=640,
                         bgcolor=colors.SURFACE,
-                        on_click=self.payment,
+                        on_click=self.cancelled_payment,
                     ),
                     alignment=alignment.bottom_center,
                 ),
@@ -114,3 +115,16 @@ class PaymentView(AuthView):
         await self.client.session.set_cs(key='token', value=None)
         from app.views.auth.init import InitView
         await self.client.change_view(view=InitView())
+
+    async def cancelled_payment(self, _):
+        from app.views.auth.purchase.about import PurchaseFirstView
+        try:
+            await self.set_type(loading=True)
+            await self.client.session.api.client.payments.cancel(
+                id_=self.client.session.payment.payment_id
+            )
+            await self.set_type(loading=False)
+            await self.client.change_view(view=PurchaseFirstView(), delete_current=True)
+        except ApiException as exception:
+            await self.set_type(loading=False)
+            return await self.client.session.error(exception=exception)
