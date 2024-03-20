@@ -20,7 +20,7 @@ from flet_core import ElevatedButton as FletElevatedButton, ButtonStyle, Materia
 
 
 class FilledButton(FletElevatedButton):
-    def __init__(self, horizontal_padding: int = 27, bgcolor=colors.SECONDARY, **kwargs):
+    def __init__(self, horizontal_padding: int = 27, bgcolor=colors.PRIMARY, **kwargs):
         super().__init__(**kwargs)
         self.style = ButtonStyle(
             padding={
@@ -29,12 +29,7 @@ class FilledButton(FletElevatedButton):
             shape={
                 MaterialState.DEFAULT: RoundedRectangleBorder(radius=6),
             },
-            overlay_color={
-                MaterialState.DEFAULT: colors.PRIMARY_CONTAINER,
-                MaterialState.HOVERED: colors.PRIMARY_CONTAINER,
-            },
-            shadow_color=None,
         )
         self.elevation = 0
         self.bgcolor = bgcolor
-        self.color = colors.BACKGROUND
+        self.color = colors.ON_PRIMARY

@@ -27,7 +27,7 @@ class ProductChipButton(ElevatedButton):
             value=text,
             font_family=Fonts.MEDIUM,
             text_align=TextAlign.CENTER,
-            color=colors.ON_PRIMARY_CONTAINER,
+            color=colors.BLACK,
         )
         self.style = ButtonStyle(
             shape={MaterialState.DEFAULT: RoundedRectangleBorder(radius=10)},

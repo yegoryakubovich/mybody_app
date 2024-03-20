@@ -29,9 +29,9 @@ class Dropdown(FletDropdown):
         )
         label_style = TextStyle(
             font_family=Fonts.REGULAR,
-            color=colors.ON_PRIMARY_CONTAINER,
+            color=colors.ON_BACKGROUND,
         )
-        self.border_color = colors.PRIMARY_CONTAINER
+        self.border_color = colors.PRIMARY
         self.text_style = text_style
         self.label_style = label_style
         self.bgcolor = colors.RED

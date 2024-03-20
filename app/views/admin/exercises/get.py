@@ -16,12 +16,13 @@
 
 
 from flet_core import Row
-from flet_core.dropdown import Option, Dropdown
+from flet_core.dropdown import Option
 from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.information.snack_bar import SnackBar
+from app.controls.input import Dropdown
 from app.controls.layout import AdminBaseView
 
 

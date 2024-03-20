@@ -155,9 +155,17 @@ class HomeTab(BaseTab):
         meals_buttons = []
         current_meal_with_report = False
         next_meal_after_report = False
+        first_meal = False
+
+        if not any(meal['meal_report_id'] for meal in self.meals):
+            first_meal = True
 
         for meal in self.meals:
-            if meal['meal_report_id']:
+            if first_meal:
+                meal_color = colors.ON_PRIMARY
+                meal_bgcolor = colors.PRIMARY
+                first_meal = False
+            elif meal['meal_report_id']:
                 meal_color = colors.ON_PRIMARY_CONTAINER
                 meal_bgcolor = colors.PRIMARY_CONTAINER
                 current_meal_with_report = True
