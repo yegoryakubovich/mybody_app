@@ -28,6 +28,7 @@ class Settings(BaseSettings):
     url: str
     url_telegram: str
     privacy_policy_article_id: int
+    secret_key: str
 
     model_config = SettingsConfigDict(env_file='.env')
 

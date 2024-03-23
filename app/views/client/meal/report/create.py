@@ -15,27 +15,27 @@
 #
 
 
-import base64
-import io
-import json
+from base64 import b64encode
+from io import BytesIO
 import os
+from json import dumps
 from functools import partial
+from typing import Any
 
 from flet_core import ScrollMode, AlertDialog, Container, Column, FilePickerUploadFile, Image, Row, \
-    MainAxisAlignment, TextButton, IconButton, icons, FilePickerUploadEvent, colors
-from flet_core.dropdown import Option
+    MainAxisAlignment, TextButton, IconButton, icons, FilePickerUploadEvent, colors, ListTile
 from mybody_api_client.utils import ApiException
 
 from app.controls.button import FilledButton, ProductChipButton
 from app.controls.information import Text
-from app.controls.input import TextField, Dropdown
+from app.controls.information.search_bar import SearchBar
+from app.controls.input import TextField
 from app.controls.layout import ClientBaseView
 from app.utils import Fonts, Error
 
 
 class MealReportView(ClientBaseView):
     tf_comment: TextField
-    dd_product: Dropdown
     tf_quantity: TextField
     dlg_modal: AlertDialog
     user_comment: str = ''
@@ -44,6 +44,7 @@ class MealReportView(ClientBaseView):
     added_product_controls = None
     added_photo_controls = None
     file_name: str = None
+    search_bar: Any
 
     def __init__(self, meal_id):
         super().__init__()
@@ -60,23 +61,27 @@ class MealReportView(ClientBaseView):
         )
         await self.set_type(loading=False)
 
-        product_options = [
-            Option(
-                text=await self.client.session.gtv(key=product['name_text']),
-                key=product['id'],
-            ) for product in self.products
-        ]
         self.tf_comment = TextField(
             value=self.user_comment,
             on_change=self.save_user_comment,
         )
-        self.dd_product = Dropdown(
-            label=await self.client.session.gtv(key='products'),
-            value=product_options[0].key,
-            options=product_options,
-        )
+
         self.tf_quantity = TextField(
             label=await self.client.session.gtv(key='quantity'),
+        )
+        self.search_bar = SearchBar(
+            on_change=self.on_search_product,
+            bar_hint_text=await self.client.session.gtv(key='search'),
+            controls=[
+                ListTile(
+                    title=Text(
+                        value=await self.client.session.gtv(key=product['name_text']),
+                    ),
+                    on_click=self.close_dlg_modal,
+                    data=product
+                )
+                for product in self.products
+            ]
         )
         self.dlg_modal = AlertDialog(
             content=Container(
@@ -87,7 +92,7 @@ class MealReportView(ClientBaseView):
                             size=20,
                             font_family=Fonts.SEMIBOLD,
                         ),
-                        self.dd_product,
+                        self.search_bar,
                         Text(
                             value=await self.client.session.gtv(key='weight'),
                             size=20,
@@ -122,27 +127,26 @@ class MealReportView(ClientBaseView):
             modal=False,
         )
         controls = []
-        for product, quantity in self.added_products:
+        for self.product, quantity in self.added_products:
             controls.append(
                 Row(
                     controls=[
                         ProductChipButton(
                             Text(
                                 value=await self.client.session.gtv(
-                                    key=product['name_text']
+                                    key=self.product['name_text']
                                 ) + ' ' + quantity + ' ' + await self.client.session.gtv(key='gr')
                             ).value,
                             on_click=None,
                         ),
                         IconButton(
                             icon=icons.DELETE,
-                            on_click=partial(self.remove_product, product, quantity),
+                            on_click=partial(self.remove_product, self.product, quantity),
                         ),
                     ],
                     spacing=1,
                 ),
             )
-
         self.added_product_controls = [
             Row(
                 controls=controls,
@@ -227,10 +231,22 @@ class MealReportView(ClientBaseView):
             ]
         )
 
-    async def remove_product(self, product_to_remove, quantity_to_remove, _):
-        self.added_products = [(product, quantity) for (product, quantity) in self.added_products if not (
-                product['id'] == product_to_remove['id'] and quantity == quantity_to_remove)]
-        await self.restart()
+    async def on_upload_progress(self, e: FilePickerUploadEvent):
+        if e.progress is not None and e.progress < 1.0:
+            pass
+        else:
+            path = f'upload/{e.file_name}'
+            print(path)
+            if os.path.exists(path):
+                with open(path, 'rb') as f:
+                    image_data = f.read()
+                self.data_io = BytesIO(image_data)
+                encoded_image_data = b64encode(image_data).decode()
+                self.file_name = e.file_name
+                self.photos.append(encoded_image_data)
+                await self.restart()
+            else:
+                pass
 
     async def upload_files(self, _):
         uf = []
@@ -245,29 +261,6 @@ class MealReportView(ClientBaseView):
                 await self.client.session.filepicker.upload_async([uf[-1]])
                 await self.on_upload_progress(e=FilePickerUploadEvent(file_name=f.name, progress=1.0, error=None))
 
-    async def on_upload_progress(self, e: FilePickerUploadEvent):
-        if e.progress < 1.0:
-            pass
-            # print(f"Загрузка файла {e.file_name} {e.progress:}")  # FIXME
-        else:
-            # Проверяем, существует ли файл
-            path = f'uploads/{e.file_name}'
-            if os.path.exists(path):
-                with open(path, 'rb') as f:
-                    image_data = f.read()
-                self.data_io = io.BytesIO(image_data)
-                encoded_image_data = base64.b64encode(image_data).decode()
-                self.file_name = e.file_name
-                self.photos.append(encoded_image_data)
-                os.remove(path)
-                await self.restart()
-            else:
-                pass
-                # print(f"Файл {e.file_name} еще не загружен.")  # FIXME
-
-    async def save_user_comment(self, event):
-        self.user_comment = event.data
-
     async def add_photo(self, _):
         await self.client.session.filepicker.open_(
             on_select=self.upload_files,
@@ -275,9 +268,17 @@ class MealReportView(ClientBaseView):
             allowed_extensions=['svg', 'jpg'],
         )
 
+    async def remove_product(self, product_to_remove, quantity_to_remove, _):
+        self.added_products = [(product, quantity) for (product, quantity) in self.added_products if not (
+                product['id'] == product_to_remove['id'] and quantity == quantity_to_remove)]
+        await self.restart()
+
+    async def save_user_comment(self, event):
+        self.user_comment = event.data
+
     async def close_dlg(self, _):
         self.dlg_modal.open = False
-        await self.update_async()
+        await self.restart()
 
     async def open_dlg(self, _):
         self.dlg_modal.open = True
@@ -288,16 +289,14 @@ class MealReportView(ClientBaseView):
         for field, min_len, max_len, check_int in fields:
             if not await Error.check_field(self, field, min_len=min_len, max_len=max_len, check_int=check_int):
                 return
+        self.added_products.append((self.product, self.tf_quantity.value))
         await self.close_dlg(_)
-        product = await self.client.session.api.client.products.get(id_=self.dd_product.value)
-        self.added_products.append((product, self.tf_quantity.value))
-        await self.restart()
 
     async def create_report(self, _):
         await self.set_type(loading=True)
         if len(self.added_products) > 0:
             product_list = [{"id": product[0]['id'], "value": int(product[1])} for product in self.added_products]
-            product_list_json = json.dumps(product_list, ensure_ascii=False)
+            product_list_json = dumps(product_list, ensure_ascii=False)
         else:
             product_list_json = None
         try:
@@ -317,3 +316,26 @@ class MealReportView(ClientBaseView):
         except ApiException as exception:
             await self.set_type(loading=False)
             return await self.client.session.error(exception=exception)
+
+    async def on_search_product(self, search_text):
+        filtered_products = []
+        for product in self.products:
+            product_name = await self.client.session.gtv(key=product['name_text'])
+            if search_text.data.lower() in product_name.lower():
+                filtered_products.append(product)
+
+        self.search_bar.controls = [
+            ListTile(
+                title=Text(
+                    value=await self.client.session.gtv(key=product['name_text']),
+                ),
+                on_click=self.close_dlg_modal,
+                data=product
+            )
+            for product in filtered_products
+        ]
+        await self.update_async()
+
+    async def close_dlg_modal(self, e):
+        self.product = await self.client.session.api.client.products.get(id_=e.control.data['id'])
+        await self.search_bar.close_view_async(await self.client.session.gtv(key=self.product['name_text']))

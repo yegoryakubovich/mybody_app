@@ -31,6 +31,5 @@ def create_app():
         assets_dir=abspath('assets'),
         fonts=fonts,
         themes=themes,
-        upload_dir='uploads',
     )
     return app.fastapi
