@@ -32,6 +32,5 @@ def create_app():
         fonts=fonts,
         themes=themes,
         upload_dir='uploads',
-        secret_key='1',  # FIXME
     )
     return app.fastapi
