@@ -28,6 +28,7 @@ from .exercises.get_list import ExerciseListView
 from .languages.get_list import LanguageListView
 from .permissions import PermissionListView
 from .products.get_list import ProductListView
+from .promocodes import PromocodeListView
 from .roles import RoleListView
 from .services import ServiceListView
 from .texts.get_list import TextListView
@@ -126,6 +127,11 @@ class AdminView(AdminBaseView):
                 icon=Icons.ADMIN_SERVICES,
                 on_click=self.get_urls,
             ),
+            Setting(
+                name='admin_promocode_get_list_view_title',
+                icon=Icons.ADMIN_SERVICES,
+                on_click=self.get_promocode,
+            ),
         ]
 
         main_sections_controls = [
@@ -185,3 +191,6 @@ class AdminView(AdminBaseView):
 
     async def get_urls(self, _):
         await self.client.change_view(view=UrlListView())
+
+    async def get_promocode(self, _):
+        await self.client.change_view(view=PromocodeListView())
