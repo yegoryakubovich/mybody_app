@@ -25,7 +25,7 @@ from app.controls.input import TextField
 from app.controls.layout import AdminBaseView, Section
 from app.utils import Fonts, Icons
 from app.views.admin.accounts.role import AccountRoleListView
-from app.views.admin.accounts.service.get import AccountServiceView
+from app.views.admin.accounts.service.get_list_day import AccountServiceView
 
 
 class AccountView(AdminBaseView):

@@ -14,6 +14,7 @@
 # limitations under the License.
 #
 
+
 from flet_core import Row
 from flet_core.dropdown import Option
 from mybody_api_client.utils import ApiException
@@ -62,14 +63,18 @@ class AccountTrainingExerciseView(AdminBaseView):
             value=self.exercise['training_exercise']['exercise'],
             options=exercise_options,
         )
-        self.tf_priority, self.tf_quantity, self.tf_rest = [
+        self.tf_priority, self.tf_rest = [
             TextField(
                 label=await self.client.session.gtv(key=key),
                 value=self.exercise['training_exercise'][key],
             )
-            for key in ['priority', 'quantity', 'rest']
+            for key in ['priority', 'rest']
         ]
 
+        self.tf_quantity = TextField(
+            label=await self.client.session.gtv(key='quantity'),
+            value=self.exercise['training_exercise']['value']
+        )
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='admin_account_training_exercise_get_view_title'),
             main_section_controls=[

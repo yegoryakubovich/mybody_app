@@ -30,9 +30,10 @@ class ProductCreateView(AdminBaseView):
     route = '/admin/product/create'
     articles = list[dict]
     tf_name: TextField
-    dd_type = Dropdown
+    dd_nutrients_type = Dropdown
     dd_articles = Dropdown
     dd_unit = Dropdown
+    dd_is_main = Dropdown
     tf_fats = TextField
     tf_proteins = TextField
     tf_carbohydrates = TextField
@@ -42,6 +43,10 @@ class ProductCreateView(AdminBaseView):
         await self.set_type(loading=True)
         self.articles = await self.client.session.api.client.articles.get_list()
         await self.set_type(loading=False)
+        product_main_dict = {
+            await self.client.session.gtv(key='no'): 'no',
+            await self.client.session.gtv(key='yes'): 'yes',
+        }
         nutrients_type_dict = {
             await self.client.session.gtv(key='proteins'): 'proteins',
             await self.client.session.gtv(key='fats'): 'fats',
@@ -69,16 +74,27 @@ class ProductCreateView(AdminBaseView):
                 key=nutrients_unit_dict[nutrient_unit],
             ) for nutrient_unit in nutrients_unit_dict
         ]
+        product_main_options = [
+            Option(
+                text=product_main,
+                key=product_main_dict[product_main],
+            ) for product_main in product_main_dict
+        ]
         self.tf_name, self.tf_fats, self.tf_proteins, self.tf_carbohydrates, self.tf_calories = [
             TextField(
                 label=await self.client.session.gtv(key=key),
             )
             for key in ['name', 'fats', 'proteins', 'carbohydrates', 'calories']
         ]
-        self.dd_type = Dropdown(
+        self.dd_nutrients_type = Dropdown(
             label=await self.client.session.gtv(key='type'),
             value=list(nutrients_type_dict.values())[0],
             options=nutrients_type_options,
+        )
+        self.dd_is_main = Dropdown(
+            label=await self.client.session.gtv(key='main_product'),
+            value=list(product_main_dict.values())[0],
+            options=product_main_options,
         )
         self.dd_unit = Dropdown(
             label=await self.client.session.gtv(key='units'),
@@ -94,7 +110,8 @@ class ProductCreateView(AdminBaseView):
             title=await self.client.session.gtv(key='admin_product_create_view_title'),
             main_section_controls=[
                 self.tf_name,
-                self.dd_type,
+                self.dd_nutrients_type,
+                self.dd_is_main,
                 self.dd_unit,
                 self.tf_fats,
                 self.tf_proteins,
@@ -109,7 +126,7 @@ class ProductCreateView(AdminBaseView):
                     on_click=self.create_product,
                 ),
             ],
-         )
+        )
 
     async def create_product(self, _):
         from app.views.admin.products.get import ProductView
@@ -125,7 +142,8 @@ class ProductCreateView(AdminBaseView):
             await self.set_type(loading=True)
             product_id = await self.client.session.api.admin.products.create(
                 name=self.tf_name.value,
-                type_=self.dd_type.value,
+                type_=self.dd_nutrients_type.value,
+                is_main=True if self.dd_is_main.value == 'yes' else False,
                 unit=self.dd_unit.value,
                 fats=self.tf_fats.value,
                 proteins=self.tf_proteins.value,

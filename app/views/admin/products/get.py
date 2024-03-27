@@ -38,6 +38,7 @@ class ProductView(AdminBaseView):
     tf_proteins = TextField
     tf_carbohydrates = TextField
     tf_calories = TextField
+    dd_is_main = Dropdown
     snack_bar = SnackBar
 
     def __init__(self, product_id):
@@ -52,6 +53,7 @@ class ProductView(AdminBaseView):
         self.articles = await self.client.session.api.client.articles.get_list(
         )
         await self.set_type(loading=False)
+
 
         nutrients_type_dict = {
             await self.client.session.gtv(key='proteins'): 'proteins',
@@ -74,6 +76,16 @@ class ProductView(AdminBaseView):
                 key=nutrients_type_dict[nutrient_type],
             ) for nutrient_type in nutrients_type_dict
         ]
+        product_type_dict = {
+            await self.client.session.gtv(key='no'): 'no',
+            await self.client.session.gtv(key='yes'): 'yes',
+        }
+        product_unit_options = [
+            Option(
+                text=product_type,
+                key=product_type_dict[product_type],
+            ) for product_type in product_type_dict
+        ]
         nutrients_unit_options = [
             Option(
                 text=nutrient_unit,
@@ -90,8 +102,13 @@ class ProductView(AdminBaseView):
             value=self.product['type'],
             options=nutrients_type_options,
         )
+        self.dd_is_main = Dropdown(
+            label=await self.client.session.gtv(key='main_product'),
+            value=list(nutrients_type_dict.values())[0],
+            options=product_unit_options,
+        )
         self.dd_units = Dropdown(
-            label=await self.client.session.gtv(key='unit'),
+            label=await self.client.session.gtv(key='units'),
             value=self.product['unit'],
             options=nutrients_unit_options,
         )
@@ -114,6 +131,7 @@ class ProductView(AdminBaseView):
             main_section_controls=[
                 self.dd_type,
                 self.dd_units,
+                self.dd_is_main,
                 self.tf_fats,
                 self.tf_proteins,
                 self.tf_carbohydrates,
@@ -155,6 +173,7 @@ class ProductView(AdminBaseView):
             await self.client.session.api.admin.products.update(
                 id_=self.product_id,
                 type_=self.dd_type.value,
+                is_main=True if self.dd_is_main.value == 'yes' else False,
                 unit=self.dd_units.value,
                 fats=self.tf_fats.value,
                 proteins=self.tf_proteins.value,

@@ -60,7 +60,7 @@ class PromotionalCodeView(AuthView):
                 service_cost_id=service_cost_id[0]['id'],
                 payment_method=self.client.session.payment.payment_method,
                 payment_method_currency_id=self.client.session.payment.payment_method_currency_id,
-                promo_code=self.tf_promotional_code.value or None,
+                promocode=self.tf_promotional_code.value or None,
             )
             self.client.session.payment.payment_id = payment_id
             await self.set_type(loading=False)

@@ -31,7 +31,6 @@ from app.controls.layout import AdminBaseView, Section
 from app.utils import Fonts, Error
 from app.views.admin.accounts.service.meal.product import AccountMealProductView
 from app.views.admin.accounts.service.meal.product.create import AccountMealProductCreateView
-from app.views.admin.accounts.service.meal.report.get import AccountMealReportView
 
 
 class AccountMealView(AdminBaseView):
@@ -44,6 +43,7 @@ class AccountMealView(AdminBaseView):
     tf_fats: TextField
     tf_proteins: TextField
     tf_carbohydrates: TextField
+    meal_id: int
 
     def __init__(self, meal_id):
         super().__init__()
@@ -54,10 +54,12 @@ class AccountMealView(AdminBaseView):
         self.meal = await self.client.session.api.admin.meals.get(
             id_=self.meal_id,
         )
+        self.meal = await self.client.session.api.admin.meals.get(
+            id_=self.meal_id,
+        )
         self.products = []
         for i, product in enumerate(self.meal['products']):
             product_info = await self.client.session.api.client.products.get(id_=product['product'])
-            # Находим соответствующий продукт в self.meal['products']
             meal_product = self.meal['products'][i]
             if meal_product:
                 product_info['meal_product'] = meal_product
@@ -123,12 +125,6 @@ class AccountMealView(AdminBaseView):
                             ),
                             on_click=self.delete_meal
                         ),
-                        FilledButton(
-                            content=Text(
-                                value=await self.client.session.gtv(key='report'),
-                            ),
-                            on_click=self.view_report
-                        ),
                     ],
                     wrap=True,
                 )
@@ -161,13 +157,6 @@ class AccountMealView(AdminBaseView):
         await self.client.change_view(
             AccountMealProductView(
                 product=product,
-                meal_id=self.meal_id,
-            ),
-        )
-
-    async def view_report(self, _):
-        await self.client.change_view(
-            view=AccountMealReportView(
                 meal_id=self.meal_id,
             ),
         )

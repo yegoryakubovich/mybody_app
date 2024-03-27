@@ -24,51 +24,50 @@ from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.layout import AdminBaseView
 from app.utils import Fonts
-from app.views.client.meal.report import MealReportView
 
 
-class AccountMealReportView(AdminBaseView):
+class ReportListView(AdminBaseView):
     route = '/admin/account/meal/report/get'
     tf_not_report: Text
     products: list[dict]
     report: dict
     meal: dict
     image_data: str = None
+    meals_reports: dict
+    training_report: dict
+    tf_comment: Text
+    tf_not_report: Text
 
-    def __init__(self, meal_id):
+    def __init__(self, meals_reports_ids, training_report_id, training_id):
         super().__init__()
-        self.meal_id = meal_id
+        self.meals_reports_ids = meals_reports_ids
+        self.training_id = training_id
+        self.training_report_id = training_report_id
 
     async def build(self):
         await self.set_type(loading=True)
-        self.meal = await self.client.session.api.admin.meals.get(
-            id_=self.meal_id,
-        )
+        for meal_report_id in self.meals_reports_ids:
+            try:
+                report = await self.client.session.api.admin.meals.reports.get(id_=meal_report_id)
+                if report['images']:
+                    response = await self.client.session.api.client.images.get(id_str=report['images'][0]['id_str'])
+                    image_data = await response.read()
+                else:
+                    image_data = None
+                self.meals_reports[meal_report_id] = {'report': report, 'image_data': image_data}
+            except ApiException:
+                self.meals_reports[meal_report_id] = {}
         try:
-            self.report = await self.client.session.api.admin.meals.reports.get(
-                id_=self.meal['meal_report_id'],
+            self.training_report = await self.client.session.api.admin.trainings.reports.get(
+                id_=self.training_report_id,
             )
-            if self.report['images']:
-                response = await self.client.session.api.client.images.get(
-                    id_str=self.report['images'][0]['id_str'],
-                )
-                self.image_data = await response.read()
         except ApiException:
-            self.report = {}
+            self.training_report = {}
         await self.set_type(loading=False)
 
-        if self.report:
-            self.products = []
-            for i, product in enumerate(self.report['products']):
-                product_info = await self.client.session.api.client.products.get(id_=product['product_id'])
-                # Находим соответствующий продукт в self.meal['products']
-                meal_product = self.report['products'][i]
-                if meal_product:
-                    product_info['meal_product'] = meal_product
-                self.products.append(product_info)
         controls = []
-        if self.report:
-            if self.report['comment']:
+        if self.training_report:
+            if self.training_report['comment']:
                 comment = Text(
                     value=f'{await self.client.session.gtv(key="comment")}: {self.report["comment"]}',
                     size=20,
@@ -104,8 +103,6 @@ class AccountMealReportView(AdminBaseView):
                 on_click=self.delete_meal_report,
             )
             controls.append(button)
-
-            create_button = None
         else:
             not_report_text = Text(
                 value=await self.client.session.gtv(key='not_report'),
@@ -114,19 +111,40 @@ class AccountMealReportView(AdminBaseView):
             )
             controls.append(not_report_text)
 
-            create_button = self.create_training_report
+        if self.training_report:
+            self.tf_comment = Text(
+                value=self.report['comment'],
+                size=20,
+                font_family=Fonts.MEDIUM,
+            )
+            button = FilledButton(
+                content=Text(
+                    value=await self.client.session.gtv(key='delete'),
+                ),
+                on_click=self.delete_training_report,
+            )
+            controls = [self.tf_comment, button]
+        else:
+            self.tf_not_report = Text(
+                value=await self.client.session.gtv(key='not_report'),
+                size=20,
+                font_family=Fonts.MEDIUM,
+            )
+            controls = [self.tf_not_report]
 
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='report'),
-            create_button=create_button,
             main_section_controls=controls,
         )
+
+    async def delete_training_report(self, _):
+        await self.client.session.api.admin.trainings.reports.delete(
+            id_=self.training_report_id,
+        )
+        await self.client.change_view(go_back=True, with_restart=True)
 
     async def delete_meal_report(self, _):
         await self.client.session.api.admin.meals.reports.delete(
             id_=self.meal['meal_report_id'],
         )
         await self.client.change_view(go_back=True, with_restart=True, delete_current=True)
-
-    async def create_training_report(self, _):
-        await self.client.change_view(MealReportView(meal_id=self.meal_id))

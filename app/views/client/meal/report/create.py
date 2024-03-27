@@ -236,7 +236,6 @@ class MealReportView(ClientBaseView):
             pass
         else:
             path = f'upload/{e.file_name}'
-            print(path)
             if os.path.exists(path):
                 with open(path, 'rb') as f:
                     image_data = f.read()

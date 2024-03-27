@@ -13,8 +13,3 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
-
-from .get import AccountTrainingView
-from .get_list import AccountTrainingListView
-from .create import AccountTrainingCreateView

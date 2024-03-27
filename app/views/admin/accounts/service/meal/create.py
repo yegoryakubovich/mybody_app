@@ -14,8 +14,6 @@
 # limitations under the License.
 #
 
-from datetime import datetime
-
 from flet_core import ScrollMode
 from flet_core.dropdown import Option
 from mybody_api_client.utils import ApiException
@@ -23,14 +21,12 @@ from mybody_api_client.utils import ApiException
 from app.controls.button import FilledButton
 from app.controls.information import Text
 from app.controls.input import TextField, Dropdown
-from app.controls.input.textfielddate import TextFieldDate
 from app.controls.layout import AdminBaseView
 from app.utils import Error
 
 
 class AccountMealCreateView(AdminBaseView):
     route = '/admin/account/meal/create'
-    tf_date: TextField
     dd_type: Dropdown
     tf_fats = TextField
     tf_proteins = TextField
@@ -60,12 +56,6 @@ class AccountMealCreateView(AdminBaseView):
             value=meal_type_options[0].key,
             options=meal_type_options,
         )
-        now = datetime.now()
-        self.tf_date = TextFieldDate(
-            label=await self.client.session.gtv(key='date'),
-            value=self.meal_date or now.strftime("%Y-%m-%d"),
-            client=self.client
-        )
         self.tf_fats, self.tf_proteins, self.tf_carbohydrates = [
             TextField(
                 label=await self.client.session.gtv(key=key),
@@ -76,7 +66,6 @@ class AccountMealCreateView(AdminBaseView):
         self.controls = await self.get_controls(
             title=await self.client.session.gtv(key='admin_account_meal_create_view_title'),
             main_section_controls=[
-                self.tf_date,
                 self.dd_type,
                 self.tf_fats,
                 self.tf_proteins,
@@ -101,7 +90,7 @@ class AccountMealCreateView(AdminBaseView):
             await self.set_type(loading=True)
             meal_id = await self.client.session.api.admin.meals.create(
                 account_service_id=self.account_service_id,
-                date=self.tf_date.value,
+                date=self.meal_date,
                 type_=self.dd_type.value,
                 fats=self.tf_fats.value,
                 proteins=self.tf_proteins.value,
